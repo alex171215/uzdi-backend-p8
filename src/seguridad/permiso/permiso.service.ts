@@ -1,0 +1,35 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreatePermisoDto } from './dto/create-permiso.dto';
+import { UpdatePermisoDto } from './dto/update-permiso.dto';
+import { Permiso } from './entities/permiso.entity';
+
+@Injectable()
+export class PermisoService {
+  constructor(
+    @InjectRepository(Permiso)
+    private readonly repository: Repository<Permiso>,
+  ) {}
+
+  create(createPermisoDto: CreatePermisoDto) {
+    const newEntity = this.repository.create(createPermisoDto);
+    return this.repository.save(newEntity);
+  }
+
+  findAll() {
+    return this.repository.find();
+  }
+
+  findOne(id: number) {
+    return this.repository.findOne({ where: { id } as any });
+  }
+
+  update(id: number, updatePermisoDto: UpdatePermisoDto) {
+    return this.repository.update(id, updatePermisoDto);
+  }
+
+  remove(id: number) {
+    return this.repository.delete(id);
+  }
+}

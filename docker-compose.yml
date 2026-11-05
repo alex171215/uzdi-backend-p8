@@ -1,0 +1,26 @@
+services:
+  uzdi_db:
+    image: postgres:15-alpine
+    container_name: uzdi_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: uzdi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - uzdi_pgdata:/var/lib/postgresql/data
+      # Montaje automático del script DDL v8 en la inicialización de Postgres
+      - ./"Back Ecologia (1).sql":/docker-entrypoint-initdb.d/01_ddl_v8.sql:ro
+    networks:
+      - uzdi_network
+
+volumes:
+  uzdi_pgdata:
+    driver: local
+
+networks:
+  uzdi_network:
+    driver: bridge
+
