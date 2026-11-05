@@ -58,3 +58,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Others
 *.pdf
 # *.sql (permitir script de BD para Docker)
+*.tsbuildinfo

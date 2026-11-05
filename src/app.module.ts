@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
-// Modulos UZDI Scaffoldeados
+// Módulos UZDI
 import { EstructuraInstitucionalModule } from './estructura-institucional/estructura-institucional.module';
 import { SeguridadModule } from './seguridad/seguridad.module';
 import { AdolescentesModule } from './adolescente/adolescente.module';
@@ -14,6 +14,7 @@ import { ContextoFamiliarModule } from './contexto-familiar/contexto-familiar.mo
 import { TalleresActividadesModule } from './talleres-actividades/talleres-actividades.module';
 import { GestionDocumentalModule } from './gestion-documental/gestion-documental.module';
 import { MockAuthMiddleware } from './common/middleware/mock-auth.middleware';
+import { AuditContextMiddleware } from './common/middleware/audit-context.middleware';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { MockAuthMiddleware } from './common/middleware/mock-auth.middleware';
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      // El esquema lo gobierna DDL_UZDI_FINAL.sql; TypeORM no debe alterarlo.
+      // El esquema físico lo gobierna Back Ecologia (1).sql (DDL v8); TypeORM no debe alterarlo automáticamente.
       synchronize: false,
     }),
     AuthModule,
@@ -34,13 +35,15 @@ import { MockAuthMiddleware } from './common/middleware/mock-auth.middleware';
     AdolescentesModule,
     ContextoFamiliarModule,
     TalleresActividadesModule,
-    GestionDocumentalModule
+    GestionDocumentalModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(MockAuthMiddleware).forRoutes('*');
+    consumer
+      .apply(MockAuthMiddleware, AuditContextMiddleware)
+      .forRoutes('*');
   }
 }

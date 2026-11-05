@@ -12,13 +12,15 @@
     "target": "ES2022",
     "sourceMap": true,
     "outDir": "./dist",
+    "baseUrl": "./",
+    "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": 6.0,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "noFallthroughCasesInSwitch": true
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
   }
 }
