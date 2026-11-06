@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SanitizationPipe } from './common/pipes/sanitization.pipe';
 import { ResponseTransformInterceptor } from './common/interceptors/transform.interceptor';
 import { CustomHttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -36,8 +37,42 @@ async function bootstrap() {
     }),
   );
 
+  // Configuración de OpenAPI / Swagger
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Sistema SNAI - UZDI API REST')
+    .setDescription(
+      'Documentación interactiva de la API REST para el Sistema de Gestión Integral UZDI (SNAI - PUCE). ' +
+      'Permite consultar, registrar y probar endpoints operativos de Adolescentes, Expedientes, Medidas, ' +
+      'Estructura Institucional, Contexto Familiar y Seguridad.',
+    )
+    .setVersion('2.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Ingresa el token JWT en formato: Bearer <token>',
+      },
+      'JWT-auth',
+    )
+    .addTag('Auth', 'Autenticación y ciclo de vida de sesiones')
+    .addTag('Adolescentes', 'Registro y gestión sociodemográfica de adolescentes')
+    .addTag('Expedientes', 'Gestión procesal de causas judiciales')
+    .addTag('Medidas Expediente', 'Asociación y control secuencial de medidas según el CONA')
+    .addTag('Infracciones', 'Catálogo de infracciones tipificadas')
+    .addTag('Medidas Socioeducativas', 'Catálogo de medidas socioeducativas no privativas de libertad')
+    .addTag('Estructura Institucional', 'Gestión geográfica (Provincias, Cantones y UZDIs)')
+    .addTag('Usuarios y Seguridad', 'Administración de usuarios, roles y auditoría')
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, swaggerDocument, {
+    customSiteTitle: 'SNAI UZDI — API Docs',
+  });
+
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   console.log(`🚀 Servidor Backend UZDI ejecutándose en: http://localhost:${port}/api/v1`);
+  console.log(`📖 Documentación Swagger interactiva lista en: http://localhost:${port}/api/docs`);
 }
 bootstrap();
