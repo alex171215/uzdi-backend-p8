@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEtniaDto } from './dto/create-etnia.dto';
@@ -18,18 +18,30 @@ export class EtniaService {
   }
 
   findAll() {
-    return this.repository.find();
+    return this.repository.find({ where: { estado: true } });
   }
 
   findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
+    return this.repository.findOne({ where: { id, estado: true } });
   }
 
-  update(id: number, updateEtniaDto: UpdateEtniaDto) {
-    return this.repository.update(id, updateEtniaDto);
+  async update(id: number, updateEtniaDto: UpdateEtniaDto) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      updateEtniaDto,
+    );
+    if (!result.affected)
+      throw new NotFoundException('Etnia activa no encontrada');
+    return result;
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      { estado: false },
+    );
+    if (!result.affected)
+      throw new NotFoundException('Etnia activa no encontrada');
+    return result;
   }
 }

@@ -1,12 +1,27 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { EstadoColumn } from '../../../common/decorators/estado-column.decorator';
+import { Canton } from '../../canton/entities/canton.entity';
 
 @Entity({ schema: 'estructura_institucional', name: 'uzdi' })
 export class Uzdi {
+  @EstadoColumn()
+  estado: boolean;
+
   @PrimaryGeneratedColumn({ name: 'uzdi_id' })
   id: number;
 
   @Column({ name: 'cntn_id', type: 'int4' })
   cntn_id: number;
+
+  @ManyToOne(() => Canton, { eager: true })
+  @JoinColumn({ name: 'cntn_id' })
+  canton: Canton;
 
   @Column({ name: 'nombre', type: 'varchar', length: 255 })
   nombre: string;
@@ -23,9 +38,21 @@ export class Uzdi {
   @Column({ name: 'correo', type: 'varchar', length: 100, nullable: true })
   correo?: string;
 
-  @Column({ name: 'fcCrea', type: 'timestamp', insert: false, update: false, nullable: true })
+  @Column({
+    name: 'fcCrea',
+    type: 'timestamp',
+    insert: false,
+    update: false,
+    nullable: true,
+  })
   fcCrea?: Date;
 
-  @Column({ name: 'fcMod', type: 'timestamp', insert: false, update: false, nullable: true })
+  @Column({
+    name: 'fcMod',
+    type: 'timestamp',
+    insert: false,
+    update: false,
+    nullable: true,
+  })
   fcMod?: Date;
 }

@@ -12,7 +12,7 @@ export class Perfil extends AuditableEntity {
   @Column({ name: 'prflpdre', type: 'int4', nullable: true })
   padreId: number | null;
 
-  @Column({ name: 'prflcdgo', type: 'varchar', length: 4, nullable: true })
+  @Column({ name: 'prflcdgo', type: 'varchar', length: 5, nullable: true })
   codigo: string | null;
 
   @Column({ name: 'prflnmbr', type: 'varchar', length: 63 })
