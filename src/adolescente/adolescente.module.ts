@@ -7,6 +7,7 @@ import { InfraccionModule } from './infraccion/infraccion.module';
 import { MedidaSocioeducativaModule } from './medida-socioeducativa/medida-socioeducativa.module';
 import { AdolescenteModule } from './adolescente/adolescente.module';
 import { ExpedienteModule } from './expediente/expediente.module';
+import { MedidaExpedienteModule } from './medida-expediente/medida-expediente.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ExpedienteModule } from './expediente/expediente.module';
     MedidaSocioeducativaModule,
     AdolescenteModule,
     ExpedienteModule,
-  ]
+    MedidaExpedienteModule,
+  ],
 })
 export class AdolescentesModule {}

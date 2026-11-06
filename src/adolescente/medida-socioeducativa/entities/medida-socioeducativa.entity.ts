@@ -1,21 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 
-// CAMBIO v6/DDL: la medida_socioeducativa es un CATÁLOGO de tipos de medida.
-// La medida aplicada a un adolescente vive en `adolescente.expediente`.
+// Catalogo de tipos de medida (DDL v8).
+// La medida que se le asigna a un expediente se guarda en medida_expediente.
 @Entity({ schema: 'adolescente', name: 'medida_socioeducativa' })
-export class MedidaSocioeducativa {
+export class MedidaSocioeducativa extends AuditableEntity {
   @PrimaryGeneratedColumn({ name: 'mdso_id' })
   id: number;
 
-  @Column({ name: 'nombre', type: 'varchar', length: 255 })
+  @Column({ name: 'nombre', type: 'varchar', length: 255, unique: true })
   nombre: string;
 
   @Column({ name: 'duracion_meses', type: 'int2', nullable: true })
   duracion_meses?: number;
-
-  @Column({ name: 'fcCrea', type: 'timestamp', insert: false, update: false, nullable: true })
-  fcCrea?: Date;
-
-  @Column({ name: 'fcMod', type: 'timestamp', insert: false, update: false, nullable: true })
-  fcMod?: Date;
 }

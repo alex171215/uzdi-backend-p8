@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateInfraccionDto } from './dto/create-infraccion.dto';
 import { UpdateInfraccionDto } from './dto/update-infraccion.dto';
 import { Infraccion } from './entities/infraccion.entity';
+import { Expediente } from '../expediente/entities/expediente.entity';
 
 @Injectable()
 export class InfraccionService {
   constructor(
     @InjectRepository(Infraccion)
     private readonly repository: Repository<Infraccion>,
+    @InjectRepository(Expediente)
+    private readonly expedienteRepo: Repository<Expediente>,
   ) {}
 
   create(createInfraccionDto: CreateInfraccionDto) {
@@ -17,19 +20,38 @@ export class InfraccionService {
     return this.repository.save(newEntity);
   }
 
-  findAll() {
-    return this.repository.find();
+  // por defecto solo devuelve las activas
+  findAll(incluirInactivos = false) {
+    return this.repository.find({
+      where: incluirInactivos ? {} : { estado: true },
+      order: { nombre: 'ASC' },
+    });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
+  async findOne(id: number) {
+    const entity = await this.repository.findOne({ where: { id } });
+    if (!entity) throw new NotFoundException(`Infracción ${id} no encontrada.`);
+    return entity;
   }
 
-  update(id: number, updateInfraccionDto: UpdateInfraccionDto) {
-    return this.repository.update(id, updateInfraccionDto);
+  async findExpedientes(id: number) {
+    await this.findOne(id);
+    return this.expedienteRepo.find({
+      where: { infc_id: id, estado: true },
+      order: { id: 'DESC' },
+    });
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async update(id: number, updateInfraccionDto: UpdateInfraccionDto) {
+    await this.findOne(id);
+    await this.repository.update(id, updateInfraccionDto);
+    return this.findOne(id);
+  }
+
+  async remove(id: number) {
+    await this.findOne(id);
+    // borrado logico: solo se cambia el estado a 'F'
+    await this.repository.update(id, { estado: false });
+    return { id, estado: false };
   }
 }
