@@ -38,3 +38,4 @@ EXPOSE 3000
 
 # Comando de arranque
 CMD ["node", "dist/main.js"]
+

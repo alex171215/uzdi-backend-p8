@@ -13,3 +13,4 @@ import { Uzdi } from '../estructura-institucional/uzdi/entities/uzdi.entity';
   exports: [ReportesService],
 })
 export class ReportesModule {}
+

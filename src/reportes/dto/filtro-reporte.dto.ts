@@ -30,3 +30,4 @@ export class FiltroReporteDto {
   @IsString()
   estado_procesal?: string;
 }
+
