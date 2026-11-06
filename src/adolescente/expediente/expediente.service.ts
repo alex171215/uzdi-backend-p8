@@ -1,35 +1,94 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateExpedienteDto } from './dto/create-expediente.dto';
 import { UpdateExpedienteDto } from './dto/update-expediente.dto';
+import { QueryExpedienteDto } from './dto/query-expediente.dto';
 import { Expediente } from './entities/expediente.entity';
+import { Infraccion } from '../infraccion/entities/infraccion.entity';
 
 @Injectable()
 export class ExpedienteService {
   constructor(
     @InjectRepository(Expediente)
     private readonly repository: Repository<Expediente>,
+    @InjectRepository(Infraccion)
+    private readonly infraccionRepo: Repository<Infraccion>,
   ) {}
 
-  create(createExpedienteDto: CreateExpedienteDto) {
-    const newEntity = this.repository.create(createExpedienteDto);
-    return this.repository.save(newEntity);
+  // la infraccion tiene que existir y estar activa
+  private async validarInfraccion(infcId: number) {
+    const infraccion = await this.infraccionRepo.findOne({
+      where: { id: infcId },
+    });
+    if (!infraccion)
+      throw new BadRequestException(
+        `La infracción (infc_id=${infcId}) no existe.`,
+      );
+    if (!infraccion.estado)
+      throw new BadRequestException(
+        `La infracción "${infraccion.nombre}" está inactiva.`,
+      );
   }
 
-  findAll() {
-    return this.repository.find();
+  // el numero de causa es opcional, pero no se puede repetir en otro expediente activo
+  private async validarNumeroCausa(
+    numeroCausa: string | undefined,
+    excludeId?: number,
+  ) {
+    if (!numeroCausa) return;
+    const existente = await this.repository.findOne({
+      where: { numero_causa: numeroCausa, estado: true },
+    });
+    if (existente && existente.id !== excludeId) {
+      throw new ConflictException(
+        `Ya existe un expediente activo con el número de causa ${numeroCausa}.`,
+      );
+    }
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
+  async create(dto: CreateExpedienteDto) {
+    await this.validarInfraccion(dto.infc_id);
+    await this.validarNumeroCausa(dto.numero_causa);
+    const entity = this.repository.create(dto);
+    return this.repository.save(entity);
   }
 
-  update(id: number, updateExpedienteDto: UpdateExpedienteDto) {
-    return this.repository.update(id, updateExpedienteDto);
+  findAll(query: QueryExpedienteDto = {}) {
+    return this.repository.find({
+      where: { estado: true, ...query },
+      order: { id: 'DESC' },
+    });
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async findOne(id: number) {
+    const expediente = await this.repository.findOne({
+      where: { id },
+      relations: { medidas: { medida: true } },
+      order: { medidas: { orden: 'ASC' } },
+    });
+    if (!expediente)
+      throw new NotFoundException(`Expediente ${id} no encontrado.`);
+    return expediente;
+  }
+
+  async update(id: number, dto: UpdateExpedienteDto) {
+    await this.findOne(id);
+    if (dto.infc_id) await this.validarInfraccion(dto.infc_id);
+    await this.validarNumeroCausa(dto.numero_causa, id);
+    await this.repository.update(id, dto);
+    return this.findOne(id);
+  }
+
+  async remove(id: number) {
+    await this.findOne(id);
+    // borrado logico: solo se cambia el estado a 'F'
+    await this.repository.update(id, { estado: false });
+    return { id, estado: false };
   }
 }

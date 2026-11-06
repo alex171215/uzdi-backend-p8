@@ -1,10 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { InfraccionService } from './infraccion.service';
 import { CreateInfraccionDto } from './dto/create-infraccion.dto';
 import { UpdateInfraccionDto } from './dto/update-infraccion.dto';
+import { EstadoQueryDto } from '../../common/dto/estado-query.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
+
+const LECTURA = [
+  Rol.ADMINISTRADOR,
+  Rol.SUPERADMINISTRADOR,
+  Rol.TRABAJADOR_SOCIAL,
+  Rol.PSICOLOGO,
+  Rol.EDUCADOR,
+  Rol.JURIDICO,
+];
 
 @Controller('infraccion')
 @UseGuards(RolesGuard)
@@ -17,26 +38,38 @@ export class InfraccionController {
     return this.infraccionService.create(createInfraccionDto);
   }
 
+  // ?incluirInactivos=true para ver tambien las desactivadas
   @Get()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.TRABAJADOR_SOCIAL, Rol.PSICOLOGO, Rol.EDUCADOR, Rol.JURIDICO)
-  findAll() {
-    return this.infraccionService.findAll();
+  @Roles(...LECTURA)
+  findAll(@Query() query: EstadoQueryDto) {
+    return this.infraccionService.findAll(query.incluirInactivos);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.infraccionService.findOne(+id);
+  @Roles(...LECTURA)
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.infraccionService.findOne(id);
+  }
+
+  // expedientes que tienen esta infraccion
+  @Get(':id/expedientes')
+  @Roles(...LECTURA)
+  findExpedientes(@Param('id', ParseIntPipe) id: number) {
+    return this.infraccionService.findExpedientes(id);
   }
 
   @Patch(':id')
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  update(@Param('id') id: string, @Body() updateInfraccionDto: UpdateInfraccionDto) {
-    return this.infraccionService.update(+id, updateInfraccionDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateInfraccionDto: UpdateInfraccionDto,
+  ) {
+    return this.infraccionService.update(id, updateInfraccionDto);
   }
 
   @Delete(':id')
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  remove(@Param('id') id: string) {
-    return this.infraccionService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.infraccionService.remove(id);
   }
 }

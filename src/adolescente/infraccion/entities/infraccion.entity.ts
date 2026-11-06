@@ -1,7 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { AuditableEntity } from '../../../common/entities/auditable.entity';
 
+// Catalogo de infracciones (DDL v8). Hereda estado, fcCrea y fcMod de AuditableEntity
 @Entity({ schema: 'adolescente', name: 'infraccion' })
-export class Infraccion {
+export class Infraccion extends AuditableEntity {
   @PrimaryGeneratedColumn({ name: 'infc_id' })
   id: number;
 
@@ -11,15 +13,14 @@ export class Infraccion {
   @Column({ name: 'categoria', type: 'varchar', length: 127 })
   categoria: string;
 
-  @Column({ name: 'articulo_cona', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'articulo_cona',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   articulo_cona?: string;
 
   @Column({ name: 'descripcion', type: 'text', nullable: true })
   descripcion?: string;
-
-  @Column({ name: 'fcCrea', type: 'timestamp', insert: false, update: false, nullable: true })
-  fcCrea?: Date;
-
-  @Column({ name: 'fcMod', type: 'timestamp', insert: false, update: false, nullable: true })
-  fcMod?: Date;
 }
