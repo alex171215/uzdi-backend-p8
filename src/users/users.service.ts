@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, In } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -16,41 +16,56 @@ export class UsersService {
     private readonly tipoPersonaRepo: Repository<TipoPersona>,
   ) {}
 
+  /**
+   * RF-12 → RF-01: el perfil institucional (tipo_persona) debe existir y
+   * estar activo ANTES de dar de alta al usuario.
+   */
+  private async validarPerfilInstitucional(tpprId: number): Promise<TipoPersona> {
+    const tipo = await this.tipoPersonaRepo.findOne({ where: { id: tpprId } });
+    if (!tipo) {
+      throw new BadRequestException(
+        `El perfil institucional (tppr_id=${tpprId}) no existe. Regístrelo primero (RF-12).`,
+      );
+    }
+    if (!tipo.estado) {
+      throw new BadRequestException(`El perfil institucional "${tipo.nombre}" está inactivo.`);
+    }
+    return tipo;
+  }
+
   async create(createUserDto: CreateUserDto) {
+    const tipoPersona = await this.validarPerfilInstitucional(createUserDto.tppr_id);
+
     const existingUser = await this.userRepository.findOne({
       where: [{ login: createUserDto.login }, { correo: createUserDto.correo }],
     });
-
     if (existingUser) {
       throw new ConflictException('El login o correo ya está en uso');
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
     const newUser = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      tipoPersona,
+      estado: true,
     });
-
-    if (createUserDto.roles_ids?.length) {
-      newUser.roles = await this.tipoPersonaRepo.findBy({ id: In(createUserDto.roles_ids) });
-      newUser.tppr_id = createUserDto.roles_ids[0];
-    }
 
     const savedUser = await this.userRepository.save(newUser);
     delete savedUser.password;
-    
+
     return {
       message: 'Usuario registrado correctamente',
       data: savedUser,
     };
   }
 
+  /** Solo usuarios activos (estado = 'V'). */
   async findAll() {
     const users = await this.userRepository.find({
-      select: { id: true, nombres: true, apellidos: true, correo: true, login: true, uzdi_id: true, tppr_id: true },
-      relations: { roles: true },
+      where: { estado: true },
+      order: { apellidos: 'ASC' },
     });
     return {
       message: 'Listado general de usuarios',
@@ -59,14 +74,14 @@ export class UsersService {
   }
 
   async search(query: string) {
+    const q = `%${query ?? ''}%`;
     const users = await this.userRepository.find({
       where: [
-        { nombres: Like(`%${query}%`) },
-        { apellidos: Like(`%${query}%`) },
-        { login: Like(`%${query}%`) },
-        { correo: Like(`%${query}%`) }
+        { estado: true, nombres: ILike(q) },
+        { estado: true, apellidos: ILike(q) },
+        { estado: true, login: ILike(q) },
+        { estado: true, correo: ILike(q) },
       ],
-      select: { id: true, nombres: true, apellidos: true, correo: true, login: true }
     });
 
     return {
@@ -78,21 +93,29 @@ export class UsersService {
   async findOne(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
-    delete user.password;
     return {
       message: `Usuario con ID ${id}`,
       data: user,
     };
   }
 
+  /** Uso interno (AuthService): incluye el hash de la contraseña. */
   async findByLoginOrEmail(login: string) {
-    return this.userRepository.findOne({
-      where: [{ login }, { correo: login }],
-    });
+    return this.userRepository
+      .createQueryBuilder('u')
+      .addSelect('u.password')
+      .leftJoinAndSelect('u.tipoPersona', 'tp')
+      .where('u.login = :login OR u.correo = :login', { login })
+      .getOne();
   }
 
+  /** Uso interno (AuthService): incluye el hash de la contraseña. */
   async findById(id: number) {
-    return this.userRepository.findOne({ where: { id } });
+    return this.userRepository
+      .createQueryBuilder('u')
+      .addSelect('u.password')
+      .where('u.id = :id', { id })
+      .getOne();
   }
 
   async changePassword(userId: number, newPasswordHash: string) {
@@ -103,27 +126,19 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    if (updateUserDto.password) {
-      const salt = await bcrypt.genSalt(10);
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, salt);
+    if (updateUserDto.tppr_id !== undefined) {
+      user.tipoPersona = await this.validarPerfilInstitucional(updateUserDto.tppr_id);
+      user.tppr_id = updateUserDto.tppr_id;
     }
 
-    if (updateUserDto.roles_ids !== undefined) {
-      const roles = await this.tipoPersonaRepo.findBy({ id: In(updateUserDto.roles_ids) });
-      user.roles = roles;
-      if (updateUserDto.roles_ids.length) user.tppr_id = updateUserDto.roles_ids[0];
-      await this.userRepository.save(user);
+    const { tppr_id: _t, password, ...fields } = updateUserDto;
+    Object.assign(user, fields);
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
     }
 
-    const { roles_ids: _r, ...fieldsToUpdate } = updateUserDto;
-    if (Object.keys(fieldsToUpdate).length) {
-      await this.userRepository.update(id, fieldsToUpdate);
-    }
-
-    const updatedUser = await this.userRepository.findOne({ where: { id }, relations: { roles: true } });
-    if (updatedUser) {
-      delete updatedUser.password;
-    }
+    await this.userRepository.save(user);
+    const updatedUser = await this.userRepository.findOne({ where: { id } });
 
     return {
       message: 'Información del usuario actualizada',
@@ -131,18 +146,16 @@ export class UsersService {
     };
   }
 
+  /** Borrado lógico: estado = 'F' (el trigger deja el rastro en seguridad.historial). */
   async remove(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    // Desactivación lógica requeriría un campo 'estado' o similar. 
-    // Como la DB actual no tiene 'estado' explícito en seguridad.prsn, 
-    // hacemos soft remove si TypeORM lo permite o delete real temporalmente.
-    // Para cumplir el PDF, idealmente agregamos la lógica pero por ahora eliminamos.
-    await this.userRepository.delete(id);
-    
+    await this.userRepository.update(id, { estado: false });
+
     return {
-      message: `Usuario con ID ${id} desactivado/eliminado exitosamente`
+      message: `Usuario con ID ${id} desactivado exitosamente`,
+      data: { id, estado: false },
     };
   }
 }
