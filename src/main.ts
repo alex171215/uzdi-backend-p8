@@ -86,6 +86,7 @@ async function bootstrap() {
     .addTag('Medidas Socioeducativas', 'Catálogo de medidas socioeducativas no privativas de libertad')
     .addTag('Estructura Institucional', 'Gestión geográfica (Provincias, Cantones y UZDIs)')
     .addTag('Usuarios y Seguridad', 'Administración de usuarios, roles y auditoría')
+    .addTag('Reportes', 'Generación y exportación de reportes institucionales SNAI (Excel y PDF)')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

@@ -14,6 +14,7 @@ import { AdolescentesModule } from './adolescente/adolescente.module';
 import { ContextoFamiliarModule } from './contexto-familiar/contexto-familiar.module';
 import { TalleresActividadesModule } from './talleres-actividades/talleres-actividades.module';
 import { GestionDocumentalModule } from './gestion-documental/gestion-documental.module';
+import { ReportesModule } from './reportes/reportes.module';
 import { AuditContextMiddleware } from './common/middleware/audit-context.middleware';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
@@ -37,6 +38,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ContextoFamiliarModule,
     TalleresActividadesModule,
     GestionDocumentalModule,
+    ReportesModule,
   ],
   controllers: [AppController],
   providers: [
