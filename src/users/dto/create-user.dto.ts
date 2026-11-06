@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsInt, IsIn } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional, IsInt, IsIn, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -32,19 +32,20 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
   password: string;
 
   @IsInt()
   @IsOptional()
   uzdi_id?: number;
 
-  @IsInt()
-  @IsOptional()
-  tppr_id?: number;
-
-  @IsInt({ each: true })
-  @IsOptional()
-  roles_ids?: number[];
+  /**
+   * RF-12 antes de RF-01: todo usuario debe darse de alta con un
+   * tipo de persona / perfil institucional activo ya registrado.
+   */
+  @IsInt({ message: 'tppr_id debe ser un número entero' })
+  @IsNotEmpty({ message: 'Debe asignar un perfil institucional (tppr_id) antes de registrar al usuario' })
+  tppr_id: number;
 
   @IsString()
   @IsOptional()
