@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { BooleanVF } from '../../../common/transformers/boolean-vf.transformer';
+import { EstadoColumn } from '../../../common/decorators/estado-column.decorator';
 import { Nacionalidad } from '../../nacionalidad/entities/nacionalidad.entity';
 import { EstadoCivil } from '../../estado-civil/entities/estado-civil.entity';
 import { Etnia } from '../../etnia/entities/etnia.entity';
@@ -8,6 +15,9 @@ import { Canton } from '../../../estructura-institucional/canton/entities/canton
 
 @Entity({ schema: 'adolescente', name: 'adolescente' })
 export class Adolescente {
+  @EstadoColumn()
+  estado: boolean;
+
   @PrimaryGeneratedColumn({ name: 'adlc_id' })
   id: number;
 
@@ -33,16 +43,33 @@ export class Adolescente {
   hijos: number;
 
   // CHAR(1) 'V'/'F' en BD <-> boolean en la API
-  @Column({ name: 'reincide', type: 'char', length: 1, default: 'F', transformer: BooleanVF })
+  @Column({
+    name: 'reincide',
+    type: 'char',
+    length: 1,
+    default: 'F',
+    transformer: BooleanVF,
+  })
   reincide: boolean;
 
   @Column({ name: 'fecha_ingr', type: 'date' })
   fecha_ingr: string;
 
-  @Column({ name: 'hijoPpl', type: 'char', length: 1, default: 'F', transformer: BooleanVF })
+  @Column({
+    name: 'hijoPpl',
+    type: 'char',
+    length: 1,
+    default: 'F',
+    transformer: BooleanVF,
+  })
   hijoPpl: boolean;
 
-  @Column({ name: 'observaciones', type: 'varchar', length: 255, nullable: true })
+  @Column({
+    name: 'observaciones',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
   observaciones?: string;
 
   // --- Llaves foráneas a catálogos (columna + relación eager para resolver nombre) ---
@@ -81,9 +108,21 @@ export class Adolescente {
   @JoinColumn({ name: 'gdo_id' })
   gdo?: Gdo;
 
-  @Column({ name: 'fcCrea', type: 'timestamp', insert: false, update: false, nullable: true })
+  @Column({
+    name: 'fcCrea',
+    type: 'timestamp',
+    insert: false,
+    update: false,
+    nullable: true,
+  })
   fcCrea?: Date;
 
-  @Column({ name: 'fcMod', type: 'timestamp', insert: false, update: false, nullable: true })
+  @Column({
+    name: 'fcMod',
+    type: 'timestamp',
+    insert: false,
+    update: false,
+    nullable: true,
+  })
   fcMod?: Date;
 }

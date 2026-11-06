@@ -150,7 +150,7 @@ CREATE TABLE estructura_institucional.uzdi (
 CREATE TABLE seguridad.prfl (
     prfl_id SERIAL PRIMARY KEY,
     prflpdre INT4,
-    prflcdgo VARCHAR(4),
+    prflcdgo VARCHAR(5),
     prflnmbr VARCHAR(63) NOT NULL,
     prfldscr VARCHAR(63),
     prflobsr VARCHAR(127),

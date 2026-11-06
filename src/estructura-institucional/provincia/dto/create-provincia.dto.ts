@@ -1,6 +1,9 @@
-import { IsString, IsNotEmpty, Length } from 'class-validator';
+import { IsString, IsNotEmpty, Length, Matches } from 'class-validator';
 
 export class CreateProvinciaDto {
-  @IsString() @IsNotEmpty() @Length(1, 100)
+  @IsString()
+  @IsNotEmpty()
+  @Length(1, 100)
+  @Matches(/^[\p{L}\p{M} ./'-]+$/u)
   nombre: string;
 }

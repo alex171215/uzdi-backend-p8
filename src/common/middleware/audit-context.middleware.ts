@@ -1,4 +1,8 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NestMiddleware,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { DataSource } from 'typeorm';
 
@@ -22,15 +26,32 @@ export class AuditContextMiddleware implements NestMiddleware {
 
   async use(req: AuthenticatedRequest, _res: Response, next: NextFunction) {
     // 1. Extraer identificador de usuario desde el token JWT, headers o fallback administrativo en desarrollo
-    const headerUserId = req.headers['x-usuario-id'] || req.headers['x-user-id'];
+    const headerUserId =
+      req.headers['x-usuario-id'] || req.headers['x-user-id'];
+    if (
+      headerUserId !== undefined &&
+      (typeof headerUserId !== 'string' || !/^[1-9]\d*$/.test(headerUserId))
+    ) {
+      throw new BadRequestException(
+        'El identificador de usuario debe ser un entero positivo',
+      );
+    }
     const userId = headerUserId ? Number(headerUserId) : (req.user?.id ?? 1);
-    
+    if (!Number.isSafeInteger(userId) || userId < 1) {
+      throw new BadRequestException(
+        'El identificador de usuario está fuera de rango',
+      );
+    }
+
     req.usuarioId = userId;
 
     // 2. Propagar la variable de sesión local a PostgreSQL si el pool de conexiones está listo
     try {
       if (this.dataSource && this.dataSource.isInitialized) {
-        await this.dataSource.query(`SET app.usuario_id = '${userId}'`);
+        await this.dataSource.query('SELECT set_config($1, $2, false)', [
+          'app.usuario_id',
+          String(userId),
+        ]);
       }
     } catch {
       // No interrumpe el flujo si la conexión aún está inicializándose
@@ -39,4 +60,3 @@ export class AuditContextMiddleware implements NestMiddleware {
     next();
   }
 }
-
