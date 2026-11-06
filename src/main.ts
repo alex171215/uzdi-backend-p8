@@ -10,9 +10,32 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5174',
+    origin: (origin, callback) => {
+      // Permitir peticiones sin origen (como Postman, curl, Swagger o apps móviles)
+      if (!origin) return callback(null, true);
+
+      // Permitir localhost, 127.0.0.1, y cualquier IP de red local (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+      const allowedPatterns = [
+        /^http:\/\/localhost(:\d+)?$/,
+        /^http:\/\/127\.0\.0\.1(:\d+)?$/,
+        /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,
+        /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/,
+        /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+(:\d+)?$/,
+      ];
+
+      const isAllowed =
+        allowedPatterns.some((pattern) => pattern.test(origin)) ||
+        (process.env.CORS_ORIGIN &&
+          (process.env.CORS_ORIGIN === '*' ||
+            process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).includes(origin)));
+
+      if (isAllowed || process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+      return callback(new Error('Bloqueado por política de CORS UZDI'), false);
+    },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-usuario-id', 'x-user-id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'x-usuario-id', 'x-user-id'],
     credentials: true,
   });
 
@@ -71,8 +94,9 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT ?? 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 Servidor Backend UZDI ejecutándose en: http://localhost:${port}/api/v1`);
+  console.log(`🌐 Acceso en red local disponible en: http://0.0.0.0:${port}/api/v1`);
   console.log(`📖 Documentación Swagger interactiva lista en: http://localhost:${port}/api/docs`);
 }
 bootstrap();

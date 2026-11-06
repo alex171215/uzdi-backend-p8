@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly sesionRepo: Repository<Sesion>,
     @InjectRepository(Perfil)
     private readonly perfilRepo: Repository<Perfil>,
+    private readonly jwtService: JwtService,
   ) {}
 
   private async resolverPerfil(prflId?: number): Promise<Perfil> {
@@ -67,10 +69,22 @@ export class AuthService {
       }),
     );
 
+    // Firma de JWT real criptográfico con datos de sesión
+    const payload = {
+      sub: user.id,
+      username: user.login,
+      email: user.correo,
+      prfl_id: perfil.id,
+      rol: perfil.nombre,
+      rol_codigo: perfil.codigo,
+      sesion_id: sesion.id,
+    };
+    const token = await this.jwtService.signAsync(payload);
+
     return {
       message: 'Login exitoso',
       data: {
-        token: 'mock-jwt-token-generado-por-la-app', // TODO: reemplazar por JWT real
+        token,
         sesion: { id: sesion.id, inicio: sesion.fechaInicio },
         perfil: { id: perfil.id, codigo: perfil.codigo, nombre: perfil.nombre },
         user,

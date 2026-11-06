@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -13,8 +14,8 @@ import { AdolescentesModule } from './adolescente/adolescente.module';
 import { ContextoFamiliarModule } from './contexto-familiar/contexto-familiar.module';
 import { TalleresActividadesModule } from './talleres-actividades/talleres-actividades.module';
 import { GestionDocumentalModule } from './gestion-documental/gestion-documental.module';
-import { MockAuthMiddleware } from './common/middleware/mock-auth.middleware';
 import { AuditContextMiddleware } from './common/middleware/audit-context.middleware';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -38,12 +39,18 @@ import { AuditContextMiddleware } from './common/middleware/audit-context.middle
     GestionDocumentalModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(MockAuthMiddleware, AuditContextMiddleware)
+      .apply(AuditContextMiddleware)
       .forRoutes('*');
   }
 }
