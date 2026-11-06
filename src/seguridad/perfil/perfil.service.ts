@@ -18,7 +18,7 @@ export class PerfilService {
   }
 
   findAll() {
-    return this.repository.find();
+    return this.repository.find({ where: { estado: true } as any });
   }
 
   findOne(id: number) {
@@ -30,6 +30,7 @@ export class PerfilService {
   }
 
   remove(id: number) {
-    return this.repository.delete(id);
+    // Borrado lógico (DDL v8): estado = 'F'
+    return this.repository.update(id, { estado: false } as any);
   }
 }
