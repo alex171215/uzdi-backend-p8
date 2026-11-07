@@ -1,0 +1,69 @@
+# ============================================================
+# Despliegue de producción UZDI (API + PostgreSQL) con Docker
+# Uso (desde la raíz del repositorio):
+#   cp deploy/.env.production.example deploy/.env.production   # y editar
+#   docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env.production up -d --build
+# Guía completa: docs/GUIA_DESPLIEGUE_LINUX.md
+# ============================================================
+name: uzdi
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: uzdi_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-uzdi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en deploy/.env.production}
+      POSTGRES_DB: ${POSTGRES_DB:-uzdi_db}
+      TZ: America/Guayaquil
+    volumes:
+      - uzdi_pgdata:/var/lib/postgresql/data
+      # Solo se ejecutan la PRIMERA vez (volumen vacío), en orden alfabético
+      - '../Back Ecologia (1).sql:/docker-entrypoint-initdb.d/01_ddl_v8.sql:ro'
+      - ../db/02_seguridad_rbac.sql:/docker-entrypoint-initdb.d/02_seguridad_rbac.sql:ro
+    # La BD NO se publica a Internet; solo la ve la API por la red interna.
+    # Para administrarla desde el propio servidor: 127.0.0.1:5432
+    ports:
+      - '127.0.0.1:${DB_PORT_HOST:-5432}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-uzdi} -d ${POSTGRES_DB:-uzdi_db}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [uzdi_net]
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: uzdi-backend:latest
+    container_name: uzdi_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      TZ: America/Guayaquil
+      DATABASE_URL: postgresql://${POSTGRES_USER:-uzdi}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-uzdi_db}
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET en deploy/.env.production}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+    # Nginx del servidor publica la API; aquí solo se escucha en localhost.
+    ports:
+      - '127.0.0.1:${API_PORT_HOST:-3000}:3000'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/api/v1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks: [uzdi_net]
+
+volumes:
+  uzdi_pgdata:
+
+networks:
+  uzdi_net:
+    driver: bridge
