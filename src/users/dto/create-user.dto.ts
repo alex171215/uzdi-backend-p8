@@ -1,4 +1,15 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsInt, IsIn, MinLength } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayNotEmpty,
+  IsArray,
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsInt,
+  IsIn,
+  MinLength,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -44,10 +55,26 @@ export class CreateUserDto {
    * tipo de persona / perfil institucional activo ya registrado.
    */
   @IsInt({ message: 'tppr_id debe ser un número entero' })
-  @IsNotEmpty({ message: 'Debe asignar un perfil institucional (tppr_id) antes de registrar al usuario' })
+  @IsNotEmpty({
+    message:
+      'Debe asignar un perfil institucional (tppr_id) antes de registrar al usuario',
+  })
   tppr_id: number;
 
   @IsString()
   @IsOptional()
   observaciones?: string;
+
+  /**
+   * RF-12 → RF-01: perfiles de seguridad.prfl con los que el usuario podrá
+   * iniciar sesión (ej. [3] = LEGAL). Deben existir y estar activos.
+   */
+  @IsArray({ message: 'perfiles_ids debe ser una lista de prfl_id' })
+  @ArrayNotEmpty({
+    message:
+      'Debe asignar al menos un perfil institucional (perfiles_ids) antes de registrar al usuario',
+  })
+  @ArrayMaxSize(20)
+  @IsInt({ each: true, message: 'Cada prfl_id debe ser un entero' })
+  perfiles_ids: number[];
 }
