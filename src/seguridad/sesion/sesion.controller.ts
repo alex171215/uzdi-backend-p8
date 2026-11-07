@@ -1,42 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Query,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SesionService } from './sesion.service';
-import { CreateSesionDto } from './dto/create-sesion.dto';
-import { UpdateSesionDto } from './dto/update-sesion.dto';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { SesionQueryDto } from './dto/sesion-query.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
 
+@ApiTags('Usuarios y Seguridad')
+@ApiBearerAuth('JWT-auth')
 @Controller('sesion')
-@UseGuards(RolesGuard)
 export class SesionController {
   constructor(private readonly sesionService: SesionService) {}
 
-  @Post()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  create(@Body() createSesionDto: CreateSesionDto) {
-    return this.sesionService.create(createSesionDto);
-  }
-
   @Get()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.TRABAJADOR_SOCIAL, Rol.PSICOLOGO, Rol.EDUCADOR, Rol.JURIDICO)
-  findAll() {
-    return this.sesionService.findAll();
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  @ApiOperation({ summary: 'Bitácora de sesiones (?activas=true&prsn_id=)' })
+  findAll(@Query() q: SesionQueryDto) {
+    return this.sesionService.findAll(q);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sesionService.findOne(+id);
+  @Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
+  @ApiOperation({ summary: 'Detalle de una sesión' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.sesionService.findOne(id);
   }
 
-  @Patch(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  update(@Param('id') id: string, @Body() updateSesionDto: UpdateSesionDto) {
-    return this.sesionService.update(+id, updateSesionDto);
-  }
-
-  @Delete(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  remove(@Param('id') id: string) {
-    return this.sesionService.remove(+id);
+  @Patch(':id/cerrar')
+  @Roles(Rol.ADMINISTRADOR)
+  @ApiOperation({ summary: 'Forzar cierre de una sesión (invalida su token)' })
+  cerrar(@Param('id', ParseIntPipe) id: number) {
+    return this.sesionService.cerrar(id);
   }
 }

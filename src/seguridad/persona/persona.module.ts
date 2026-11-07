@@ -3,11 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PersonaService } from './persona.service';
 import { PersonaController } from './persona.controller';
 import { Persona } from './entities/persona.entity';
+import { PersonaPerfil } from './entities/persona-perfil.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Persona])],
+  imports: [TypeOrmModule.forFeature([Persona, PersonaPerfil])],
   controllers: [PersonaController],
   providers: [PersonaService],
-  exports: [PersonaService]
+  exports: [PersonaService],
 })
 export class PersonaModule {}
