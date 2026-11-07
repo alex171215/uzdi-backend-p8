@@ -10,8 +10,8 @@ export class LoginDto {
   password: string;
 
   /**
-   * Perfil (seguridad.prfl) con el que el usuario abre la sesión.
-   * Si no se envía, se usa el perfil de solo lectura 'CONS' (Consulta).
+   * Perfil (seguridad.prfl) con el que el usuario abre la sesión. Debe estar
+   * asignado al usuario (seguridad.prpf). Si no se envía, se usa el primero asignado.
    */
   @IsInt()
   @IsOptional()

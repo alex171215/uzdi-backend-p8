@@ -1,42 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HistorialService } from './historial.service';
-import { CreateHistorialDto } from './dto/create-historial.dto';
-import { UpdateHistorialDto } from './dto/update-historial.dto';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { HistorialQueryDto } from './dto/historial-query.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
 
+/** Auditoría inmutable: no hay POST/PATCH/DELETE. */
+@ApiTags('Usuarios y Seguridad')
+@ApiBearerAuth('JWT-auth')
 @Controller('historial')
-@UseGuards(RolesGuard)
+@Roles(Rol.ADMINISTRADOR, Rol.COORDINADOR)
 export class HistorialController {
   constructor(private readonly historialService: HistorialService) {}
 
-  @Post()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  create(@Body() createHistorialDto: CreateHistorialDto) {
-    return this.historialService.create(createHistorialDto);
-  }
-
   @Get()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.TRABAJADOR_SOCIAL, Rol.PSICOLOGO, Rol.EDUCADOR, Rol.JURIDICO)
-  findAll() {
-    return this.historialService.findAll();
+  @ApiOperation({
+    summary:
+      'Consultar auditoría (filtros por tabla, registro, usuario, acción y fechas)',
+  })
+  findAll(@Query() q: HistorialQueryDto) {
+    return this.historialService.findAll(q);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.historialService.findOne(+id);
-  }
-
-  @Patch(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  update(@Param('id') id: string, @Body() updateHistorialDto: UpdateHistorialDto) {
-    return this.historialService.update(+id, updateHistorialDto);
-  }
-
-  @Delete(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  remove(@Param('id') id: string) {
-    return this.historialService.remove(+id);
+  @ApiOperation({ summary: 'Detalle de un registro de auditoría' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.historialService.findOne(id);
   }
 }

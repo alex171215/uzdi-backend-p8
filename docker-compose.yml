@@ -13,6 +13,8 @@ services:
       - uzdi_pgdata:/var/lib/postgresql/data
       # Montaje automático del script DDL v8 en la inicialización de Postgres
       - './Back Ecologia (1).sql:/docker-entrypoint-initdb.d/01_ddl_v8.sql:ro'
+      # Tabla persona-perfil, usuario admin inicial y matriz RBAC (seguridad.accn / seguridad.prms)
+      - './db/02_seguridad_rbac.sql:/docker-entrypoint-initdb.d/02_seguridad_rbac.sql:ro'
     networks:
       - uzdi_network
 

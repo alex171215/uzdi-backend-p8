@@ -1,36 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreatePersonaDto } from './dto/create-persona.dto';
-import { UpdatePersonaDto } from './dto/update-persona.dto';
 import { Persona } from './entities/persona.entity';
 
+/**
+ * seguridad.prsn en modo consulta. El alta, edición y baja de personas se
+ * hace por /users, que aplica la precedencia RF-12 → RF-01 y el hash de clave.
+ */
 @Injectable()
 export class PersonaService {
   constructor(
-    @InjectRepository(Persona)
-    private readonly repository: Repository<Persona>,
+    @InjectRepository(Persona) private readonly repository: Repository<Persona>,
   ) {}
 
-  create(createPersonaDto: CreatePersonaDto) {
-    const newEntity = this.repository.create(createPersonaDto);
-    return this.repository.save(newEntity);
+  async findAll() {
+    const data = await this.repository.find({
+      where: { estado: true },
+      order: { apellidos: 'ASC' },
+    });
+    return { message: 'Personas activas del sistema', data };
   }
 
-  findAll() {
-    return this.repository.find({ where: { estado: true } as any });
-  }
-
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
-  }
-
-  update(id: number, updatePersonaDto: UpdatePersonaDto) {
-    return this.repository.update(id, updatePersonaDto);
-  }
-
-  remove(id: number) {
-    // Borrado lógico (DDL v8): estado = 'F'
-    return this.repository.update(id, { estado: false } as any);
+  async findOne(id: number) {
+    const data = await this.repository.findOne({ where: { id } });
+    if (!data)
+      throw new NotFoundException(`No existe la persona con prsn_id=${id}`);
+    return { message: `Persona con prsn_id=${id}`, data };
   }
 }

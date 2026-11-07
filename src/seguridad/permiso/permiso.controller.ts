@@ -1,42 +1,70 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PermisoService } from './permiso.service';
 import { CreatePermisoDto } from './dto/create-permiso.dto';
-import { UpdatePermisoDto } from './dto/update-permiso.dto';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { AsignarAccionesDto } from './dto/asignar-acciones.dto';
+import { PermisoQueryDto } from './dto/permiso-query.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
 
+/** seguridad.prms — Matriz RBAC perfil ↔ acción. */
+@ApiTags('Usuarios y Seguridad')
+@ApiBearerAuth('JWT-auth')
 @Controller('permiso')
-@UseGuards(RolesGuard)
+@Roles(Rol.ADMINISTRADOR)
 export class PermisoController {
   constructor(private readonly permisoService: PermisoService) {}
 
   @Post()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  create(@Body() createPermisoDto: CreatePermisoDto) {
-    return this.permisoService.create(createPermisoDto);
+  @ApiOperation({ summary: 'Otorgar una acción a un perfil' })
+  create(@Body() dto: CreatePermisoDto) {
+    return this.permisoService.create(dto);
+  }
+
+  @Post('perfil/:prflId/acciones')
+  @ApiOperation({ summary: 'Asignar varias acciones a un perfil' })
+  asignar(
+    @Param('prflId', ParseIntPipe) prflId: number,
+    @Body() dto: AsignarAccionesDto,
+  ) {
+    return this.permisoService.asignarAcciones(prflId, dto.accn_ids);
   }
 
   @Get()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.TRABAJADOR_SOCIAL, Rol.PSICOLOGO, Rol.EDUCADOR, Rol.JURIDICO)
-  findAll() {
-    return this.permisoService.findAll();
+  @ApiOperation({
+    summary: 'Consultar matriz de permisos (?prfl_id=&accn_id=)',
+  })
+  findAll(@Query() q: PermisoQueryDto) {
+    return this.permisoService.findAll(q);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permisoService.findOne(+id);
+  @ApiOperation({ summary: 'Detalle de un permiso' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.permisoService.findOne(id);
   }
 
-  @Patch(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  update(@Param('id') id: string, @Body() updatePermisoDto: UpdatePermisoDto) {
-    return this.permisoService.update(+id, updatePermisoDto);
+  @Delete('perfil/:prflId/acciones/:accnId')
+  @ApiOperation({ summary: 'Revocar una acción a un perfil' })
+  revocar(
+    @Param('prflId', ParseIntPipe) prflId: number,
+    @Param('accnId', ParseIntPipe) accnId: number,
+  ) {
+    return this.permisoService.revocar(prflId, accnId);
   }
 
   @Delete(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  remove(@Param('id') id: string) {
-    return this.permisoService.remove(+id);
+  @ApiOperation({ summary: 'Revocar permiso por prms_id (borrado lógico)' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.permisoService.remove(id);
   }
 }
