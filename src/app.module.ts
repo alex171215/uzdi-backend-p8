@@ -17,6 +17,7 @@ import { GestionDocumentalModule } from './gestion-documental/gestion-documental
 import { ReportesModule } from './reportes/reportes.module';
 import { AuditContextMiddleware } from './common/middleware/audit-context.middleware';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [
@@ -47,12 +48,15 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    // Tarea 5.3: autorización RBAC contra seguridad.prms (se ejecuta después del JWT).
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuditContextMiddleware)
-      .forRoutes('*');
+    consumer.apply(AuditContextMiddleware).forRoutes('*');
   }
 }
