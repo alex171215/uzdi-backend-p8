@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CreateAdolescenteDto } from './dto/create-adolescente.dto';
 import { UpdateAdolescenteDto } from './dto/update-adolescente.dto';
 import { Adolescente } from './entities/adolescente.entity';
@@ -18,7 +18,25 @@ export class AdolescenteService {
   }
 
   findAll() {
-    return this.repository.find({ where: { estado: true } });
+    return this.repository.find({
+      where: { estado: true },
+      order: { apellido: 'ASC', nombre: 'ASC' },
+    });
+  }
+
+  async search(query: string) {
+    if (!query || !query.trim()) {
+      return this.findAll();
+    }
+    const q = `%${query.trim()}%`;
+    return this.repository.find({
+      where: [
+        { nombre: ILike(q), estado: true },
+        { apellido: ILike(q), estado: true },
+        { cedula: ILike(q), estado: true },
+      ],
+      order: { apellido: 'ASC', nombre: 'ASC' },
+    });
   }
 
   findOne(id: number) {

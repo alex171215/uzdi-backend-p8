@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTipoParentescoDto } from './dto/create-tipo-parentesco.dto';
@@ -12,24 +12,45 @@ export class TipoParentescoService {
     private readonly repository: Repository<TipoParentesco>,
   ) {}
 
-  create(createTipoParentescoDto: CreateTipoParentescoDto) {
+  async create(createTipoParentescoDto: CreateTipoParentescoDto) {
     const newEntity = this.repository.create(createTipoParentescoDto);
     return this.repository.save(newEntity);
   }
 
-  findAll() {
-    return this.repository.find();
+  async findAll() {
+    return this.repository.find({
+      where: { estado: true },
+      order: { nombre: 'ASC' },
+    });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
+  async findOne(id: number) {
+    const item = await this.repository.findOne({ where: { id, estado: true } });
+    if (!item) {
+      throw new NotFoundException('Tipo de parentesco activo no encontrado');
+    }
+    return item;
   }
 
-  update(id: number, updateTipoParentescoDto: UpdateTipoParentescoDto) {
-    return this.repository.update(id, updateTipoParentescoDto);
+  async update(id: number, updateTipoParentescoDto: UpdateTipoParentescoDto) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      updateTipoParentescoDto,
+    );
+    if (!result.affected) {
+      throw new NotFoundException('Tipo de parentesco activo no encontrado');
+    }
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      { estado: false },
+    );
+    if (!result.affected) {
+      throw new NotFoundException('Tipo de parentesco activo no encontrado');
+    }
+    return { message: 'Tipo de parentesco inactivado correctamente' };
   }
 }

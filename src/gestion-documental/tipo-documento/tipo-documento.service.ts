@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTipoDocumentoDto } from './dto/create-tipo-documento.dto';
@@ -12,24 +12,45 @@ export class TipoDocumentoService {
     private readonly repository: Repository<TipoDocumento>,
   ) {}
 
-  create(createTipoDocumentoDto: CreateTipoDocumentoDto) {
+  async create(createTipoDocumentoDto: CreateTipoDocumentoDto) {
     const newEntity = this.repository.create(createTipoDocumentoDto);
     return this.repository.save(newEntity);
   }
 
-  findAll() {
-    return this.repository.find();
+  async findAll() {
+    return this.repository.find({
+      where: { estado: true },
+      order: { nombre: 'ASC' },
+    });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id } as any });
+  async findOne(id: number) {
+    const item = await this.repository.findOne({ where: { id, estado: true } });
+    if (!item) {
+      throw new NotFoundException('Tipo de documento activo no encontrado');
+    }
+    return item;
   }
 
-  update(id: number, updateTipoDocumentoDto: UpdateTipoDocumentoDto) {
-    return this.repository.update(id, updateTipoDocumentoDto);
+  async update(id: number, updateTipoDocumentoDto: UpdateTipoDocumentoDto) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      updateTipoDocumentoDto,
+    );
+    if (!result.affected) {
+      throw new NotFoundException('Tipo de documento activo no encontrado');
+    }
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return this.repository.delete(id);
+  async remove(id: number) {
+    const result = await this.repository.update(
+      { id, estado: true },
+      { estado: false },
+    );
+    if (!result.affected) {
+      throw new NotFoundException('Tipo de documento activo no encontrado');
+    }
+    return { message: 'Tipo de documento inactivado correctamente' };
   }
 }
