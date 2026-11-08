@@ -7,6 +7,7 @@ import { AdolescenteService } from './adolescente.service';
 import { Adolescente } from './entities/adolescente.entity';
 import { BooleanVF } from '../../common/transformers/boolean-vf.transformer';
 import { parsePositiveInt } from '../../common/pipes/positive-int.pipe';
+import { SearchAdolescenteDto } from './dto/search-adolescente.dto';
 
 const validBody = {
   cedula: '0123456789',
@@ -93,5 +94,43 @@ describe('Adolescente', () => {
       { estado: false },
     );
     await expect(service.remove(7)).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('exige un término de búsqueda válido y acotado', async () => {
+    expect(
+      await validate(plainToInstance(SearchAdolescenteDto, { q: 'Pérez' })),
+    ).toHaveLength(0);
+    for (const q of ['', '%', 'A'.repeat(101)]) {
+      expect(
+        await validate(plainToInstance(SearchAdolescenteDto, { q })),
+      ).not.toHaveLength(0);
+    }
+  });
+
+  it('busca solo adolescentes activos por nombre, apellido o cédula', async () => {
+    const find = jest.fn().mockResolvedValue([]);
+    const service = new AdolescenteService({
+      find,
+    } as unknown as Repository<Adolescente>);
+    await service.search('Pérez');
+    const options = find.mock.calls[0][0];
+    expect(options.where).toHaveLength(3);
+    expect(
+      options.where.every(
+        (condition: { estado: boolean }) => condition.estado === true,
+      ),
+    ).toBe(true);
+    expect(Object.keys(options.where[0])).toContain('nombre');
+    expect(Object.keys(options.where[1])).toContain('apellido');
+    expect(Object.keys(options.where[2])).toContain('cedula');
+  });
+
+  it('responde 404 al consultar un ID inexistente o inactivo', async () => {
+    const findOne = jest.fn().mockResolvedValue(null);
+    const service = new AdolescenteService({
+      findOne,
+    } as unknown as Repository<Adolescente>);
+    await expect(service.findOne(99)).rejects.toBeInstanceOf(NotFoundException);
+    expect(findOne).toHaveBeenCalledWith({ where: { id: 99, estado: true } });
   });
 });

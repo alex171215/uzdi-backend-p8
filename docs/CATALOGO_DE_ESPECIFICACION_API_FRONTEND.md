@@ -1,510 +1,201 @@
-# 📚 CATÁLOGO Y ESPECIFICACIÓN TÉCNICA DE SERVICIOS API REST
-## Sistema de Gestión Integral UZDI — Guía Oficial de Integración para Frontend
-### Servicio Nacional de Atención Integral (SNAI) — Pontificia Universidad Católica del Ecuador (PUCE)
+# Catálogo técnico de servicios API para frontend
 
----
+**Sistema UZDI · API v2 · 8 de noviembre de 2026**
 
-**Código Documental:** SNAI-UZDI-API-002  
-**Versión de la API:** 2.0 (NestJS 11 + TypeORM + PostgreSQL 15 DDL v8)  
-**Fecha de Emisión:** Noviembre 2026  
-**Audiencia Objetivo:** Desarrolladores de Frontend (`UZDI_FRONT`), Diseñadores UI/UX e Integradores de Sistemas.  
-**Prefijo Global Base:** `/api/v1`  
-**Servidor Local de Desarrollo:** `http://localhost:3000/api/v1`  
-**Documentación Swagger Interactiva:** `http://localhost:3000/api/docs`  
+Base de desarrollo: `http://localhost:3000/api/v1` · Swagger: `http://localhost:3000/api/docs`.
 
----
+Este catálogo describe las rutas implementadas en NestJS. Las tablas se identifican por su esquema de PostgreSQL; los nombres JSON siguen las entidades y DTO, que en algunos casos difieren de las columnas. Los ejemplos son ficticios para integración, no datos precargados. Sustituir los ID por los del entorno.
 
-## 📑 ÍNDICE DE CONTENIDOS
+## Contrato común
 
-1. [Convenciones Generales de la API](#1-convenciones-generales-de-la-api)
-   * 1.1. [Esquema Institucional de Respuestas](#11-esquema-institucional-de-respuestas)
-   * 1.2. [Autenticación y Encabezados Requeridos](#12-autenticación-y-encabezados-requeridos)
-   * 1.3. [Políticas de CORS y Consumo en Red Local (LAN)](#13-políticas-de-cors-y-consumo-en-red-local-lan)
-2. [Módulo de Seguridad y Autenticación](#2-módulo-de-seguridad-y-autenticación)
-   * 2.1. [Auth (Login, Logout, Cambio de Contraseña)](#21-auth-login-logout-cambio-de-contraseña)
-   * 2.2. [Usuarios Institucionales (`seguridad.prsn`)](#22-usuarios-institucionales-seguridadprsn)
-   * 2.3. [Catálogo de Perfiles (`seguridad.prfl`)](#23-catálogo-de-perfiles-seguridadprfl)
-   * 2.4. [Catálogo de Acciones (`seguridad.accn`)](#24-catálogo-de-acciones-seguridadaccn)
-   * 2.5. [Matriz de Permisos (`seguridad.prms`)](#25-matriz-de-permisos-seguridadprms)
-3. [Módulo Sociodemográfico del Adolescente](#3-módulo-sociodemográfico-del-adolescente)
-   * 3.1. [Adolescente (`adolescente.adolescente`) — CRUD y Búsqueda Rápida](#31-adolescente-adolescenteadolescente--crud-y-búsqueda-rápida)
-   * 3.2. [Catálogos Paramétricos (Nacionalidad, Estado Civil, Etnia, GDO)](#32-catálogos-paramétricos-nacionalidad-estado-civil-etnia-gdo)
-4. [Módulo Judicial: Expedientes y Medidas CONA](#4-módulo-judicial-expedientes-y-medidas-cona)
-   * 4.1. [Expedientes Judiciales (`adolescente.expediente`)](#41-expedientes-judiciales-adolescenteexpediente)
-   * 4.2. [Medidas por Expediente (`adolescente.medida_expediente`)](#42-medidas-por-expediente-adolescentemedida_expediente)
-   * 4.3. [Catálogos Judiciales (Infracciones y Medidas Socioeducativas)](#43-catálogos-judiciales-infracciones-y-medidas-socioeducativas)
-5. [Módulo de Contexto Familiar y Tutoría Legal](#5-módulo-de-contexto-familiar-y-tutoría-legal)
-   * 5.1. [Representantes Legales (`contexto_familiar.representante`)](#51-representantes-legales-contexto_familiarrepresentante)
-   * 5.2. [Catálogo de Parentesco (`contexto_familiar.tipo_parentesco`)](#52-catálogo-de-parentesco-contexto_familiartipo_parentesco)
-   * 5.3. [Vínculo Adolescente-Representante (`contexto_familiar.adolescente_representante`)](#53-vínculo-adolescente-representante-contexto_familiaradolescente_representante)
-6. [Módulo de Talleres y Control de Asistencia](#6-módulo-de-talleres-y-control-de-asistencia)
-   * 6.1. [Talleres Socioeducativos (`talleres_actividades.taller`)](#61-talleres-socioeducativos-talleres_actividadestaller)
-   * 6.2. [Asistencia a Talleres (`talleres_actividades.asistencia_taller`)](#62-asistencia-a-talleres-talleres_actividadesasistencia_taller)
-7. [Módulo de Gestión Documental](#7-módulo-de-gestión-documental)
-   * 7.1. [Tipos de Documento (`gestion_documental.tipo_documento`)](#71-tipos-de-documento-gestion_documentaltipo_documento)
-   * 7.2. [Documentos del Expediente (`gestion_documental.documento_expediente`)](#72-documentos-del-expediente-gestion_documentaldocumento_expediente)
-8. [Módulo de Estructura Institucional y Geografía](#8-módulo-de-estructura-institucional-y-geografía)
-   * 8.1. [Provincias, Cantones y Sedes UZDI](#81-provincias-cantones-y-sedes-uzdi)
-9. [Módulo de Reportes Oficiales SNAI](#9-módulo-de-reportes-oficiales-snai)
-   * 9.1. [Consultas Consolidadas y Exportación Excel / PDF](#91-consultas-consolidadas-y-exportación-excel--pdf)
+- Enviar `Authorization: Bearer <JWT>` en rutas protegidas, `Content-Type: application/json` para cuerpos JSON y `Accept: application/json`. `POST /auth/login` es público. Los permisos dependen del perfil y la acción.
+- `:id` y las claves foráneas son enteros positivos. En JSON se envían como números. Las fechas son cadenas ISO (`YYYY-MM-DD`). Los DTO rechazan propiedades desconocidas; los textos pasan por sanitización.
+- En los CRUD **estándar**, las rutas completas son `GET /api/v1/<ruta>` (lista, 200), `GET /api/v1/<ruta>/:id` (detalle, 200), `POST /api/v1/<ruta>` (alta, 201), `PATCH /api/v1/<ruta>/:id` (modificación parcial, 200) y `DELETE /api/v1/<ruta>/:id` (borrado lógico o revocación, 200). `PATCH` acepta los campos del alta como opcionales; `DELETE` no lleva cuerpo. El único `PUT` expuesto es el reemplazo de perfiles de usuario.
+- La búsqueda textual `search?q=` existe en `/adolescente` y `/users`. Para el resto, usar los filtros expresos o filtrar una lista en frontend. No construir rutas `/search` inexistentes.
+- Las tablas con estado lógico de un carácter en BD (`V`/`F`) devuelven la propiedad `estado` como booleano por el transformador de TypeORM. No enviarla en cuerpos. Los catálogos sociodemográficos, geografía y adolescentes solo permiten modificar filas activas.
 
----
+### Respuestas y errores
 
-## ⚙️ 1. CONVENCIONES GENERALES DE LA API
+El interceptor envuelve los éxitos. `data` es objeto en altas/detalles, arreglo en listas/búsquedas y, en varios `PATCH`/`DELETE`, el resultado de TypeORM (`{ "generatedMaps": [], "raw": [], "affected": 1 }`). En el objeto, `id` es el identificador generado; se devuelven los campos de la entidad indicados en las tablas siguientes, los valores predeterminados y, según el recurso, relaciones y metadatos de auditoría. Los campos opcionales sin valor pueden llegar como `null`. Algunos servicios devuelven un `message` específico.
 
-### 1.1. Esquema Institucional de Respuestas
-
-Todas las respuestas emitidas por la API UZDI están normalizadas por interceptores y filtros globales de NestJS:
-
-#### Formato Exitoso (`HTTP 200 OK`, `HTTP 201 Created`):
 ```json
 {
   "ok": true,
   "message": "Operación realizada correctamente",
-  "data": { ... },
-  "timestamp": "2026-11-07T14:30:00.000Z"
+  "data": { "id": 7, "nombre": "Ecuatoriana", "estado": true },
+  "timestamp": "2026-11-08T14:30:00.000Z"
 }
 ```
 
-#### Formato de Error (`HTTP 400`, `401`, `403`, `404`, `409`, `500`):
+`GET` de lista sin resultados devuelve `data: []`. Varios `GET /:id` de catálogos devuelven `data: null` con 200 si no hay registro; los servicios que lanzan `NotFoundException`, incluido `/adolescente/:id`, responden 404. El frontend debe contemplar ambos.
+
 ```json
 {
   "ok": false,
   "statusCode": 400,
   "message": "Error de validación en la solicitud",
   "errors": [
-    "cedula debe ser una cédula de 10 dígitos o un pasaporte alfanumérico",
-    "fecha_nac debe tener formato YYYY-MM-DD"
+    "cedula debe ser una cédula de 10 dígitos o un pasaporte alfanumérico de 6 a 20 caracteres"
   ],
   "path": "/api/v1/adolescente",
-  "timestamp": "2026-11-07T14:30:00.000Z"
+  "timestamp": "2026-11-08T14:30:00.000Z"
 }
 ```
 
-### 1.2. Autenticación y Encabezados Requeridos
-
-Salvo los endpoints marcados con `@Public()` (como `POST /auth/login` y `GET /health`), todas las solicitudes deben incluir el encabezado de autorización:
-
-```http
-Authorization: Bearer <TOKEN_JWT_OBTENIDO_EN_LOGIN>
-Content-Type: application/json
-Accept: application/json
-```
-
-### 1.3. Políticas de CORS y Consumo en Red Local (LAN)
-
-El backend escucha en `0.0.0.0:3000` y autoriza peticiones originadas desde:
-* `http://localhost:5173` y `http://localhost:5174` (Vite dev server)
-* `http://127.0.0.1:*`
-* Direcciones IPv4 locales: `192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`
-* Herramientas de prueba como Postman, Insomnia, curl y Swagger UI.
-
----
-
-## 🔐 2. MÓDULO DE SEGURIDAD Y AUTENTICACIÓN
-
-### 2.1. Auth
-
-#### `POST /api/v1/auth/login` *(Público)*
-Valida credenciales, genera el token JWT institucional (vigencia de 8 horas) y registra la sesión activa en `seguridad.sesn`.
-
-* **Request Body:**
-```json
-{
-  "login": "admin.uzdi",
-  "password": "Password123!"
-}
-```
-* **Respuesta Exitosa (`200 OK`):**
-```json
-{
-  "ok": true,
-  "message": "Inicio de sesión exitoso",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": 1,
-      "login": "admin.uzdi",
-      "nombres": "Juan Carlos",
-      "apellidos": "Pérez Gómez",
-      "correo": "juan.perez@snai.gob.ec",
-      "rol": "Administrador",
-      "rol_codigo": "ADM",
-      "sesion_id": 42
-    }
-  },
-  "timestamp": "2026-11-07T14:30:00.000Z"
-}
-```
-* **Error (`401 Unauthorized`):**
 ```json
 {
   "ok": false,
-  "statusCode": 401,
-  "message": "Credenciales inválidas. Usuario o contraseña incorrectos.",
+  "statusCode": 404,
+  "message": "Adolescente activo no encontrado",
   "errors": null,
-  "path": "/api/v1/auth/login"
+  "path": "/api/v1/adolescente/999",
+  "timestamp": "2026-11-08T14:30:00.000Z"
 }
 ```
 
-#### `POST /api/v1/auth/logout` *(Protegido)*
-Cierra la sesión activa del usuario, actualizando `sesnfcfn = NOW()` en `seguridad.sesn`.
-* **Headers:** `Authorization: Bearer <token>`
-* **Respuesta Exitosa (`200 OK`):**
+El 500 conserva en `message` el detalle de la excepción no controlada (por ejemplo, `duplicate key value violates unique constraint "UQ_..."` al repetir una cédula), y `errors` suele ser `null`; el nombre exacto de la restricción depende de la base instalada. No se sustituye por un mensaje genérico. El 401 indica token ausente/inválido y el 403 falta de permiso. `path` es la URL real solicitada.
+
 ```json
 {
-  "ok": true,
-  "message": "Sesión cerrada correctamente",
-  "data": null
+  "ok": false,
+  "statusCode": 500,
+  "message": "duplicate key value violates unique constraint \"UQ_...\"",
+  "errors": null,
+  "path": "/api/v1/adolescente",
+  "timestamp": "2026-11-08T14:30:00.000Z"
 }
 ```
 
-#### `POST /api/v1/auth/change-password` *(Protegido)*
-* **Request Body:**
+## Seguridad (`seguridad`)
+
+| Tabla                     | Rutas completas y método                                                                                                                                                                                          | Cuerpo de alta / modificación y restricciones                                                                                                                                                                                                                                                                          | Lectura / respuesta                                                                                                                  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `prsn` (usuarios)         | `GET/POST /api/v1/users`; `GET/PATCH/DELETE /api/v1/users/:id`; `GET /api/v1/users/search?q=perez`; `GET /api/v1/persona`; `GET /api/v1/persona/:id`                                                              | `POST`: `nombres`, `apellidos`, `correo` (email), `login` (texto), `password` (mín. 8), `tppr_id` (entero positivo), `perfiles_ids` (arreglo no vacío de enteros positivos, máx. 20). Opcionales: `sexo` (`M/F/O`), `direccion`, `telefono`, `uzdi_id`, `observaciones`. `PATCH` acepta los campos de `UpdateUserDto`. | `/users/search` coincide con nombres, apellidos, login o correo. `/persona` es solo lectura. Objeto/array de usuario sin contraseña. |
+| `tipo_persona`            | Sin controlador CRUD propio                                                                                                                                                                                       | Sin cuerpo de escritura público; se referencia con `tppr_id` en `/users`.                                                                                                                                                                                                                                              | Consultar a través de la relación de usuario o datos de referencia del entorno.                                                      |
+| `prpf` (persona ↔ perfil) | `GET /api/v1/users/:id/perfiles`; `PUT /api/v1/users/:id/perfiles`                                                                                                                                                | `PUT`: `{ "perfiles_ids": [1, 2] }` reemplaza las asignaciones; IDs positivos.                                                                                                                                                                                                                                         | Lista de perfiles. No hay `/prpf` público.                                                                                           |
+| `prfl` (perfil)           | CRUD estándar `/api/v1/perfil`; `GET /api/v1/perfil?incluirInactivos=true`; `GET /api/v1/perfil/:id/permisos`                                                                                                     | `POST`: `codigo` (2–5 mayúsculas), `nombre` (≤63); opcionales `descripcion` (≤63), `observaciones` (≤127), `padreId` (ID positivo).                                                                                                                                                                                    | Objeto/array de perfil; `/:id/permisos` lista permisos.                                                                              |
+| `accn` (acción)           | CRUD estándar `/api/v1/accion`; `GET /api/v1/accion?q=users&incluirInactivos=true`                                                                                                                                | `POST`: `nombre` (dos segmentos minúsculos separados por punto, ≤63); opcionales `descripcion` (≤63), `auditable` (`0/1`), `moduloId`, `controladorId`, `tipoAccionId` (ID positivos).                                                                                                                                 | Objeto/array de acción; `q` filtra acciones.                                                                                         |
+| `prms` (permiso)          | `GET/POST /api/v1/permiso`; `GET/DELETE /api/v1/permiso/:id`; `GET /api/v1/permiso?prfl_id=1&accn_id=2`; `POST /api/v1/permiso/perfil/:prflId/acciones`; `DELETE /api/v1/permiso/perfil/:prflId/acciones/:accnId` | Alta: `{ "prfl_id": 1, "accn_id": 2 }`; asignación múltiple: `{ "accn_ids": [2, 3] }`. ID positivos. No hay `PATCH`.                                                                                                                                                                                                   | Objeto/array de permisos; revocación por ID o par perfil/acción.                                                                     |
+| `sesn`                    | `GET /api/v1/sesion`; `GET /api/v1/sesion/:id`; `PATCH /api/v1/sesion/:id/cerrar`                                                                                                                                 | `cerrar` sin cuerpo; el ciclo normal usa `/auth`.                                                                                                                                                                                                                                                                      | Objeto/array con persona, perfil y fechas.                                                                                           |
+| `historial`               | `GET /api/v1/historial`; `GET /api/v1/historial/:id`                                                                                                                                                              | Solo lectura.                                                                                                                                                                                                                                                                                                          | Objeto/array con tabla, registro, usuario, fecha, acción, estados y descripción.                                                     |
+
+`POST /api/v1/auth/login` recibe `{ "login": "mperez", "password": "ClaveSegura2026" }` y opcional `prfl_id`; devuelve token y sesión en `data`. `GET /api/v1/auth/me` consulta la sesión. `POST /api/v1/auth/logout` la cierra (cuerpo opcional `{ "sesionId": 4 }`). `POST /api/v1/auth/change-password` recibe `currentPassword` y `newPassword` (mín. 8; `userId` opcional).
+
+## Núcleo sociodemográfico (`adolescente`)
+
+### `adolescente.adolescente`
+
+CRUD estándar `/api/v1/adolescente`. Además, `GET /api/v1/adolescente/search?q=Pérez` busca coincidencia parcial, sin distinguir mayúsculas, en `nombre`, `apellido` o `cedula`, solo activos. `q` es obligatorio, 1–100 caracteres; admite letras Unicode, números, espacio, punto, apóstrofo, barra y guion. `GET /api/v1/adolescente/7` consulta por ID positivo. ID ausente/inactivo produce el 404 mostrado. `q` vacío o con caracteres inválidos produce 400, sin convertir la búsqueda en listado general.
+
+| Campo de `POST /api/v1/adolescente`        | Tipo y restricción                                                                 | Obligatorio |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- |
+| `cedula`                                   | Cadena: 10 dígitos o pasaporte alfanumérico ASCII de 6–20, sin espacios ni guiones | Sí          |
+| `nombre`, `apellido`                       | Cadena 1–100, letras Unicode y signos de nombre ` ./'-`                            | Sí          |
+| `fecha_nac`, `fecha_ingr`                  | Fecha ISO                                                                          | Sí          |
+| `sexo`                                     | `M`, `F` u `O`                                                                     | Sí          |
+| `nacn_id`, `etcv_id`, `etna_id`, `cntn_id` | Enteros positivos; nacionalidad, estado civil, etnia y cantón                      | Sí          |
+| `nved_nombre`                              | Texto de nombre ≤100                                                               | No          |
+| `hijos`                                    | Entero ≥0                                                                          | No          |
+| `reincide`, `hijoPpl`                      | Booleano JSON                                                                      | No          |
+| `observaciones`                            | Texto ≤255                                                                         | No          |
+| `gdo_id`                                   | Entero positivo                                                                    | No          |
+
+`PATCH /api/v1/adolescente/:id` admite estos campos como opcionales. Ejemplo de alta:
+
 ```json
 {
-  "currentPassword": "Password123!",
-  "newPassword": "NewPassword2026#"
-}
-```
-
----
-
-### 2.2. Usuarios Institucionales (`seguridad.prsn`)
-
-* **Base URI:** `/api/v1/users`
-* **Permisos:** Administrador (`ADM`), Coordinador (`CORD`).
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/users` | Listado general de usuarios institucionales activos |
-| `GET` | `/api/v1/users/:id` | Detalle del usuario y su perfil institucional |
-| `POST` | `/api/v1/users` | Registro de nuevo usuario (exige `tppr_id` activo - Regla RF-12) |
-| `PATCH` | `/api/v1/users/:id` | Actualización de datos del usuario |
-| `DELETE` | `/api/v1/users/:id` | Inactivación lógica del usuario (`estado = false`) |
-
-* **Ejemplo Request Body (`POST /api/v1/users`):**
-```json
-{
-  "prsnnmbr": "Paúl Alejandro",
-  "prsnapll": "Rosero Mena",
-  "prsnsexo": "M",
-  "prsntelf": "0987654321",
-  "prsnmail": "paul.rosero@snai.gob.ec",
-  "prsnlogn": "paul.rosero",
-  "prsnpass": "ClaveSegura2026*",
-  "uzdi_id": 1,
-  "tppr_id": 2
-}
-```
-
----
-
-## 🧒 3. MÓDULO SOCIODEMOGRÁFICO DEL ADOLESCENTE
-
-### 3.1. Adolescente (`adolescente.adolescente`)
-
-* **Base URI:** `/api/v1/adolescente`
-* **Permisos:** Todos los perfiles técnicos (Lectura), Administrador y Técnico (Escritura).
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/adolescente` | Lista de todos los adolescentes activos |
-| `GET` | `/api/v1/adolescente/search?q={termino}` | **Búsqueda por texto coincidente** en cédula, nombres o apellidos |
-| `GET` | `/api/v1/adolescente/:id` | Consulta detallada de la ficha de un adolescente |
-| `POST` | `/api/v1/adolescente` | Registro de ingreso de un nuevo adolescente |
-| `PATCH` | `/api/v1/adolescente/:id` | Actualización sociodemográfica del adolescente |
-| `DELETE` | `/api/v1/adolescente/:id` | Inactivación lógica (`estado = false`) |
-
-#### Parámetro de Búsqueda Rápida:
-* **Ejemplo de Consulta:** `GET /api/v1/adolescente/search?q=180123` o `GET /api/v1/adolescente/search?q=Mendoza`
-
-#### Request Body (`POST /api/v1/adolescente`):
-```json
-{
-  "cedula": "1804567890",
-  "nombre": "Carlos Andrés",
-  "apellido": "Mendoza Silva",
-  "fecha_nac": "2009-06-15",
-  "sexo": "M",
-  "nved_nombre": "Tercero de Bachillerato",
+  "cedula": "AB1234567",
+  "nombre": "María José",
+  "apellido": "Pérez López",
+  "fecha_nac": "2009-03-15",
+  "sexo": "F",
+  "fecha_ingr": "2026-02-10",
+  "nacn_id": 1,
+  "etcv_id": 2,
+  "etna_id": 1,
+  "cntn_id": 5,
   "hijos": 0,
   "reincide": false,
-  "fecha_ingr": "2026-02-01",
-  "observaciones": "Derivado por Unidad Judicial Multicompetente",
-  "nacn_id": 1,
-  "edcv_id": 1,
-  "etna_id": 1,
-  "gdo_id": 1,
-  "cntn_id": 1
+  "hijoPpl": false
 }
 ```
 
-#### Respuesta Exitosa (`201 Created`):
-```json
-{
-  "ok": true,
-  "message": "Operación realizada correctamente",
-  "data": {
-    "id": 12,
-    "cedula": "1804567890",
-    "nombre": "Carlos Andrés",
-    "apellido": "Mendoza Silva",
-    "fecha_nac": "2009-06-15",
-    "sexo": "M",
-    "reincide": false,
-    "estado": true,
-    "fcCrea": "2026-11-07T14:35:00.000Z"
-  }
-}
-```
+En 201, `data` contiene el adolescente creado, `id` y `estado: true`. En `GET /search`, `data` es un arreglo. `PATCH` y `DELETE` devuelven un resultado de actualización con `affected: 1`; una fila inactiva produce 404.
 
----
+### Catálogos paramétricos
 
-### 3.2. Catálogos Paramétricos del Adolescente
+Cada fila usa CRUD estándar. `POST` exige únicamente `nombre`; `PATCH` admite `nombre` opcional; `estado` no forma parte del DTO. Nacionalidad, estado civil y etnia admiten 1–100 caracteres, letras Unicode, espacios y `./'-`; GDO admite dígitos y hasta 255. Listas/detalle muestran activos. Alta devuelve 201 y objeto `{ id, nombre, estado: true }` en `data`. Modificar o eliminar inactivo responde 404 con el nombre del catálogo.
 
-Cada catálogo cuenta con endpoints estandarizados de lectura (`GET`) y administración (`POST`, `PATCH`, `DELETE`):
+| Tabla          | Rutas completas (métodos CRUD estándar)            | Ejemplo de `POST`                       | Ejemplo de `data` en 200/201                                     |
+| -------------- | -------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------- |
+| `nacionalidad` | `/api/v1/nacionalidad`, `/api/v1/nacionalidad/:id` | `{ "nombre": "Ecuatoriana" }`           | `{ "id": 1, "nombre": "Ecuatoriana", "estado": true }`           |
+| `estado_civil` | `/api/v1/estado-civil`, `/api/v1/estado-civil/:id` | `{ "nombre": "Soltero" }`               | `{ "id": 2, "nombre": "Soltero", "estado": true }`               |
+| `etnia`        | `/api/v1/etnia`, `/api/v1/etnia/:id`               | `{ "nombre": "Mestiza" }`               | `{ "id": 1, "nombre": "Mestiza", "estado": true }`               |
+| `gdo`          | `/api/v1/gdo`, `/api/v1/gdo/:id`                   | `{ "nombre": "Grupo de referencia 1" }` | `{ "id": 3, "nombre": "Grupo de referencia 1", "estado": true }` |
 
-* `/api/v1/nacionalidad` $\rightarrow$ Catálogo de países (`Ecuatoriana`, `Colombiana`, `Venezolana`).
-* `/api/v1/estado-civil` $\rightarrow$ Catálogo civil (`Soltero`, `Unión de hecho`, `Casado`).
-* `/api/v1/etnia` $\rightarrow$ Autoidentificación (`Mestizo`, `Indígena`, `Afroecuatoriano`, `Montubio`, `Blanco`).
-* `/api/v1/gdo` $\rightarrow$ Grupos de Delincuencia Organizada (`Ninguno`, `Los Choneros`, `Los Lobos`, etc.).
+Son mocks realistas para formularios Vue, no semillas de producción. Los cuatro `GET /:id` pueden responder `data: null` si no hay fila activa. No existe búsqueda textual en servidor para estos catálogos.
 
----
+### Expedientes y catálogos judiciales
 
-## ⚖️ 4. MÓDULO JUDICIAL: EXPEDIENTES Y MEDIDAS CONA
+| Tabla                   | Rutas completas y método                                                                           | Cuerpo `POST` (en `PATCH`, campos opcionales)                                                                                                                                                                                                                      | Filtros / respuesta                                                                  |
+| ----------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `expediente`            | CRUD estándar `/api/v1/expediente`                                                                 | `adlc_id`, `uzdi_id`, `infc_id`: ID positivos obligatorios. Opcionales: `numero_causa` (≤100, mayúsculas/números/`-./ `), `estado_procesal` (enum del DTO), `observaciones`. Ej.: `{ "adlc_id": 7, "uzdi_id": 3, "infc_id": 2, "numero_causa": "EXP-2026-0042" }`. | `GET /api/v1/expediente?adlc_id=7&infc_id=2&uzdi_id=3`; objeto/array de expediente.  |
+| `medida_expediente`     | CRUD estándar `/api/v1/medida-expediente`                                                          | `expe_id`, `mdso_id`, `orden`: ID/entero positivos; `fecha_inicio`: fecha ISO. Opcionales: `fecha_fin`, `estado_cumplimiento` (enum), `observaciones`. Ej.: `{ "expe_id": 4, "mdso_id": 2, "orden": 1, "fecha_inicio": "2026-03-01" }`.                            | `GET /api/v1/medida-expediente?expe_id=4&mdso_id=2`; objeto/array.                   |
+| `infraccion`            | CRUD estándar `/api/v1/infraccion`; `GET /api/v1/infraccion/:id/expedientes`                       | `nombre` (≤255), `categoria` (≤127) obligatorios; `articulo_cona` (≤50), `descripcion` opcionales. Ej.: `{ "nombre": "Infracción de prueba", "categoria": "Contra la propiedad" }`.                                                                                | La lista admite filtro de estado; `/:id/expedientes` devuelve expedientes asociados. |
+| `medida_socioeducativa` | CRUD estándar `/api/v1/medida-socioeducativa`; `GET /api/v1/medida-socioeducativa/:id/expedientes` | `nombre` (≤255) obligatorio; `duracion_meses` (entero positivo) opcional. Ej.: `{ "nombre": "Servicio a la comunidad", "duracion_meses": 3 }`.                                                                                                                     | La lista admite filtro de estado; `/:id/expedientes` devuelve expedientes asociados. |
 
-### 4.1. Expedientes Judiciales (`adolescente.expediente`)
+Valores de `estado_procesal`: `En proceso`, `Atraso`, `Incomparecencia`, `Concluido`, `Archivado`. Valores de `estado_cumplimiento`: `En proceso`, `Cumplida`, `Incumplida`, `Sustituida`, `Suspendida`. Para incluir registros inactivos en `infraccion` y `medida-socioeducativa`, enviar `?incluirInactivos=true`.
 
-* **Base URI:** `/api/v1/expediente`
-* **Permisos:** Profesional Jurídico (`LEGAL`), Coordinador (`CORD`), Administrador (`ADM`).
+En altas, `data` incluye los campos enviados más `id` y valores predeterminados. En listas, `data` es arreglo. Los 400 de validación detallan el campo en `errors`.
 
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/expediente` | Listado general de causas judiciales activas |
-| `GET` | `/api/v1/expediente/:id` | Detalle completo de causa con medidas e infracción asociada |
-| `POST` | `/api/v1/expediente` | Apertura de nueva causa judicial (`numero_causa` obligatorio y único) |
-| `PATCH` | `/api/v1/expediente/:id` | Modificación del estado procesal o datos judiciales |
-| `DELETE` | `/api/v1/expediente/:id` | Inactivación lógica del expediente |
+## Geografía institucional (`estructura_institucional`)
 
-* **Request Body (`POST /api/v1/expediente`):**
-```json
-{
-  "adlc_id": 12,
-  "uzdi_id": 1,
-  "infc_id": 3,
-  "numero_causa": "18201-2026-00341",
-  "estado_procesal": "En proceso",
-  "observaciones": "Auto de llamamiento a juicio emitido el 10-01-2026"
-}
-```
+Para selectores en cascada: `GET /api/v1/provincia` → elegir `prov_id` → `GET /api/v1/canton?prov_id=1` → elegir `cntn_id` → `GET /api/v1/uzdi?cntn_id=5`. Cada `data` es un arreglo con `id`, `nombre` y la FK (`prov_id` o `cntn_id`). Los servicios omiten filas inactivas y descendientes de padres inactivos. Los filtros son opcionales; sin ellos se devuelve la lista activa completa. Los ID de filtro deben ser enteros positivos.
 
----
+| Tabla       | Rutas completas (CRUD estándar)                                | Cuerpo `POST` / `PATCH`                                                                                                                                                     | Ejemplo de `data` en 200/201                                                               |
+| ----------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `provincia` | `/api/v1/provincia`, `/api/v1/provincia/:id`                   | `{ "nombre": "Pichincha" }`; nombre obligatorio ≤100.                                                                                                                       | `{ "id": 1, "nombre": "Pichincha", "estado": true }`                                       |
+| `canton`    | `/api/v1/canton`, `/api/v1/canton/:id`; lista con `?prov_id=1` | `{ "prov_id": 1, "nombre": "Quito" }`; ID positivo, nombre ≤100.                                                                                                            | `{ "id": 5, "prov_id": 1, "nombre": "Quito", "estado": true }`                             |
+| `uzdi`      | `/api/v1/uzdi`, `/api/v1/uzdi/:id`; lista con `?cntn_id=5`     | `{ "cntn_id": 5, "nombre": "UZDI Quito Norte", "zona": "Norte" }`; nombre ≤255 y zona ≤100 obligatorios. Opcionales: `direccion` ≤255, `telefono` ≤20, `correo` email ≤100. | `{ "id": 3, "cntn_id": 5, "nombre": "UZDI Quito Norte", "zona": "Norte", "estado": true }` |
 
-### 4.2. Medidas por Expediente (`adolescente.medida_expediente`)
+Crear o trasladar un cantón a provincia inactiva devuelve 404 `Provincia activa no encontrada`; crear o trasladar una UZDI a cantón inactivo o con provincia inactiva devuelve 404 `Cantón activo no encontrado`. `PATCH` y `DELETE` solo afectan filas activas. No hay `/search` geográfico.
 
-* **Base URI:** `/api/v1/medida-expediente`
-* **Directriz CONA:** Permite asociar múltiples medidas a un expediente ordenadas secuencial o simultáneamente mediante el campo `orden`.
+## Contexto familiar (`contexto_familiar`)
 
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/medida-expediente` | Consulta general de medidas asignadas |
-| `GET` | `/api/v1/medida-expediente/:id` | Detalle de una medida específica |
-| `POST` | `/api/v1/medida-expediente` | Asignación de medida al expediente (`orden` secuencial) |
-| `PATCH` | `/api/v1/medida-expediente/:id` | Actualización de fechas o estado de cumplimiento |
-| `DELETE` | `/api/v1/medida-expediente/:id` | Inactivación lógica de la medida |
+| Tabla                       | Rutas completas y método                                                                                        | Cuerpo `POST` (en `PATCH`, campos opcionales)                                                                                                                                                                                   | Lectura / respuesta                       |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `tipo_parentesco`           | CRUD estándar `/api/v1/tipo-parentesco`                                                                         | `{ "nombre": "Madre" }`; nombre obligatorio ≤100.                                                                                                                                                                               | Objeto/array `{ id, nombre, ... }`.       |
+| `representante`             | CRUD estándar `/api/v1/representante`; `GET /api/v1/representante/cedula/:cedula`                               | `cntn_id` ID positivo, `nombre`, `apellido` (≤100), `cedula` (cadena ≤20) obligatorios; `telefono` (≤20), `direccion` (≤255) opcionales. Ej.: `{ "cntn_id": 5, "nombre": "Ana", "apellido": "Pérez", "cedula": "1712345678" }`. | Objeto/array; consulta exacta por cédula. |
+| `adolescente_representante` | CRUD estándar `/api/v1/adolescente-representante`; `GET /api/v1/adolescente-representante/adolescente/:adlc_id` | `adlc_id`, `repr_id`, `tprt_id` ID positivos obligatorios; `es_referente` booleano, `fecha_inicio`, `fecha_fin` ISO opcionales. Ej.: `{ "adlc_id": 7, "repr_id": 4, "tprt_id": 1, "es_referente": true }`.                      | Objeto/array; filtro por adolescente.     |
 
-* **Request Body (`POST /api/v1/medida-expediente`):**
-```json
-{
-  "expe_id": 5,
-  "mdso_id": 2,
-  "orden": 1,
-  "fecha_inicio": "2026-02-15",
-  "fecha_fin": "2026-08-15",
-  "estado_cumplimiento": "En proceso",
-  "observaciones": "Cumplimiento en sede UZDI Ambato los días sábados"
-}
-```
+## Talleres y asistencia (`talleres_actividades`)
 
----
+| Tabla               | Rutas completas y método                                                                   | Cuerpo `POST` (en `PATCH`, campos opcionales)                                                                                                                                                                                                                                                                                                                                           | Lectura / respuesta              |
+| ------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `taller`            | CRUD estándar `/api/v1/taller`                                                             | `uzdi_id`, `prsn_id` ID positivos; `nombre`, `tema` textos ≤255; `fecha` ISO, `hora_inicio`, `hora_fin` formato `HH:MM` o `HH:MM:SS`, todos obligatorios. `objetivo`, `lugar` ≤255, `observaciones` opcionales. Ej.: `{ "uzdi_id": 3, "prsn_id": 2, "nombre": "Convivencia", "tema": "Resolución de conflictos", "fecha": "2026-04-10", "hora_inicio": "09:00", "hora_fin": "11:00" }`. | Objeto/array de taller.          |
+| `asistencia_taller` | CRUD estándar `/api/v1/asistencia-taller`; `GET /api/v1/asistencia-taller/taller/:tall_id` | `tall_id` ID positivo y `tipo_asistente` (`adolescente` o `representante`) obligatorios; enviar solo uno de `adlc_id` o `adre_id` según el tipo. `asistio` booleano y `observaciones` opcionales. Ej.: `{ "tall_id": 2, "tipo_asistente": "adolescente", "adlc_id": 7, "asistio": true }`.                                                                                              | Objeto/array; filtro por taller. |
 
-## 👨‍👩‍👧 5. MÓDULO DE CONTEXTO FAMILIAR Y TUTORÍA LEGAL
+## Gestión documental (`gestion_documental`)
 
-### 5.1. Representantes Legales (`contexto_familiar.representante`)
+| Tabla                  | Rutas completas y método                                                                             | Cuerpo `POST` (en `PATCH`, campos opcionales)                                                                                                                                                                                                                                                                                      | Lectura / respuesta                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `tipo_documento`       | CRUD estándar `/api/v1/tipo-documento`                                                               | `{ "nombre": "Oficio", "descripcion": "Comunicación oficial" }`; nombre obligatorio ≤255, descripción opcional.                                                                                                                                                                                                                    | Objeto/array de tipos.               |
+| `documento_expediente` | CRUD estándar `/api/v1/documento-expediente`; `GET /api/v1/documento-expediente/expediente/:expe_id` | `expe_id`, `prsn_id`, `tpdc_id` ID positivos obligatorios; opcionales `es_habilitante` booleano, `estado_tramite` enum, `numero_documento` ≤100, `fecha_documento` ISO, `emisor` ≤255, `observaciones`. Ej.: `{ "expe_id": 4, "prsn_id": 2, "tpdc_id": 1, "numero_documento": "OFI-2026-0045", "fecha_documento": "2026-02-20" }`. | Objeto/array; filtro por expediente. |
 
-* **Base URI:** `/api/v1/representante`
+Valores de `estado_tramite`: `pendiente`, `recibido`, `verificado`, `no aplica`, `rechazado`.
 
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/representante` | Listado general de representantes y tutores |
-| `GET` | `/api/v1/representante/cedula/:cedula` | **Consulta rápida por cédula** para autocompletar formularios |
-| `GET` | `/api/v1/representante/:id` | Detalle de representante por ID |
-| `POST` | `/api/v1/representante` | Alta de nuevo representante o tutor |
-| `PATCH` | `/api/v1/representante/:id` | Actualización de dirección, teléfono o datos personales |
-| `DELETE` | `/api/v1/representante/:id` | Inactivación lógica (`estado = false`) |
+## Reportes (servicios sin tabla CRUD propia)
 
-* **Request Body (`POST /api/v1/representante`):**
-```json
-{
-  "cntn_id": 1,
-  "nombre": "Rosa María",
-  "apellido": "Pérez Gómez",
-  "cedula": "1801234567",
-  "telefono": "0991234567",
-  "direccion": "Av. Cevallos y Montalvo, Ambato"
-}
-```
+`GET /api/v1/reportes/uzdi/adolescentes` y `GET /api/v1/reportes/expedientes/medidas` devuelven consolidados en el envoltorio común. Las cuatro rutas de reporte aceptan opcionalmente `uzdi_id`, `prov_id`, `cntn_id` (enteros) y `estado_procesal` (texto), por ejemplo `?prov_id=1&cntn_id=5`. `GET /api/v1/reportes/export/excel` entrega un archivo `.xlsx` binario: tratarlo como `Blob`. `GET /api/v1/reportes/export/pdf` entrega HTML imprimible (`text/html`) para que el navegador lo guarde como PDF; no devuelve un PDF binario ni JSON.
 
----
+## Guía de errores por operación
 
-### 5.2. Vínculo Adolescente-Representante (`contexto_familiar.adolescente_representante`)
+| Caso                                                                              | HTTP                             | Respuesta relevante                                                                                                                   |
+| --------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| DTO inválido, ID mal formado o `q` inválido                                       | 400                              | `message: "Error de validación en la solicitud"` y `errors` con las reglas fallidas; otras excepciones 400 llevan mensaje específico. |
+| Sin JWT válido o sesión cerrada                                                   | 401                              | `ok: false`, `statusCode: 401`, mensaje del guard.                                                                                    |
+| Perfil sin permiso                                                                | 403                              | `ok: false`, `statusCode: 403`, mensaje del guard.                                                                                    |
+| Adolescente no activo, FK geográfica inactiva o modificación de catálogo inactivo | 404                              | Mensaje específico como `Adolescente activo no encontrado` o `Cantón activo no encontrado`.                                           |
+| Restricción de unicidad o FK en PostgreSQL                                        | 500 si el servicio no la captura | `message` incluye el detalle técnico de la excepción; registrar `path` y código para diagnóstico.                                     |
 
-* **Base URI:** `/api/v1/adolescente-representante`
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/adolescente-representante` | Listado general de vínculos familiares |
-| `GET` | `/api/v1/adolescente-representante/adolescente/:adlc_id` | **Obtener todos los familiares/tutores de un adolescente** |
-| `GET` | `/api/v1/adolescente-representante/:id` | Detalle de un vínculo por su ID |
-| `POST` | `/api/v1/adolescente-representante` | Asociar tutor con adolescente (`es_referente`, parentesco) |
-| `PATCH` | `/api/v1/adolescente-representante/:id` | Actualización del vínculo |
-| `DELETE` | `/api/v1/adolescente-representante/:id` | Inactivación lógica del vínculo |
-
-* **Request Body (`POST /api/v1/adolescente-representante`):**
-```json
-{
-  "adlc_id": 12,
-  "repr_id": 8,
-  "tprt_id": 1,
-  "es_referente": true,
-  "fecha_inicio": "2026-02-01",
-  "fecha_fin": "2026-12-31"
-}
-```
-
----
-
-## 🏫 6. MÓDULO DE TALLERES Y CONTROL DE ASISTENCIA
-
-### 6.1. Talleres Socioeducativos (`talleres_actividades.taller`)
-
-* **Base URI:** `/api/v1/taller`
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/taller` | Listado de talleres planificados y ejecutados |
-| `GET` | `/api/v1/taller/:id` | Información detallada del taller y facilitador |
-| `POST` | `/api/v1/taller` | Registro de taller (`hora_fin > hora_inicio`) |
-| `PATCH` | `/api/v1/taller/:id` | Actualización de fecha, lugar u horarios |
-| `DELETE` | `/api/v1/taller/:id` | Inactivación lógica del taller |
-
-* **Request Body (`POST /api/v1/taller`):**
-```json
-{
-  "uzdi_id": 1,
-  "prsn_id": 3,
-  "nombre": "Taller de Habilidades para la Vida",
-  "tema": "Resolución Asertiva de Conflictos y Comunicación no Violenta",
-  "objetivo": "Fortalecer habilidades de negociación interpersonal en adolescentes",
-  "fecha": "2026-03-20",
-  "hora_inicio": "09:00:00",
-  "hora_fin": "11:00:00",
-  "lugar": "Sala de Capacitación UZDI Ambato",
-  "observaciones": "Se convocó a 15 adolescentes de la zona centro"
-}
-```
-
----
-
-### 6.2. Asistencia a Talleres (`talleres_actividades.asistencia_taller`)
-
-* **Base URI:** `/api/v1/asistencia-taller`
-* **Regla de Negocio Dual:** La restricción `chk_asistencia_taller_asistente` exige registrar de forma mutuamente excluyente si el asistente es el adolescente o su representante.
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/asistencia-taller` | Listado general de asistencias |
-| `GET` | `/api/v1/asistencia-taller/taller/:tall_id` | **Lista de participantes (asistencia) de un taller específico** |
-| `GET` | `/api/v1/asistencia-taller/:id` | Detalle de asistencia por ID |
-| `POST` | `/api/v1/asistencia-taller` | Registro de asistencia (adolescente o tutor) |
-| `PATCH` | `/api/v1/asistencia-taller/:id` | Actualización de estado de asistencia |
-| `DELETE` | `/api/v1/asistencia-taller/:id` | Inactivación de registro de asistencia |
-
-#### Caso A: Asistencia del Adolescente
-```json
-{
-  "tall_id": 4,
-  "tipo_asistente": "adolescente",
-  "adlc_id": 12,
-  "asistio": true,
-  "observaciones": "Puntual, participación dinámica en la mesa redonda"
-}
-```
-
-#### Caso B: Asistencia del Representante Legal
-```json
-{
-  "tall_id": 4,
-  "tipo_asistente": "representante",
-  "adre_id": 3,
-  "asistio": true,
-  "observaciones": "Madre de familia asistió a la sesión de escuela para padres"
-}
-```
-
----
-
-## 📂 7. MÓDULO DE GESTIÓN DOCUMENTAL
-
-### 7.1. Documentos del Expediente (`gestion_documental.documento_expediente`)
-
-* **Base URI:** `/api/v1/documento-expediente`
-
-| Método | Endpoint URI | Descripción |
-|:---:|:---|:---|
-| `GET` | `/api/v1/documento-expediente` | Listado general de documentos en archivo |
-| `GET` | `/api/v1/documento-expediente/expediente/:expe_id` | **Historial y archivo digital de un expediente específico** |
-| `GET` | `/api/v1/documento-expediente/:id` | Detalle del documento por ID |
-| `POST` | `/api/v1/documento-expediente` | Registro de documento habilitante o informe |
-| `PATCH` | `/api/v1/documento-expediente/:id` | Actualización del estado del trámite |
-| `DELETE` | `/api/v1/documento-expediente/:id` | Inactivación lógica del documento |
-
-* **Request Body (`POST /api/v1/documento-expediente`):**
-```json
-{
-  "expe_id": 5,
-  "prsn_id": 2,
-  "tpdc_id": 1,
-  "es_habilitante": true,
-  "estado_tramite": "recibido",
-  "numero_documento": "OF-2026-089-JNA",
-  "fecha_documento": "2026-02-14",
-  "emisor": "Juzgado de Familia, Niñez y Adolescencia",
-  "observaciones": "Oficio de remisión de medida socioeducativa debidamente foliado"
-}
-```
-
----
-
-## 📈 8. MÓDULO DE REPORTES OFICIALES SNAI
-
-* **Base URI:** `/api/v1/reportes`
-* **Permisos:** Administrador (`ADM`), Coordinador (`CORD`), Jurídico (`LEGAL`), SNAI Consulta (`CONS`).
-
-| Método | Endpoint URI | Descripción | Formato Retornado |
-|:---:|:---|:---|:---:|
-| `GET` | `/api/v1/reportes/uzdi/adolescentes` | Consolidado demográfico de adolescentes activos por provincia, cantón y sede UZDI | JSON |
-| `GET` | `/api/v1/reportes/expedientes/medidas` | Resumen procesal de expedientes, causas y estado de cumplimiento de medidas | JSON |
-| `GET` | `/api/v1/reportes/export/excel` | **Descarga de reporte consolidado en Microsoft Excel** | Binario `.xlsx` |
-| `GET` | `/api/v1/reportes/export/pdf` | **Ficha ejecutiva institucional con diseño para impresión/guardar PDF** | HTML / PDF |
-
-#### Parámetros de Filtrado Opcionales (Query Params):
-* `?uzdi_id=1` $\rightarrow$ Filtrar por identificador de sede UZDI.
-* `?prov_id=18` $\rightarrow$ Filtrar por código de provincia.
-* `?cntn_id=1` $\rightarrow$ Filtrar por código de cantón.
-* `?estado_procesal=En proceso` $\rightarrow$ Filtrar por estado de la causa judicial.
-
----
-
-*Catálogo Técnico de Servicios API REST oficializado para el equipo de desarrollo de Frontend — Proyecto UZDI (SNAI – PUCE 2026).*
+En formularios de adolescentes, cargar antes los cuatro catálogos y el cantón. `GET /:id` usa el ID interno, no la cédula. Enviar en `PATCH` solo los campos que cambiaron.

@@ -9,10 +9,17 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AdolescenteService } from './adolescente.service';
 import { CreateAdolescenteDto } from './dto/create-adolescente.dto';
 import { UpdateAdolescenteDto } from './dto/update-adolescente.dto';
+import { SearchAdolescenteDto } from './dto/search-adolescente.dto';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
@@ -28,7 +35,10 @@ export class AdolescenteController {
   @Post()
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
   @ApiOperation({ summary: 'Registrar un nuevo adolescente' })
-  @ApiResponse({ status: 201, description: 'Adolescente registrado exitosamente' })
+  @ApiResponse({
+    status: 201,
+    description: 'Adolescente registrado exitosamente',
+  })
   create(@Body() createAdolescenteDto: CreateAdolescenteDto) {
     return this.adolescenteService.create(createAdolescenteDto);
   }
@@ -59,11 +69,18 @@ export class AdolescenteController {
     Rol.EDUCADOR,
     Rol.JURIDICO,
   )
-  @ApiOperation({ summary: 'Buscar adolescentes activos por coincidencia en nombre, apellido o cédula' })
-  @ApiQuery({ name: 'q', required: true, description: 'Texto de búsqueda (nombre, apellido o cédula)' })
+  @ApiOperation({
+    summary:
+      'Buscar adolescentes activos por coincidencia en nombre, apellido o cédula',
+  })
+  @ApiQuery({
+    name: 'q',
+    required: true,
+    description: 'Texto de búsqueda (nombre, apellido o cédula)',
+  })
   @ApiResponse({ status: 200, description: 'Resultados de la búsqueda' })
-  search(@Query('q') q: string) {
-    return this.adolescenteService.search(q);
+  search(@Query() query: SearchAdolescenteDto) {
+    return this.adolescenteService.search(query.q);
   }
 
   @Get(':id')
