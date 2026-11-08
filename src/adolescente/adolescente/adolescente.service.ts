@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { CreateAdolescenteDto } from './dto/create-adolescente.dto';
@@ -26,7 +30,7 @@ export class AdolescenteService {
 
   async search(query: string) {
     if (!query || !query.trim()) {
-      return this.findAll();
+      throw new BadRequestException('El parámetro q es obligatorio');
     }
     const q = `%${query.trim()}%`;
     return this.repository.find({
@@ -39,8 +43,13 @@ export class AdolescenteService {
     });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id, estado: true } });
+  async findOne(id: number) {
+    const adolescente = await this.repository.findOne({
+      where: { id, estado: true },
+    });
+    if (!adolescente)
+      throw new NotFoundException('Adolescente activo no encontrado');
+    return adolescente;
   }
 
   async update(id: number, updateAdolescenteDto: UpdateAdolescenteDto) {
