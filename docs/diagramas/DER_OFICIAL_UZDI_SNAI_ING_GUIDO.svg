@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3200 2400" width="3200" height="2400">
+  <defs>
+    <filter id="drop-shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15" flood-color="#000000" />
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#455A64" />
+    </marker>
+  </defs>
+
+  <!-- Fondo General -->
+  <rect x="0" y="0" width="3200" height="2400" fill="#F4F6F9" />
+
+  <!-- ENCABEZADO FORMAL INSTITUCIONAL -->
+  <rect x="60" y="30" width="3080" height="90" rx="10" ry="10" fill="#1F497D" filter="url(#drop-shadow)" />
+  <text x="100" y="70" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFFFFF">
+    DIAGRAMA ENTIDAD-RELACIÓN (DER) OFICIAL — SISTEMA DE GESTIÓN INTEGRAL UZDI (SNAI – PUCE)
+  </text>
+  <text x="100" y="98" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#BBDEFB">
+    MODELO RELACIONAL OFICIAL DDL v8 | METODOLOGÍA DEL ING. GUIDO | ATRIBUTOS OBLIGATORIOS fcCrea Y fcMod EN CADA TABLA | RECUADRO ER CAI Y CONA
+  </text>
+
+  <!-- RECUADRO DE AGRUPACION ER CAI -->
+  <rect x="1700" y="130" width="800" height="1140" rx="12" ry="12" fill="#FFF8E1" stroke="#FFA000" stroke-width="3" stroke-dasharray="8,4" />
+  <text x="1720" y="145" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#E65100">
+    RECUADRO DE SEGURIDAD ER CAI (MODELO OFICIAL DE CÁTEDRA: prsn, prfl, accn, prms, sesn, prpf, tipo_persona)
+  </text>
+
+  <!-- TABLAS -->
+  
+    <!-- Tabla: estructura_institucional.provincia -->
+    <g id="tbl_estructura_institucional_provincia">
+      <rect x="60" y="150" width="320" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#1565C0" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 60,158 Q 60,150 68,150 L 372,150 Q 380,150 380,158 L 380,186 L 60,186 Z" fill="#1565C0" />
+      <text x="74" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ESTRUCTURA_INSTITUCIONAL</text>
+      <text x="74" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">provincia</text>
+      <line x1="60" y1="186" x2="380" y2="186" stroke="#1565C0" stroke-width="1.5" />
+      <text x="74" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: prov_id : INT4</text>
+<text x="74" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">provcdgo : VARCHAR(20) [UQ]</text>
+<text x="74" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">provnmbr : VARCHAR(100)</text>
+<text x="74" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="74" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="74" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: estructura_institucional.canton -->
+    <g id="tbl_estructura_institucional_canton">
+      <rect x="60" y="360" width="320" height="202" rx="8" ry="8" fill="#FFFFFF" stroke="#1565C0" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 60,368 Q 60,360 68,360 L 372,360 Q 380,360 380,368 L 380,396 L 60,396 Z" fill="#1976D2" />
+      <text x="74" y="376" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ESTRUCTURA_INSTITUCIONAL</text>
+      <text x="74" y="390" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">canton</text>
+      <line x1="60" y1="396" x2="380" y2="396" stroke="#1565C0" stroke-width="1.5" />
+      <text x="74" y="412" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: cntn_id : INT4</text>
+<text x="74" y="434" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prov_id : INT4 -&gt; provincia</text>
+<text x="74" y="456" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">cntncdgo : VARCHAR(20) [UQ]</text>
+<text x="74" y="478" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">cntnnmbr : VARCHAR(100)</text>
+<text x="74" y="500" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="74" y="522" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="74" y="544" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: estructura_institucional.uzdi -->
+    <g id="tbl_estructura_institucional_uzdi">
+      <rect x="60" y="590" width="320" height="268" rx="8" ry="8" fill="#FFFFFF" stroke="#1565C0" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 60,598 Q 60,590 68,590 L 372,590 Q 380,590 380,598 L 380,626 L 60,626 Z" fill="#0D47A1" />
+      <text x="74" y="606" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ESTRUCTURA_INSTITUCIONAL</text>
+      <text x="74" y="620" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">uzdi</text>
+      <line x1="60" y1="626" x2="380" y2="626" stroke="#1565C0" stroke-width="1.5" />
+      <text x="74" y="642" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: uzdi_id : INT4</text>
+<text x="74" y="664" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: cntn_id : INT4 -&gt; canton</text>
+<text x="74" y="686" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">uzdinmbr : VARCHAR(255)</text>
+<text x="74" y="708" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">uzdizona : VARCHAR(100)</text>
+<text x="74" y="730" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">uzdidrcc : VARCHAR(255)</text>
+<text x="74" y="752" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">uzditlfn : VARCHAR(20)</text>
+<text x="74" y="774" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">uzdimail : VARCHAR(100)</text>
+<text x="74" y="796" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="74" y="818" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="74" y="840" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.adolescente -->
+    <g id="tbl_adolescente_adolescente">
+      <rect x="430" y="150" width="380" height="510" rx="8" ry="8" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 430,158 Q 430,150 438,150 L 802,150 Q 810,150 810,158 L 810,186 L 430,186 Z" fill="#2E7D32" />
+      <text x="444" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="444" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">adolescente</text>
+      <line x1="430" y1="186" x2="810" y2="186" stroke="#2E7D32" stroke-width="1.5" />
+      <text x="444" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: adlc_id : INT4</text>
+<text x="444" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlccdla : VARCHAR(20) [UQ]</text>
+<text x="444" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcnmbr : VARCHAR(100)</text>
+<text x="444" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcapll : VARCHAR(100)</text>
+<text x="444" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcfcna : DATE</text>
+<text x="444" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcsexo : CHAR(1) [M/F/O]</text>
+<text x="444" y="334" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcfcin : DATE</text>
+<text x="444" y="356" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: nacn_id : INT4 -&gt; nacionalidad</text>
+<text x="444" y="378" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: etcv_id : INT4 -&gt; estado_civil</text>
+<text x="444" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: etna_id : INT4 -&gt; etnia</text>
+<text x="444" y="422" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: cntn_id : INT4 -&gt; canton</text>
+<text x="444" y="444" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: gdo_id : INT4 (Opcional)</text>
+<text x="444" y="466" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcnved : VARCHAR(100)</text>
+<text x="444" y="488" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlchjos : INT4 DEFAULT 0</text>
+<text x="444" y="510" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcrncd : CHAR(1) [V/F]</text>
+<text x="444" y="532" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlchppl : CHAR(1) [V/F]</text>
+<text x="444" y="554" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcsitu : VARCHAR(50)</text>
+<text x="444" y="576" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adlcmtvb : VARCHAR(100)</text>
+<text x="444" y="598" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="444" y="620" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="444" y="642" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.nacionalidad -->
+    <g id="tbl_adolescente_nacionalidad">
+      <rect x="430" y="720" width="260" height="158" rx="8" ry="8" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 430,728 Q 430,720 438,720 L 682,720 Q 690,720 690,728 L 690,756 L 430,756 Z" fill="#388E3C" />
+      <text x="444" y="736" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="444" y="750" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">nacionalidad</text>
+      <line x1="430" y1="756" x2="690" y2="756" stroke="#2E7D32" stroke-width="1.5" />
+      <text x="444" y="772" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: nacn_id : INT4</text>
+<text x="444" y="794" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">nacnnmbr : VARCHAR(100)</text>
+<text x="444" y="816" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="444" y="838" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="444" y="860" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.estado_civil -->
+    <g id="tbl_adolescente_estado_civil">
+      <rect x="710" y="720" width="260" height="158" rx="8" ry="8" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 710,728 Q 710,720 718,720 L 962,720 Q 970,720 970,728 L 970,756 L 710,756 Z" fill="#388E3C" />
+      <text x="724" y="736" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="724" y="750" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">estado_civil</text>
+      <line x1="710" y1="756" x2="970" y2="756" stroke="#2E7D32" stroke-width="1.5" />
+      <text x="724" y="772" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: etcv_id : INT4</text>
+<text x="724" y="794" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">etcvnmbr : VARCHAR(100)</text>
+<text x="724" y="816" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="724" y="838" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="724" y="860" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.etnia -->
+    <g id="tbl_adolescente_etnia">
+      <rect x="430" y="900" width="260" height="158" rx="8" ry="8" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 430,908 Q 430,900 438,900 L 682,900 Q 690,900 690,908 L 690,936 L 430,936 Z" fill="#388E3C" />
+      <text x="444" y="916" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="444" y="930" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">etnia</text>
+      <line x1="430" y1="936" x2="690" y2="936" stroke="#2E7D32" stroke-width="1.5" />
+      <text x="444" y="952" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: etna_id : INT4</text>
+<text x="444" y="974" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">etnanmbr : VARCHAR(100)</text>
+<text x="444" y="996" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="444" y="1018" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="444" y="1040" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.gdo -->
+    <g id="tbl_adolescente_gdo">
+      <rect x="710" y="900" width="260" height="158" rx="8" ry="8" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 710,908 Q 710,900 718,900 L 962,900 Q 970,900 970,908 L 970,936 L 710,936 Z" fill="#388E3C" />
+      <text x="724" y="916" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="724" y="930" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">gdo</text>
+      <line x1="710" y1="936" x2="970" y2="936" stroke="#2E7D32" stroke-width="1.5" />
+      <text x="724" y="952" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: gdo_id : INT4</text>
+<text x="724" y="974" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">gdonmbr : VARCHAR(255)</text>
+<text x="724" y="996" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="724" y="1018" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="724" y="1040" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.expediente -->
+    <g id="tbl_adolescente_expediente">
+      <rect x="870" y="150" width="380" height="268" rx="8" ry="8" fill="#FFFFFF" stroke="#C62828" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 870,158 Q 870,150 878,150 L 1242,150 Q 1250,150 1250,158 L 1250,186 L 870,186 Z" fill="#C62828" />
+      <text x="884" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="884" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">expediente</text>
+      <line x1="870" y1="186" x2="1250" y2="186" stroke="#C62828" stroke-width="1.5" />
+      <text x="884" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: expe_id : INT4</text>
+<text x="884" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: adlc_id : INT4 -&gt; adolescente</text>
+<text x="884" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: uzdi_id : INT4 -&gt; uzdi</text>
+<text x="884" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: infc_id : INT4 -&gt; infraccion</text>
+<text x="884" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">numero_causa : VARCHAR(100) [UQ activos]</text>
+<text x="884" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">expeetps : VARCHAR(50)</text>
+<text x="884" y="334" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">expeobsr : TEXT</text>
+<text x="884" y="356" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="884" y="378" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="884" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.medida_expediente (CONA) -->
+    <g id="tbl_adolescente_medida_expediente (CONA)">
+      <rect x="870" y="450" width="420" height="290" rx="8" ry="8" fill="#FFFFFF" stroke="#B71C1C" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 870,458 Q 870,450 878,450 L 1282,450 Q 1290,450 1290,458 L 1290,486 L 870,486 Z" fill="#B71C1C" />
+      <text x="884" y="466" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="884" y="480" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">medida_expediente (CONA)</text>
+      <line x1="870" y1="486" x2="1290" y2="486" stroke="#B71C1C" stroke-width="1.5" />
+      <text x="884" y="502" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: mdex_id : INT4</text>
+<text x="884" y="524" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: expe_id : INT4 -&gt; expediente</text>
+<text x="884" y="546" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: mdso_id : INT4 -&gt; medida_socioeducativa</text>
+<text x="884" y="568" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">orden : INT4 NOT NULL [&gt;= 1] (Regla CONA)</text>
+<text x="884" y="590" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">fecha_inicio : DATE NOT NULL</text>
+<text x="884" y="612" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">fecha_fin : DATE [&gt;= fecha_inicio]</text>
+<text x="884" y="634" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado_cumplimiento : VARCHAR(50)</text>
+<text x="884" y="656" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">observaciones : TEXT</text>
+<text x="884" y="678" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="884" y="700" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="884" y="722" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.infraccion -->
+    <g id="tbl_adolescente_infraccion">
+      <rect x="1320" y="150" width="320" height="224" rx="8" ry="8" fill="#FFFFFF" stroke="#C62828" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1320,158 Q 1320,150 1328,150 L 1632,150 Q 1640,150 1640,158 L 1640,186 L 1320,186 Z" fill="#D32F2F" />
+      <text x="1334" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="1334" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">infraccion</text>
+      <line x1="1320" y1="186" x2="1640" y2="186" stroke="#C62828" stroke-width="1.5" />
+      <text x="1334" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: infc_id : INT4</text>
+<text x="1334" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">infcnmbr : VARCHAR(255)</text>
+<text x="1334" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">infcctgr : VARCHAR(127)</text>
+<text x="1334" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">infcartc : VARCHAR(50) [CONA/COIP]</text>
+<text x="1334" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">infcdscr : TEXT</text>
+<text x="1334" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1334" y="334" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1334" y="356" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: adolescente.medida_socioeducativa -->
+    <g id="tbl_adolescente_medida_socioeducativa">
+      <rect x="1320" y="390" width="340" height="202" rx="8" ry="8" fill="#FFFFFF" stroke="#C62828" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1320,398 Q 1320,390 1328,390 L 1652,390 Q 1660,390 1660,398 L 1660,426 L 1320,426 Z" fill="#D32F2F" />
+      <text x="1334" y="406" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">ADOLESCENTE</text>
+      <text x="1334" y="420" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">medida_socioeducativa</text>
+      <line x1="1320" y1="426" x2="1660" y2="426" stroke="#C62828" stroke-width="1.5" />
+      <text x="1334" y="442" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: mdso_id : INT4</text>
+<text x="1334" y="464" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">mdsonmbr : VARCHAR(255)</text>
+<text x="1334" y="486" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">mdsodrcn : INT4 (Meses)</text>
+<text x="1334" y="508" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">mdsodscr : TEXT</text>
+<text x="1334" y="530" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1334" y="552" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1334" y="574" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: contexto_familiar.tipo_parentesco -->
+    <g id="tbl_contexto_familiar_tipo_parentesco">
+      <rect x="60" y="880" width="330" height="158" rx="8" ry="8" fill="#FFFFFF" stroke="#7B1FA2" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 60,888 Q 60,880 68,880 L 382,880 Q 390,880 390,888 L 390,916 L 60,916 Z" fill="#7B1FA2" />
+      <text x="74" y="896" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">CONTEXTO_FAMILIAR</text>
+      <text x="74" y="910" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">tipo_parentesco</text>
+      <line x1="60" y1="916" x2="390" y2="916" stroke="#7B1FA2" stroke-width="1.5" />
+      <text x="74" y="932" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: tprt_id : INT4</text>
+<text x="74" y="954" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tprtnmbr : VARCHAR(100)</text>
+<text x="74" y="976" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="74" y="998" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="74" y="1020" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: contexto_familiar.representante -->
+    <g id="tbl_contexto_familiar_representante">
+      <rect x="60" y="1070" width="330" height="268" rx="8" ry="8" fill="#FFFFFF" stroke="#7B1FA2" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 60,1078 Q 60,1070 68,1070 L 382,1070 Q 390,1070 390,1078 L 390,1106 L 60,1106 Z" fill="#8E24AA" />
+      <text x="74" y="1086" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">CONTEXTO_FAMILIAR</text>
+      <text x="74" y="1100" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">representante</text>
+      <line x1="60" y1="1106" x2="390" y2="1106" stroke="#7B1FA2" stroke-width="1.5" />
+      <text x="74" y="1122" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: repr_id : INT4</text>
+<text x="74" y="1144" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: cntn_id : INT4 -&gt; canton</text>
+<text x="74" y="1166" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">reprcdla : VARCHAR(20) [UQ]</text>
+<text x="74" y="1188" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">reprnmbr : VARCHAR(100)</text>
+<text x="74" y="1210" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">reprapll : VARCHAR(100)</text>
+<text x="74" y="1232" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">reprtlfn : VARCHAR(20)</text>
+<text x="74" y="1254" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">reprdrcc : VARCHAR(255)</text>
+<text x="74" y="1276" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="74" y="1298" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="74" y="1320" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: contexto_familiar.adolescente_representante -->
+    <g id="tbl_contexto_familiar_adolescente_representante">
+      <rect x="430" y="1080" width="380" height="268" rx="8" ry="8" fill="#FFFFFF" stroke="#7B1FA2" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 430,1088 Q 430,1080 438,1080 L 802,1080 Q 810,1080 810,1088 L 810,1116 L 430,1116 Z" fill="#6A1B9A" />
+      <text x="444" y="1096" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">CONTEXTO_FAMILIAR</text>
+      <text x="444" y="1110" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">adolescente_representante</text>
+      <line x1="430" y1="1116" x2="810" y2="1116" stroke="#7B1FA2" stroke-width="1.5" />
+      <text x="444" y="1132" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: adre_id : INT4</text>
+<text x="444" y="1154" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: adlc_id : INT4 -&gt; adolescente</text>
+<text x="444" y="1176" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: repr_id : INT4 -&gt; representante</text>
+<text x="444" y="1198" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: tprt_id : INT4 -&gt; tipo_parentesco</text>
+<text x="444" y="1220" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adre_es_referente : CHAR(1) DEFAULT 'V'</text>
+<text x="444" y="1242" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adrefcin : DATE</text>
+<text x="444" y="1264" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">adrefcfn : DATE</text>
+<text x="444" y="1286" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="444" y="1308" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="444" y="1330" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: talleres_actividades.taller -->
+    <g id="tbl_talleres_actividades_taller">
+      <rect x="870" y="750" width="360" height="290" rx="8" ry="8" fill="#FFFFFF" stroke="#00695C" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 870,758 Q 870,750 878,750 L 1222,750 Q 1230,750 1230,758 L 1230,786 L 870,786 Z" fill="#00695C" />
+      <text x="884" y="766" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">TALLERES_ACTIVIDADES</text>
+      <text x="884" y="780" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">taller</text>
+      <line x1="870" y1="786" x2="1230" y2="786" stroke="#00695C" stroke-width="1.5" />
+      <text x="884" y="802" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: tall_id : INT4</text>
+<text x="884" y="824" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: uzdi_id : INT4 -&gt; uzdi</text>
+<text x="884" y="846" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prsn_id : INT4 -&gt; prsn</text>
+<text x="884" y="868" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tallnmbr : VARCHAR(255)</text>
+<text x="884" y="890" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">talltema : VARCHAR(255)</text>
+<text x="884" y="912" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tallfcha : DATE</text>
+<text x="884" y="934" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tallhrin : TIME</text>
+<text x="884" y="956" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tallhrfn : TIME</text>
+<text x="884" y="978" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="884" y="1000" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="884" y="1022" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: talleres_actividades.asistencia_taller -->
+    <g id="tbl_talleres_actividades_asistencia_taller">
+      <rect x="870" y="1030" width="400" height="246" rx="8" ry="8" fill="#FFFFFF" stroke="#00695C" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 870,1038 Q 870,1030 878,1030 L 1262,1030 Q 1270,1030 1270,1038 L 1270,1066 L 870,1066 Z" fill="#00796B" />
+      <text x="884" y="1046" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">TALLERES_ACTIVIDADES</text>
+      <text x="884" y="1060" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">asistencia_taller</text>
+      <line x1="870" y1="1066" x2="1270" y2="1066" stroke="#00695C" stroke-width="1.5" />
+      <text x="884" y="1082" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: astl_id : INT4</text>
+<text x="884" y="1104" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: tall_id : INT4 -&gt; taller</text>
+<text x="884" y="1126" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tipo_asistente : VARCHAR(20) [adlc/repr]</text>
+<text x="884" y="1148" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: adlc_id : INT4 (Excluyente)</text>
+<text x="884" y="1170" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: adre_id : INT4 (Excluyente)</text>
+<text x="884" y="1192" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">astlasst : CHAR(1) DEFAULT 'V'</text>
+<text x="884" y="1214" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="884" y="1236" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="884" y="1258" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: gestion_documental.tipo_documento -->
+    <g id="tbl_gestion_documental_tipo_documento">
+      <rect x="1300" y="750" width="340" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#00695C" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1300,758 Q 1300,750 1308,750 L 1632,750 Q 1640,750 1640,758 L 1640,786 L 1300,786 Z" fill="#00897B" />
+      <text x="1314" y="766" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">GESTION_DOCUMENTAL</text>
+      <text x="1314" y="780" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">tipo_documento</text>
+      <line x1="1300" y1="786" x2="1640" y2="786" stroke="#00695C" stroke-width="1.5" />
+      <text x="1314" y="802" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: tpdc_id : INT4</text>
+<text x="1314" y="824" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tpdcnmbr : VARCHAR(255)</text>
+<text x="1314" y="846" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tpdcdscr : TEXT</text>
+<text x="1314" y="868" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1314" y="890" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1314" y="912" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: gestion_documental.documento_expediente -->
+    <g id="tbl_gestion_documental_documento_expediente">
+      <rect x="1300" y="960" width="380" height="312" rx="8" ry="8" fill="#FFFFFF" stroke="#00695C" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1300,968 Q 1300,960 1308,960 L 1672,960 Q 1680,960 1680,968 L 1680,996 L 1300,996 Z" fill="#004D40" />
+      <text x="1314" y="976" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">GESTION_DOCUMENTAL</text>
+      <text x="1314" y="990" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">documento_expediente</text>
+      <line x1="1300" y1="996" x2="1680" y2="996" stroke="#00695C" stroke-width="1.5" />
+      <text x="1314" y="1012" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: dcex_id : INT4</text>
+<text x="1314" y="1034" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: expe_id : INT4 -&gt; expediente</text>
+<text x="1314" y="1056" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prsn_id : INT4 -&gt; prsn</text>
+<text x="1314" y="1078" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: tpdc_id : INT4 -&gt; tipo_documento</text>
+<text x="1314" y="1100" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">dcexnmro : VARCHAR(100)</text>
+<text x="1314" y="1122" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">dcexfcha : DATE</text>
+<text x="1314" y="1144" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">dcexemsr : VARCHAR(255)</text>
+<text x="1314" y="1166" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">dcexes_h : CHAR(1) [V/F]</text>
+<text x="1314" y="1188" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">dcex_est : VARCHAR(50)</text>
+<text x="1314" y="1210" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1314" y="1232" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1314" y="1254" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.tipo_persona (RF-12) -->
+    <g id="tbl_seguridad_tipo_persona (RF-12)">
+      <rect x="1720" y="150" width="360" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1720,158 Q 1720,150 1728,150 L 2072,150 Q 2080,150 2080,158 L 2080,186 L 1720,186 Z" fill="#E65100" />
+      <text x="1734" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="1734" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">tipo_persona (RF-12)</text>
+      <line x1="1720" y1="186" x2="2080" y2="186" stroke="#E65100" stroke-width="1.5" />
+      <text x="1734" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: tppr_id : INT4</text>
+<text x="1734" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tpprcdgo : VARCHAR(20) [UQ]</text>
+<text x="1734" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">tpprnmbr : VARCHAR(100)</text>
+<text x="1734" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1734" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1734" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.prsn (Usuario Institucional) -->
+    <g id="tbl_seguridad_prsn (Usuario Institucional)">
+      <rect x="1720" y="350" width="360" height="312" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1720,358 Q 1720,350 1728,350 L 2072,350 Q 2080,350 2080,358 L 2080,386 L 1720,386 Z" fill="#EF6C00" />
+      <text x="1734" y="366" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="1734" y="380" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">prsn (Usuario Institucional)</text>
+      <line x1="1720" y1="386" x2="2080" y2="386" stroke="#E65100" stroke-width="1.5" />
+      <text x="1734" y="402" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: prsn_id : INT4</text>
+<text x="1734" y="424" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: tppr_id : INT4 -&gt; tipo_persona</text>
+<text x="1734" y="446" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: uzdi_id : INT4 -&gt; uzdi (Opcional)</text>
+<text x="1734" y="468" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnnmbr : VARCHAR(100)</text>
+<text x="1734" y="490" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnapll : VARCHAR(100)</text>
+<text x="1734" y="512" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnmail : VARCHAR(100) [UQ]</text>
+<text x="1734" y="534" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnlgin : VARCHAR(50) [UQ]</text>
+<text x="1734" y="556" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnpswd : VARCHAR(255) [bcrypt]</text>
+<text x="1734" y="578" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prsnsexo : CHAR(1)</text>
+<text x="1734" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1734" y="622" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1734" y="644" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.prfl (Perfiles) -->
+    <g id="tbl_seguridad_prfl (Perfiles)">
+      <rect x="2140" y="150" width="340" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 2140,158 Q 2140,150 2148,150 L 2472,150 Q 2480,150 2480,158 L 2480,186 L 2140,186 Z" fill="#F57C00" />
+      <text x="2154" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="2154" y="180" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">prfl (Perfiles)</text>
+      <line x1="2140" y1="186" x2="2480" y2="186" stroke="#E65100" stroke-width="1.5" />
+      <text x="2154" y="202" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: prfl_id : INT4</text>
+<text x="2154" y="224" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prflcdgo : VARCHAR(20) [UQ]</text>
+<text x="2154" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">prflnmbr : VARCHAR(100)</text>
+<text x="2154" y="268" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="2154" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="2154" y="312" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.prpf (Persona <-> Perfil) -->
+    <g id="tbl_seguridad_prpf (Persona <-> Perfil)">
+      <rect x="2140" y="350" width="340" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 2140,358 Q 2140,350 2148,350 L 2472,350 Q 2480,350 2480,358 L 2480,386 L 2140,386 Z" fill="#F57C00" />
+      <text x="2154" y="366" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="2154" y="380" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">prpf (Persona &lt;-&gt; Perfil)</text>
+      <line x1="2140" y1="386" x2="2480" y2="386" stroke="#E65100" stroke-width="1.5" />
+      <text x="2154" y="402" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: prpf_id : INT4</text>
+<text x="2154" y="424" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prsn_id : INT4 -&gt; prsn</text>
+<text x="2154" y="446" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prfl_id : INT4 -&gt; prfl</text>
+<text x="2154" y="468" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="2154" y="490" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="2154" y="512" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.accn (Acciones Operativas) -->
+    <g id="tbl_seguridad_accn (Acciones Operativas)">
+      <rect x="1720" y="680" width="360" height="202" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1720,688 Q 1720,680 1728,680 L 2072,680 Q 2080,680 2080,688 L 2080,716 L 1720,716 Z" fill="#FB8C00" />
+      <text x="1734" y="696" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="1734" y="710" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">accn (Acciones Operativas)</text>
+      <line x1="1720" y1="716" x2="2080" y2="716" stroke="#E65100" stroke-width="1.5" />
+      <text x="1734" y="732" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: accn_id : INT4</text>
+<text x="1734" y="754" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">accnnmbr : VARCHAR(100) [UQ]</text>
+<text x="1734" y="776" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">accndscr : VARCHAR(255)</text>
+<text x="1734" y="798" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">accnadbl : CHAR(1) DEFAULT '1'</text>
+<text x="1734" y="820" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="1734" y="842" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="1734" y="864" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.prms (Matriz RBAC) -->
+    <g id="tbl_seguridad_prms (Matriz RBAC)">
+      <rect x="2140" y="550" width="340" height="180" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 2140,558 Q 2140,550 2148,550 L 2472,550 Q 2480,550 2480,558 L 2480,586 L 2140,586 Z" fill="#E65100" />
+      <text x="2154" y="566" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="2154" y="580" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">prms (Matriz RBAC)</text>
+      <line x1="2140" y1="586" x2="2480" y2="586" stroke="#E65100" stroke-width="1.5" />
+      <text x="2154" y="602" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: prms_id : INT4</text>
+<text x="2154" y="624" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prfl_id : INT4 -&gt; prfl</text>
+<text x="2154" y="646" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: accn_id : INT4 -&gt; accn</text>
+<text x="2154" y="668" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="2154" y="690" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="2154" y="712" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.sesn (Sesiones y Tokens) -->
+    <g id="tbl_seguridad_sesn (Sesiones y Tokens)">
+      <rect x="2140" y="750" width="340" height="224" rx="8" ry="8" fill="#FFFFFF" stroke="#E65100" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 2140,758 Q 2140,750 2148,750 L 2472,750 Q 2480,750 2480,758 L 2480,786 L 2140,786 Z" fill="#E65100" />
+      <text x="2154" y="766" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="2154" y="780" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">sesn (Sesiones y Tokens)</text>
+      <line x1="2140" y1="786" x2="2480" y2="786" stroke="#E65100" stroke-width="1.5" />
+      <text x="2154" y="802" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: sesn_id : INT4</text>
+<text x="2154" y="824" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prsn_id : INT4 -&gt; prsn</text>
+<text x="2154" y="846" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#0D47A1">🔗 FK: prfl_id : INT4 -&gt; prfl</text>
+<text x="2154" y="868" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">sesnfcin : TIMESTAMP</text>
+<text x="2154" y="890" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">sesnfcfn : TIMESTAMP</text>
+<text x="2154" y="912" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">estado : CHAR(1) [V/F]</text>
+<text x="2154" y="934" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcCrea : TIMESTAMP</text>
+<text x="2154" y="956" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#558B2F">🕒 fcMod : TIMESTAMP</text>
+
+    </g>
+  
+
+    <!-- Tabla: seguridad.historial (Auditoría Triggers) -->
+    <g id="tbl_seguridad_historial (Auditoría Triggers)">
+      <rect x="1720" y="920" width="420" height="224" rx="8" ry="8" fill="#FFFFFF" stroke="#37474F" stroke-width="2" filter="url(#drop-shadow)" />
+      <path d="M 1720,928 Q 1720,920 1728,920 L 2132,920 Q 2140,920 2140,928 L 2140,956 L 1720,956 Z" fill="#37474F" />
+      <text x="1734" y="936" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" letter-spacing="1">SEGURIDAD</text>
+      <text x="1734" y="950" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF">historial (Auditoría Triggers)</text>
+      <line x1="1720" y1="956" x2="2140" y2="956" stroke="#37474F" stroke-width="1.5" />
+      <text x="1734" y="972" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="bold" fill="#B71C1C">🔑 PK: hist_id : INT4</text>
+<text x="1734" y="994" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_tabla : VARCHAR(100)</text>
+<text x="1734" y="1016" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_registro_id : INT4</text>
+<text x="1734" y="1038" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_usuario_id : INT4</text>
+<text x="1734" y="1060" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_fecha : TIMESTAMP [NOW()]</text>
+<text x="1734" y="1082" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_accion : VARCHAR(20)</text>
+<text x="1734" y="1104" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_estado_anterior : JSONB</text>
+<text x="1734" y="1126" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="normal" fill="#333333">hist_estado_nuevo : JSONB</text>
+
+    </g>
+  
+
+  <!-- RELACIONES -->
+  
+    <g>
+      <path d="M 380 420 Q 380 420 380 320 T 380 220" fill="none" stroke="#1565C0" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="330" y="308" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1" />
+      <text x="380" y="322" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#1565C0" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 380 650 Q 380 650 380 550 T 380 450" fill="none" stroke="#1565C0" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="330" y="538" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1" />
+      <text x="380" y="552" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#1565C0" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 870 260 Q 840 260 840 260 T 810 260" fill="none" stroke="#C62828" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="790" y="248" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#C62828" stroke-width="1" />
+      <text x="840" y="262" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#C62828" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 1060 450 Q 1060 450 1060 415 T 1060 380" fill="none" stroke="#B71C1C" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="1010" y="403" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#B71C1C" stroke-width="1" />
+      <text x="1060" y="417" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#B71C1C" text-anchor="middle">1:N (CONA)</text>
+    </g>
+  
+
+    <g>
+      <path d="M 1290 520 Q 1305 520 1305 485 T 1320 450" fill="none" stroke="#B71C1C" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="1255" y="473" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#B71C1C" stroke-width="1" />
+      <text x="1305" y="487" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#B71C1C" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 1250 240 Q 1285 240 1285 240 T 1320 240" fill="none" stroke="#C62828" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="1235" y="228" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#C62828" stroke-width="1" />
+      <text x="1285" y="242" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#C62828" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 1900 350 Q 1900 350 1900 310 T 1900 270" fill="none" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="1850" y="298" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#E65100" stroke-width="1" />
+      <text x="1900" y="312" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle">RF-12</text>
+    </g>
+  
+
+    <g>
+      <path d="M 2080 420 Q 2110 420 2110 420 T 2140 420" fill="none" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="2060" y="408" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#E65100" stroke-width="1" />
+      <text x="2110" y="422" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle">N:M</text>
+    </g>
+  
+
+    <g>
+      <path d="M 2310 270 Q 2310 270 2310 310 T 2310 350" fill="none" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="2260" y="298" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#E65100" stroke-width="1" />
+      <text x="2310" y="312" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle">1:N</text>
+    </g>
+  
+
+    <g>
+      <path d="M 2310 470 Q 2310 470 2310 510 T 2310 550" fill="none" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="2260" y="498" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#E65100" stroke-width="1" />
+      <text x="2310" y="512" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle">RBAC</text>
+    </g>
+  
+
+    <g>
+      <path d="M 2140 610 Q 2110 610 2110 675 T 2080 740" fill="none" stroke="#E65100" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arrow)" />
+      <rect x="2060" y="663" width="100" height="20" rx="4" fill="#FFFFFF" stroke="#E65100" stroke-width="1" />
+      <text x="2110" y="677" font-family="Segoe UI, Arial" font-size="10" font-weight="bold" fill="#E65100" text-anchor="middle">Accion</text>
+    </g>
+  
+
+  <!-- PIE DE PAGINA -->
+  <rect x="60" y="2330" width="3080" height="40" fill="#ECEFF1" rx="6" ry="6" />
+  <text x="80" y="2355" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" fill="#455A64">
+    Sistema UZDI v2.0 (SNAI - PUCE) — Generado oficialmente para el entregable de Cátedra de Ingeniería de Software — Noviembre 2026
+  </text>
+</svg>

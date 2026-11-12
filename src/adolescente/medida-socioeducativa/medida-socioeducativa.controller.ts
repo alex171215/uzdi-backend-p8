@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -10,6 +11,12 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { MedidaSocioeducativaService } from './medida-socioeducativa.service';
 import { CreateMedidaSocioeducativaDto } from './dto/create-medida-socioeducativa.dto';
 import { UpdateMedidaSocioeducativaDto } from './dto/update-medida-socioeducativa.dto';
@@ -18,6 +25,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
 
+// Roles con permiso para consultar las medidas socioeducativas
 const LECTURA = [
   Rol.ADMINISTRADOR,
   Rol.SUPERADMINISTRADOR,
@@ -25,8 +33,19 @@ const LECTURA = [
   Rol.PSICOLOGO,
   Rol.EDUCADOR,
   Rol.JURIDICO,
+  Rol.COORDINADOR,
 ];
 
+// Roles autorizados para gestionar el catalogo de medidas socioeducativas
+const ESCRITURA_JUDICIAL = [
+  Rol.ADMINISTRADOR,
+  Rol.SUPERADMINISTRADOR,
+  Rol.JURIDICO,
+];
+
+// Controlador REST para el catalogo de tipos de medidas socioeducativas segun CONA
+@ApiTags('Medidas Socioeducativas')
+@ApiBearerAuth('JWT-auth')
 @Controller('medida-socioeducativa')
 @UseGuards(RolesGuard)
 export class MedidaSocioeducativaController {
@@ -34,37 +53,50 @@ export class MedidaSocioeducativaController {
     private readonly medidaSocioeducativaService: MedidaSocioeducativaService,
   ) {}
 
+  // Endpoint para registrar un nuevo tipo de medida socioeducativa
   @Post()
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Registrar un nuevo tipo de medida socioeducativa' })
+  @ApiResponse({ status: 201, description: 'Tipo de medida creado exitosamente' })
   create(@Body() createMedidaSocioeducativaDto: CreateMedidaSocioeducativaDto) {
     return this.medidaSocioeducativaService.create(
       createMedidaSocioeducativaDto,
     );
   }
 
-  // ?incluirInactivos=true para ver tambien las desactivadas
+  // Endpoint para listar las medidas socioeducativas con soporte de filtro de inactivos
   @Get()
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Listar tipos de medidas socioeducativas' })
+  @ApiResponse({ status: 200, description: 'Listado de medidas obtenido exitosamente' })
   findAll(@Query() query: EstadoQueryDto) {
     return this.medidaSocioeducativaService.findAll(query.incluirInactivos);
   }
 
+  // Endpoint para consultar un tipo de medida por su ID
   @Get(':id')
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Consultar tipo de medida por su identificador' })
+  @ApiResponse({ status: 200, description: 'Tipo de medida obtenido exitosamente' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.findOne(id);
   }
 
-  // expedientes donde se uso esta medida
+  // Endpoint para listar los expedientes donde se aplico este tipo de medida
   @Get(':id/expedientes')
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Listar expedientes judiciales que aplican esta medida' })
+  @ApiResponse({ status: 200, description: 'Expedientes asociados obtenidos' })
   findExpedientes(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.findExpedientes(id);
   }
 
-  @Patch(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
-  update(
+  // Endpoint PUT para actualizacion completa de la medida socioeducativa
+  @Put(':id')
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Actualizar completamente el tipo de medida (PUT)' })
+  @ApiResponse({ status: 200, description: 'Tipo de medida actualizado exitosamente' })
+  updatePut(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMedidaSocioeducativaDto: UpdateMedidaSocioeducativaDto,
   ) {
@@ -74,8 +106,26 @@ export class MedidaSocioeducativaController {
     );
   }
 
+  // Endpoint PATCH para actualizacion parcial de la medida socioeducativa
+  @Patch(':id')
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Actualizar parcialmente el tipo de medida (PATCH)' })
+  @ApiResponse({ status: 200, description: 'Tipo de medida actualizado exitosamente' })
+  updatePatch(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMedidaSocioeducativaDto: UpdateMedidaSocioeducativaDto,
+  ) {
+    return this.medidaSocioeducativaService.update(
+      id,
+      updateMedidaSocioeducativaDto,
+    );
+  }
+
+  // Endpoint para dar de baja logica una medida socioeducativa
   @Delete(':id')
-  @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Inactivar logicamente un tipo de medida (DELETE)' })
+  @ApiResponse({ status: 200, description: 'Tipo de medida inactivado exitosamente' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.remove(id);
   }
