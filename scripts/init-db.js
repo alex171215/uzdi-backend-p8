@@ -7,6 +7,8 @@
  * - Si no existe el esquema (seguridad.prsn), ejecuta el DDL v8 y los catálogos.
  * - Siempre ejecuta db/02_seguridad_rbac.sql, que es idempotente
  *   (tabla persona-perfil, usuario admin y matriz RBAC).
+ * - Si el esquema ya existía pero sin catálogos (BD creada con un DDL
+ *   anterior), carga db/03_datos_iniciales_catalogos.sql.
  * - Si algo falla termina con código 1 y Render marca el despliegue como fallido.
  */
 const fs = require('fs');
@@ -51,16 +53,23 @@ async function main() {
       await ejecutar(client, SEGURIDAD);
       await ejecutar(client, CATALOGOS);
     } else {
-      console.log(
-        '[init-db] El esquema ya existe; se actualiza solo la seguridad.',
-      );
+      console.log('[init-db] El esquema ya existe; se actualiza la seguridad.');
       await ejecutar(client, SEGURIDAD);
+      // Bases creadas con un DDL anterior no tienen los catálogos iniciales.
+      // Solo se cargan si faltan, para no reactivar registros dados de baja.
+      const cat = await client.query(
+        'SELECT count(*)::int AS n FROM estructura_institucional.provincia',
+      );
+      if (cat.rows[0].n === 0) {
+        console.log('[init-db] Catálogos vacíos: cargando datos iniciales...');
+        await ejecutar(client, CATALOGOS);
+      }
     }
     const r = await client.query(
-      "SELECT (SELECT count(*) FROM seguridad.prsn WHERE prsnlogn = 'admin') AS admin, (SELECT count(*) FROM seguridad.prms) AS permisos",
+      "SELECT (SELECT count(*) FROM seguridad.prsn WHERE prsnlogn = 'admin') AS admin, (SELECT count(*) FROM seguridad.prms) AS permisos, (SELECT count(*) FROM estructura_institucional.uzdi) AS sedes",
     );
     console.log(
-      `[init-db] Listo: admin=${r.rows[0].admin}, permisos=${r.rows[0].permisos}`,
+      `[init-db] Listo: admin=${r.rows[0].admin}, permisos=${r.rows[0].permisos}, sedes=${r.rows[0].sedes}`,
     );
   } finally {
     await client.end();
