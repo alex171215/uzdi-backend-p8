@@ -1,9 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { PartialType, ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { CreateInfraccionDto } from './create-infraccion.dto';
 
 export class UpdateInfraccionDto extends PartialType(CreateInfraccionDto) {
-  // para activar o desactivar la infraccion (V/F)
+  @ApiProperty({ description: 'Estado activo/inactivo de la infracción', example: true, required: false })
   @IsOptional()
   @IsBoolean()
   estado?: boolean;

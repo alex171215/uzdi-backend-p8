@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InfraccionService } from './infraccion.service';
 import { CreateInfraccionDto } from './dto/create-infraccion.dto';
 import { UpdateInfraccionDto } from './dto/update-infraccion.dto';
@@ -27,6 +28,8 @@ const LECTURA = [
   Rol.JURIDICO,
 ];
 
+@ApiTags('Catálogos - Infracciones')
+@ApiBearerAuth('JWT-auth')
 @Controller('infraccion')
 @UseGuards(RolesGuard)
 export class InfraccionController {
@@ -34,6 +37,8 @@ export class InfraccionController {
 
   @Post()
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
+  @ApiOperation({ summary: 'Crear una nueva infracción' })
+  @ApiResponse({ status: 201, description: 'Infracción creada exitosamente' })
   create(@Body() createInfraccionDto: CreateInfraccionDto) {
     return this.infraccionService.create(createInfraccionDto);
   }
@@ -41,12 +46,17 @@ export class InfraccionController {
   // ?incluirInactivos=true para ver tambien las desactivadas
   @Get()
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Listar infracciones' })
+  @ApiQuery({ name: 'incluirInactivos', required: false, type: Boolean })
+  @ApiResponse({ status: 200, description: 'Listado de infracciones' })
   findAll(@Query() query: EstadoQueryDto) {
     return this.infraccionService.findAll(query.incluirInactivos);
   }
 
   @Get(':id')
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Obtener detalle de una infracción por ID' })
+  @ApiResponse({ status: 200, description: 'Detalle de la infracción' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.findOne(id);
   }
@@ -54,12 +64,16 @@ export class InfraccionController {
   // expedientes que tienen esta infraccion
   @Get(':id/expedientes')
   @Roles(...LECTURA)
+  @ApiOperation({ summary: 'Listar expedientes vinculados a una infracción' })
+  @ApiResponse({ status: 200, description: 'Expedientes asociados' })
   findExpedientes(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.findExpedientes(id);
   }
 
   @Patch(':id')
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
+  @ApiOperation({ summary: 'Actualizar una infracción' })
+  @ApiResponse({ status: 200, description: 'Infracción actualizada' })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateInfraccionDto: UpdateInfraccionDto,
@@ -69,6 +83,8 @@ export class InfraccionController {
 
   @Delete(':id')
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR)
+  @ApiOperation({ summary: 'Desactivar lógicamente una infracción' })
+  @ApiResponse({ status: 200, description: 'Infracción desactivada' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.remove(id);
   }

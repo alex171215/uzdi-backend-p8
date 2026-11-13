@@ -51,12 +51,17 @@ export class ReportesController {
 
   @Get('export/pdf')
   @Roles(Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.COORDINADOR, Rol.JURIDICO)
-  @ApiOperation({ summary: 'Ficha ejecutiva institucional en formato para imprimir/guardar en PDF' })
-  @ApiResponse({ status: 200, description: 'Documento HTML con formato institucional para exportar a PDF' })
+  @ApiOperation({ summary: 'Descarga de la ficha ejecutiva institucional en formato binario PDF' })
+  @ApiResponse({ status: 200, description: 'Archivo binario PDF generado exitosamente' })
   async exportarPdf(@Query() filtros: FiltroReporteDto, @Res() res: Response) {
-    const html = await this.reportesService.generarHtmlPdf(filtros);
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(html);
+    const buffer = await this.reportesService.generarPdf(filtros);
+    const fecha = new Date().toISOString().slice(0, 10);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="reporte_uzdi_snai_${fecha}.pdf"`,
+    );
+    res.send(buffer);
   }
 }
 

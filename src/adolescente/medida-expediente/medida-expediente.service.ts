@@ -67,8 +67,17 @@ export class MedidaExpedienteService {
 
   // si mandan expe_id salen las medidas de ese expediente en orden
   findAll(query: QueryMedidaExpedienteDto = {}) {
+    const where: any = { estado: true };
+    if (query?.expe_id !== undefined && query?.expe_id !== null && (query.expe_id as any) !== '') {
+      const val = Number(query.expe_id);
+      if (!isNaN(val)) where.expe_id = val;
+    }
+    if (query?.mdso_id !== undefined && query?.mdso_id !== null && (query.mdso_id as any) !== '') {
+      const val = Number(query.mdso_id);
+      if (!isNaN(val)) where.mdso_id = val;
+    }
     return this.repository.find({
-      where: { estado: true, ...query },
+      where,
       order: { expe_id: 'ASC', orden: 'ASC', fecha_inicio: 'ASC' },
     });
   }

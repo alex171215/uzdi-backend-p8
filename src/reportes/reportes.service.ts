@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as ExcelJS from 'exceljs';
+import PDFDocument from 'pdfkit';
 import { Adolescente } from '../adolescente/adolescente/entities/adolescente.entity';
 import { Expediente } from '../adolescente/expediente/entities/expediente.entity';
 import { Uzdi } from '../estructura-institucional/uzdi/entities/uzdi.entity';
@@ -202,6 +203,165 @@ export class ReportesService {
 
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
+  }
+
+  async generarPdf(filtros: FiltroReporteDto): Promise<Buffer> {
+    const data = await this.obtenerReporteExpedientes(filtros);
+
+    return new Promise<Buffer>((resolve, reject) => {
+      const doc = new PDFDocument({
+        margin: 36,
+        size: 'A4',
+        layout: 'landscape',
+        bufferPages: true,
+      });
+
+      const chunks: Buffer[] = [];
+      doc.on('data', (chunk) => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', (err) => reject(err));
+
+      // Encabezado institucional SNAI / PUCE
+      doc.rect(36, 36, doc.page.width - 72, 48).fill('#1f497d');
+      doc
+        .fillColor('#ffffff')
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('SERVICIO NACIONAL DE ATENCIÓN INTEGRAL (SNAI) - UZDI', 46, 46, {
+          align: 'center',
+          width: doc.page.width - 92,
+        });
+      doc
+        .fontSize(9)
+        .font('Helvetica')
+        .text(
+          'Ficha Ejecutiva Oficial de Causas Judiciales y Medidas Socioeducativas',
+          46,
+          63,
+          { align: 'center', width: doc.page.width - 92 },
+        );
+
+      // Metadatos
+      doc
+        .fillColor('#333333')
+        .fontSize(8)
+        .font('Helvetica-Bold')
+        .text(`Fecha de Emisión: ${new Date().toLocaleString()}`, 36, 94)
+        .text(`Total de Expedientes Consolidados: ${data.total}`, 36, 106);
+
+      // Configuración de tabla
+      const startX = 36;
+      let startY = 122;
+      const colWidths = [85, 75, 120, 70, 100, 100, 210];
+      const colHeaders = [
+        'Causa N°',
+        'Estado',
+        'Adolescente',
+        'Cédula',
+        'Sede UZDI',
+        'Infracción',
+        'Medidas Socioeducativas',
+      ];
+
+      // Cabecera de la tabla
+      doc.rect(startX, startY, doc.page.width - 72, 20).fill('#244062');
+      doc.fillColor('#ffffff').fontSize(8).font('Helvetica-Bold');
+      let currentX = startX;
+      for (let i = 0; i < colHeaders.length; i++) {
+        doc.text(colHeaders[i], currentX + 4, startY + 5, {
+          width: colWidths[i] - 8,
+          align: 'left',
+        });
+        currentX += colWidths[i];
+      }
+
+      startY += 20;
+
+      // Filas de datos
+      doc.font('Helvetica').fontSize(8);
+      data.registros.forEach((reg, index) => {
+        const rowHeight = 22;
+        if (startY + rowHeight > doc.page.height - 45) {
+          doc.addPage({ margin: 36, size: 'A4', layout: 'landscape' });
+          startY = 36;
+
+          // Repetir cabecera en nueva página
+          doc.rect(startX, startY, doc.page.width - 72, 20).fill('#244062');
+          doc.fillColor('#ffffff').fontSize(8).font('Helvetica-Bold');
+          let cx = startX;
+          for (let i = 0; i < colHeaders.length; i++) {
+            doc.text(colHeaders[i], cx + 4, startY + 5, {
+              width: colWidths[i] - 8,
+              align: 'left',
+            });
+            cx += colWidths[i];
+          }
+          startY += 20;
+          doc.font('Helvetica').fontSize(8);
+        }
+
+        // Fondo alternado para legibilidad
+        if (index % 2 === 0) {
+          doc.rect(startX, startY, doc.page.width - 72, rowHeight).fill('#f8fafc');
+        } else {
+          doc.rect(startX, startY, doc.page.width - 72, rowHeight).fill('#ffffff');
+        }
+
+        // Línea divisoria
+        doc
+          .rect(startX, startY, doc.page.width - 72, rowHeight)
+          .strokeColor('#cbd5e1')
+          .lineWidth(0.5)
+          .stroke();
+
+        doc.fillColor('#1e293b');
+        const medidasText =
+          reg.medidas && reg.medidas.length > 0
+            ? reg.medidas
+                .map((m) => `[${m.orden}] ${m.tipo_medida} (${m.cumplimiento})`)
+                .join('; ')
+            : 'Sin medidas';
+
+        const rowValues = [
+          reg.numero_causa || 'S/N',
+          reg.estado_procesal || '',
+          reg.adolescente || '',
+          reg.cedula || '',
+          reg.sede_uzdi || '',
+          reg.infraccion || '',
+          medidasText,
+        ];
+
+        let cx = startX;
+        for (let i = 0; i < rowValues.length; i++) {
+          doc.text(rowValues[i], cx + 4, startY + 6, {
+            width: colWidths[i] - 8,
+            height: rowHeight - 6,
+            ellipsis: true,
+          });
+          cx += colWidths[i];
+        }
+
+        startY += rowHeight;
+      });
+
+      // Pie de página con numeración total
+      const pages = doc.bufferedPageRange();
+      for (let i = 0; i < pages.count; i++) {
+        doc.switchToPage(i);
+        doc
+          .fillColor('#64748b')
+          .fontSize(8)
+          .text(
+            `Página ${i + 1} de ${pages.count} — Sistema UZDI SNAI / PUCE (Documento Oficial)`,
+            36,
+            doc.page.height - 25,
+            { align: 'center', width: doc.page.width - 72 },
+          );
+      }
+
+      doc.end();
+    });
   }
 
   async generarHtmlPdf(filtros: FiltroReporteDto): Promise<string> {

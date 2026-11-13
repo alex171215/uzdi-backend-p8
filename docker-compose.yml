@@ -15,6 +15,8 @@ services:
       - './Back Ecologia (1).sql:/docker-entrypoint-initdb.d/01_ddl_v8.sql:ro'
       # Tabla persona-perfil, usuario admin inicial y matriz RBAC (seguridad.accn / seguridad.prms)
       - './db/02_seguridad_rbac.sql:/docker-entrypoint-initdb.d/02_seguridad_rbac.sql:ro'
+      # Catálogos iniciales y datos operativos (provincias, cantones, uzdis, infracciones, medidas, etc.)
+      - './db/03_datos_iniciales_catalogos.sql:/docker-entrypoint-initdb.d/03_datos_iniciales_catalogos.sql:ro'
     networks:
       - uzdi_network
 

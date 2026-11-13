@@ -60,8 +60,21 @@ export class ExpedienteService {
   }
 
   findAll(query: QueryExpedienteDto = {}) {
+    const where: any = { estado: true };
+    if (query?.adlc_id !== undefined && query?.adlc_id !== null && (query.adlc_id as any) !== '') {
+      const val = Number(query.adlc_id);
+      if (!isNaN(val)) where.adlc_id = val;
+    }
+    if (query?.infc_id !== undefined && query?.infc_id !== null && (query.infc_id as any) !== '') {
+      const val = Number(query.infc_id);
+      if (!isNaN(val)) where.infc_id = val;
+    }
+    if (query?.uzdi_id !== undefined && query?.uzdi_id !== null && (query.uzdi_id as any) !== '') {
+      const val = Number(query.uzdi_id);
+      if (!isNaN(val)) where.uzdi_id = val;
+    }
     return this.repository.find({
-      where: { estado: true, ...query },
+      where,
       order: { id: 'DESC' },
     });
   }

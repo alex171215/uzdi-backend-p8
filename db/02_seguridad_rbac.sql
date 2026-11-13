@@ -152,6 +152,12 @@ INSERT INTO tmp_matriz (codigo, patron) VALUES
   ('EDUC', 'NOSEG:%.consultar'),
   ('EDUC', 'taller.%'), ('EDUC', 'asistencia-taller.%'),
 
+  -- JUEZ: autoridad judicial (consulta procesal, resoluciones y medidas)
+  ('JUEZ', 'NOSEG:%.consultar'),
+  ('JUEZ', 'expediente.consultar'),
+  ('JUEZ', 'medida-expediente.%'),
+  ('JUEZ', 'documento-expediente.%'),
+
   -- CONS: solo lectura para fiscalización
   ('CONS', 'NOSEG:%.consultar');
 

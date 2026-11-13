@@ -1,14 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  NestMiddleware,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { DataSource } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { auditContextStorage } from '../context/audit-context.storage';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
     id?: number;
+    sub?: number;
     rol?: string;
     [key: string]: any;
   };
@@ -16,47 +15,69 @@ export interface AuthenticatedRequest extends Request {
 }
 
 /**
- * Middleware para la captura e inyección del contexto de auditoría (usuario autenticado)
- * hacia la base de datos PostgreSQL, garantizando que la variable de sesión
- * `app.usuario_id` esté disponible para los triggers de `seguridad.historial`.
+ * Middleware para la captura e inyección del contexto de auditoría.
+ * Extrae el ID real del usuario desde el JWT autenticado de forma estricta.
+ * Bloquea cualquier intento de suplantación mediante cabeceras externas (x-usuario-id).
  */
 @Injectable()
 export class AuditContextMiddleware implements NestMiddleware {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async use(req: AuthenticatedRequest, _res: Response, next: NextFunction) {
-    // 1. Extraer identificador de usuario desde el token JWT, headers o fallback administrativo en desarrollo
-    const headerUserId =
-      req.headers['x-usuario-id'] || req.headers['x-user-id'];
-    if (
-      headerUserId !== undefined &&
-      (typeof headerUserId !== 'string' || !/^[1-9]\d*$/.test(headerUserId))
-    ) {
-      throw new BadRequestException(
-        'El identificador de usuario debe ser un entero positivo',
-      );
+    // 1. Prevenir suplantación: eliminar cualquier cabecera x-usuario-id / x-user-id enviada por el cliente
+    delete req.headers['x-usuario-id'];
+    delete req.headers['x-user-id'];
+
+    let userId: number | undefined;
+
+    // 2. Extraer y verificar el usuario real directamente desde el token JWT
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const payload = this.jwtService.verify(token) as { sub?: number; id?: number };
+        if (payload) {
+          const rawId = payload.sub ?? payload.id;
+          if (rawId && Number.isInteger(Number(rawId)) && Number(rawId) > 0) {
+            userId = Number(rawId);
+          }
+        }
+      } catch {
+        // Token inválido, expirado o con firma no válida
+      }
     }
-    const userId = headerUserId ? Number(headerUserId) : (req.user?.id ?? 1);
-    if (!Number.isSafeInteger(userId) || userId < 1) {
-      throw new BadRequestException(
-        'El identificador de usuario está fuera de rango',
-      );
+
+    // Fallback: si req.user ya fue establecido previamente (ej. pruebas unitarias)
+    if (!userId && req.user) {
+      const fallbackId = req.user.sub ?? req.user.id;
+      if (fallbackId && Number.isInteger(Number(fallbackId)) && Number(fallbackId) > 0) {
+        userId = Number(fallbackId);
+      }
     }
 
     req.usuarioId = userId;
 
-    // 2. Propagar la variable de sesión local a PostgreSQL si el pool de conexiones está listo
-    try {
-      if (this.dataSource && this.dataSource.isInitialized) {
+    // 3. Propagar la variable de sesión a PostgreSQL en caso de que esté inicializado
+    if (userId && this.dataSource && this.dataSource.isInitialized) {
+      try {
         await this.dataSource.query('SELECT set_config($1, $2, false)', [
           'app.usuario_id',
           String(userId),
         ]);
+      } catch {
+        // Silencioso si la conexión no está lista
       }
-    } catch {
-      // No interrumpe el flujo si la conexión aún está inicializándose
     }
 
-    next();
+    // 4. Envolver la ejecución en AsyncLocalStorage para que AuditSubscriber capture
+    // exactamente la conexión transaccional de TypeORM en cada INSERT/UPDATE/DELETE
+    if (userId) {
+      auditContextStorage.run(userId, () => next());
+    } else {
+      next();
+    }
   }
 }

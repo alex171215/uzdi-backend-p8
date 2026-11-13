@@ -48,6 +48,11 @@ Desarrollado bajo convenio interinstitucional entre el **SNAI** y la **Pontifici
 4. **Monitoreo de Talleres y Asistencia:** Registrar la participación tanto de adolescentes como de sus tutores en talleres formativos y psicoeducativos.
 5. **Generación Automática de Reportes Oficiales:** Proveer al SNAI y a las autoridades judiciales estadísticas consolidadas en formatos interoperables (Excel y PDF).
 
+### 1.3. Diagrama Entidad-Relación Oficial (Modelo CAI / UZDI)
+El modelo físico relacional implementado en PostgreSQL (esquemas `seguridad`, `adolescente`, `contexto_familiar`, `estructura_institucional`, `gestion_documental` y `talleres_actividades`) se encuentra respaldado de forma íntegra en la documentación técnica del repositorio:
+* **Archivo gráfico de arquitectura:** [DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg](file:///c:/Users/ASUS/Documents/6to%20Semestre/Ecolog%C3%ADa%20Integral/RDA2/teoria/UZDI_BACK/UZDI_BACK/docs/DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg)
+* **Script DDL v8 unificado:** `Back Ecologia (1).sql`
+
 ---
 
 ## 🔐 2. ARQUITECTURA DE SEGURIDAD, ACCESO Y GESTIÓN DE SESIONES
@@ -133,6 +138,34 @@ flowchart TD
 
 ### 4.1. Módulo 1: Registro Sociodemográfico del Adolescente
 
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Adolescentes > Registro de Nuevo Adolescente                  │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  FICHA DE INGRESO SOCIODEMOGRÁFICO                                                     │
+│                                                                                        │
+│  [ DATOS PERSONALES ] ───────────────────────────────────────────────────────────────   │
+│   Cédula / Identificación: [* 1723456789        ]  [🔍 Verificar Duplicidad]           │
+│   Nombres:                 [* Carlos Andrés     ]  Apellidos: [* Pérez Gómez       ]   │
+│   Fecha de Nacimiento:     [* 2008-05-14 📅     ]  Sexo:      [* [ M - Masculino ▼]]   │
+│   Nivel Educativo:         [ Educación General Básica Superior                     ]   │
+│                                                                                        │
+│  [ SITUACIÓN SOCIOFAMILIAR Y VULNERABILIDAD ] ──────────────────────────────────────   │
+│   Nacionalidad: [* [ Ecuatoriana        ▼]]   Etnia:        [* [ Mestizo/a       ▼]]   │
+│   Estado Civil: [* [ Soltero/a          ▼]]   Cantón Res.:  [* [ Quito           ▼]]   │
+│   Hijos:        [ 0                     ]   Reincidente:  [ ] Sí                       │
+│   Hijo de PPL:  [ ] Sí                      GDO Vinculado:[ [ Ninguno / No id.   ▼]]   │
+│                                                                                        │
+│  [ DATOS DE INGRESO INSTITUCIONAL ] ────────────────────────────────────────────────   │
+│   Fecha de Ingreso UZDI: [* 2026-02-01 📅       ]                                      │
+│   Observaciones Generales:                                                             │
+│   [ Reside con abuela materna en sector Quitumbe. Buena disposición al proceso.    ]   │
+│                                                                                        │
+│                                [ CANCELAR ]    [💾 GUARDAR ADOLESCENTE]                │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 #### Propósito:
 Ingresar formalmente al adolescente derivado por la autoridad judicial a la sede UZDI.
 
@@ -163,6 +196,36 @@ Ingresar formalmente al adolescente derivado por la autoridad judicial a la sede
 
 ### 4.2. Módulo 2: Apertura y Control del Expediente Judicial (Causa y Medidas CONA)
 
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Adolescentes > Carlos Pérez > Expedientes Judiciales          │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  EXPEDIENTE JUDICIAL: CAUSA N° EXP-2026-0042            [ Estado: ● En proceso ]       │
+│                                                                                        │
+│  Sede UZDI: UZDI Pichincha - Centro Norte      Infracción: Robo simple (Art. 189 COIP) │
+│  Adolescente: Carlos Andrés Pérez Gómez        Cédula: 1723456789                      │
+│                                                                                        │
+│  [ MEDIDAS SOCIOEDUCATIVAS ASIGNADAS (CONA) ]            [+ AGREGAR MEDIDA]            │
+│  ┌──────┬───────────────────────────────┬────────────┬────────────┬─────────────┬─────┐│
+│  │Orden │ Medida Socioeducativa         │ F. Inicio  │ F. Fin     │ Cumplimiento│Act. ││
+│  ├──────┼───────────────────────────────┼────────────┼────────────┼─────────────┼─────┤│
+│  │  1   │ Amonestación e imp. de reglas │ 2026-02-15 │ 2026-08-15 │ Cumpliendo  │[✏️] ││
+│  │  1   │ Orientación y apoyo familiar  │ 2026-02-15 │ 2026-08-15 │ Cumpliendo  │[✏️] ││
+│  │  2   │ Servicio a la comunidad (60h) │ 2026-08-16 │ 2027-02-16 │ Pendiente   │[✏️] ││
+│  └──────┴───────────────────────────────┴────────────┴────────────┴─────────────┴─────┘│
+│  * Nota CONA: Medidas con igual orden (1) se ejecutan de manera simultánea.            │
+│                                                                                        │
+│  [ FORMULARIO MODAL: NUEVA MEDIDA SOCIOEDUCATIVA ]                                     │
+│   Medida CONA:    [* [ Amonestación e imposición de reglas de conducta          ▼]]    │
+│   Orden Mandato:  [* [ 1 ] (Mismo orden = Simultánea | Diferente = Sucesiva)          ]│
+│   Fecha Inicio:   [* 2026-02-15 📅             ]  Fecha Fin: [ 2026-08-15 📅         ] │
+│   Estado Inicial: [* [ Cumpliendo             ▼]]                                      │
+│                                                                                        │
+│                                [ CANCELAR ]    [💾 REGISTRAR MEDIDA]                   │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 #### Propósito:
 Vincular al adolescente con el proceso legal emanado de la Unidad Judicial, identificando el delito y ordenando las medidas socioeducativas.
 
@@ -188,6 +251,30 @@ Vincular al adolescente con el proceso legal emanado de la Unidad Judicial, iden
 
 ### 4.3. Módulo 3: Contexto Familiar y Tutoría Legal
 
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Adolescentes > Carlos Pérez > Red Familiar y Tutores          │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  NÚCLEO FAMILIAR Y TUTORES VINCULADOS                   [+ VINCULAR REPRESENTANTE]     │
+│                                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
+│  │ 👤 María Elena Gómez Morales (C.I. 1801234567)          [⭐ REFERENTE PRINCIPAL ] │  │
+│  │ Parentesco: Abuela materna       Teléfono: 0991234567    Cantón: Quito           │  │
+│  │ Dirección:  Av. Ajaví y Cardenal de la Torre             Desde: 2026-02-01       │  │
+│  │ Estado:     Activo / Comparece a citas institucionales   [✏️ Editar]  [❌ Desvinc.]│  │
+│  └──────────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                        │
+│  [ MODAL: VINCULAR REPRESENTANTE AL ADOLESCENTE ]                                      │
+│   Buscar Familiar: [* [ 1801234567 - María Elena Gómez Morales                  ▼]]    │
+│   Parentesco CONA: [* [ Abuela/o                                                ▼]]    │
+│   Referente:       [X] Marcar como Representante Legal / Tutor Principal               │
+│   Fecha Inicio:    [* 2026-02-01 📅             ]                                      │
+│                                                                                        │
+│                                [ CANCELAR ]    [💾 GUARDAR VÍNCULO]                    │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 #### Propósito:
 Registrar a los padres, familiares o tutores legales responsables de velar por el cumplimiento del proceso y acompañar al adolescente.
 
@@ -207,6 +294,37 @@ Registrar a los padres, familiares o tutores legales responsables de velar por e
 ---
 
 ### 4.4. Módulo 4: Talleres Socioeducativos y Control de Asistencia
+
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Talleres > Taller: Manejo del Estrés y Asertividad            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  FICHA DEL TALLER: "Manejo del Estrés y Asertividad"            [ Estado: ● En Curso ] │
+│  Responsable: Lic. Marco Proaño (Psicólogo)     Sede: UZDI Pichincha - Centro Norte    │
+│  Fecha: 2026-03-10  |  Horario: 09:00 a 11:00  |  Asistentes Registrados: 12           │
+│                                                                                        │
+│  [ REGISTRO DE ASISTENCIA DUAL - REGLA INSTITUCIONAL ]                                 │
+│  Tipo de Asistente:  (●) Adolescente Infractor      ( ) Representante Legal / Tutor    │
+│                                                                                        │
+│  ┌─ Si seleccionó: Adolescente Infractor ───────────────────────────────────────────┐  │
+│  │ Adolescente: [* [ 15 - Carlos Andrés Pérez Gómez (C.I. 1723456789)           ▼]] │  │
+│  │ Tutor Legal: [ BLOQUEADO / DESHABILITADO AUTOMÁTICAMENTE                       ] │  │
+│  │ Asistencia:  [X] Asistió puntualmente                                            │  │
+│  │ Notas:       [ Participación activa en la dinámica de grupos.                  ] │  │
+│  └──────────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                        │
+│  LISTA DE ASISTENCIA CONSOLIDADA DEL TALLER:                                           │
+│  ┌──────┬──────────────────────┬───────────────┬────────────┬─────────────┬───────────┐│
+│  │ Tipo │ Nombre Asistente     │ Cédula        │ Asistió    │ Observación │ Operación ││
+│  ├──────┼──────────────────────┼───────────────┼────────────┼─────────────┼───────────┤│
+│  │ Adlc │ Carlos Pérez Gómez   │ 1723456789    │ [X] Sí     │ Participó   │ [✏️] [🗑️] ││
+│  │ Repr │ María Elena Gómez    │ 1801234567    │ [X] Sí     │ Acompañante │ [✏️] [🗑️] ││
+│  └──────┴──────────────────────┴───────────────┴────────────┴─────────────┴───────────┘│
+│                                                                                        │
+│                                [ CANCELAR ]    [💾 REGISTRAR ASISTENCIA]               │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 #### Propósito:
 Planificar actividades grupales y registrar de forma diferenciada la asistencia del menor o de su representante.
@@ -243,6 +361,36 @@ Planificar actividades grupales y registrar de forma diferenciada la asistencia 
 
 ### 4.5. Módulo 5: Gestión Documental y Archivo Digital de Evidencias
 
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Expedientes > EXP-2026-0042 > Repositorio Documental          │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  DOCUMENTACIÓN DEL EXPEDIENTE                           [📤 ADJUNTAR NUEVO DOCUMENTO]  │
+│                                                                                        │
+│  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
+│  │ 📁 Arrastre y suelte aquí los archivos PDF/Imágenes o haga clic para examinar    │  │
+│  │ Tipos soportados: PDF, JPG, PNG (Máx. 10MB por archivo)                          │  │
+│  └──────────────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                        │
+│  DOCUMENTOS REGISTRADOS:                                                               │
+│  ┌────┬───────────────────────┬────────────────┬─────────────┬────────────┬───────────┐│
+│  │ N° │ Tipo Documento        │ N° Oficio/Doc. │ Habilitante │ Estado     │ Acciones  ││
+│  ├────┼───────────────────────┼────────────────┼─────────────┼────────────┼───────────┤│
+│  │ 1  │ Resolución judicial   │ RES-2026-089-J │ [⭐ SÍ]     │ Verificado │ [👁️][⬇️]  ││
+│  │ 2  │ Informe técnico       │ INF-TSOC-012   │ [   NO]     │ Recibido   │ [👁️][⬇️]  ││
+│  │ 3  │ Acta de comparecencia │ ACT-COMP-004   │ [⭐ SÍ]     │ Verificado │ [👁️][⬇️]  ││
+│  └────┴───────────────────────┴────────────────┴─────────────┴────────────┴───────────┘│
+│                                                                                        │
+│  [ MODAL: REGISTRO METADATOS DEL DOCUMENTO ]                                           │
+│   Tipo Doc:     [* [ Resolución judicial                                        ▼]]    │
+│   N° Oficio:    [* RES-2026-089-J            ]  Emisor: [ Unidad Judicial Familia  ]   │
+│   Habilitante:  [X] Es requisito legal indispensable para culminación de la causa      │
+│   Estado:       [* [ Verificado             ▼]]                                        │
+│                                [ CANCELAR ]    [💾 GUARDAR DOCUMENTO]                  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 #### Propósito:
 Adjuntar respaldos, resoluciones judiciales, oficios, valoraciones psicológicas e informes de cumplimiento de medidas a cada expediente.
 
@@ -260,6 +408,31 @@ Adjuntar respaldos, resoluciones judiciales, oficios, valoraciones psicológicas
 ---
 
 ### 4.6. Módulo 6: Generación y Exportación de Reportes SNAI (Excel y PDF)
+
+#### Mockup Visual de la Pantalla:
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  SNAI - SISTEMA UZDI  │  Reportes Oficiales Institucionales                            │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  CONSOLIDADOS Y EXPORTACIÓN DE DATOS PROCESALES                                        │
+│                                                                                        │
+│  [ CRITERIOS DE FILTRADO ] ──────────────────────────────────────────────────────────  │
+│   Provincia:  [ [ Pichincha      ▼]]   Cantón:    [ [ Quito          ▼]]               │
+│   Sede UZDI:  [ [ UZDI Pichincha - Centro Norte ▼]]  Estado: [ [ En proceso ▼]]        │
+│                                                                                        │
+│   ACCIONES DE EXPORTACIÓN OFICIAL:                                                     │
+│   [📥 DESCARGAR EXCEL (.XLSX)]     [📄 DESCARGAR PDF OFICIAL (SNAI)]    [🔄 LIMPIAR]  │
+│                                                                                        │
+│  VISTA PREVIA DEL CONSOLIDADO (Primeros registros):                                    │
+│  ┌──────────────┬──────────────┬──────────────────┬────────────┬──────────────────────┐│
+│  │ Causa N°     │ Estado       │ Adolescente      │ Cédula     │ Medidas Asignadas    ││
+│  ├──────────────┼──────────────┼──────────────────┼────────────┼──────────────────────┤│
+│  │ EXP-2026-0042│ En proceso   │ Pérez Carlos     │ 1723456789 │ Amonestación (Cumpl.)││
+│  │ EXP-2026-0089│ En proceso   │ Morales Andrea   │ 1729876543 │ Libertad asistida    ││
+│  └──────────────┴──────────────┴──────────────────┴────────────┴──────────────────────┘│
+│  Total Registros Filtrados: 2 expedientes encontrados.                                 │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 #### Propósito:
 Obtener informes oficiales consolidados para rendición de cuentas, inspecciones judiciales o evaluación zonal.
