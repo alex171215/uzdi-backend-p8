@@ -107,22 +107,31 @@ describe('Adolescente', () => {
     }
   });
 
-  it('busca solo adolescentes activos por nombre, apellido o cédula', async () => {
-    const find = jest.fn().mockResolvedValue([]);
+  it('busca solo adolescentes activos por nombre, apellido o cédula, sin distinguir tildes', async () => {
+    const qb = {
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      addOrderBy: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([]),
+    };
     const service = new AdolescenteService({
-      find,
+      createQueryBuilder: jest.fn().mockReturnValue(qb),
     } as unknown as Repository<Adolescente>);
     await service.search('Pérez');
-    const options = find.mock.calls[0][0];
-    expect(options.where).toHaveLength(3);
-    expect(
-      options.where.every(
-        (condition: { estado: boolean }) => condition.estado === true,
-      ),
-    ).toBe(true);
-    expect(Object.keys(options.where[0])).toContain('nombre');
-    expect(Object.keys(options.where[1])).toContain('apellido');
-    expect(Object.keys(options.where[2])).toContain('cedula');
+
+    expect(qb.where).toHaveBeenCalledWith('a.estado = :activo', {
+      activo: 'V',
+    });
+    const [condicion, params] = qb.andWhere.mock.calls[0] as [
+      string,
+      { q: string },
+    ];
+    expect(params.q).toBe('%Pérez%');
+    expect(condicion).toContain('a.nombre');
+    expect(condicion).toContain('a.apellido');
+    expect(condicion).toContain('a.cedula');
+    expect(condicion).toContain('translate(lower(');
   });
 
   it('responde 404 al consultar un ID inexistente o inactivo', async () => {

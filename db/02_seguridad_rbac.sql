@@ -73,10 +73,12 @@ SELECT u.prsn_id, f.prfl_id, 'V'
  WHERE u.prsnlogn = 'admin'
 ON CONFLICT (prsn_id, prfl_id) DO NOTHING;
 
--- Perfil institucional JUEZ (Tarea 2.4 / Competencia Judicial)
+-- Perfil institucional JUEZ (Tarea 2.4 / Competencia Judicial).
+-- El DDL v8 ya lo inserta; esto solo cubre bases creadas con un DDL anterior.
+-- prflcdgo no tiene restricción UNIQUE, por eso se usa NOT EXISTS y no ON CONFLICT.
 INSERT INTO seguridad.prfl (prflcdgo, prflnmbr, prfldscr, estado)
-VALUES ('JUEZ', 'Juez de Garantías Penitenciarias', 'Autoridad judicial que dictamina y supervisa medidas', 'V')
-ON CONFLICT (prflcdgo) DO NOTHING;
+SELECT 'JUEZ', 'Juez', 'Control judicial y resoluciones', 'V'
+ WHERE NOT EXISTS (SELECT 1 FROM seguridad.prfl WHERE prflcdgo = 'JUEZ');
 
 -- ------------------------------------------------------------
 -- 2. Catálogo de acciones
@@ -162,12 +164,6 @@ INSERT INTO tmp_matriz (codigo, patron) VALUES
   -- EDUC: talleres y asistencias
   ('EDUC', 'NOSEG:%.consultar'),
   ('EDUC', 'taller.%'), ('EDUC', 'asistencia-taller.%'),
-
-  -- JUEZ: autoridad judicial (consulta procesal, resoluciones y medidas)
-  ('JUEZ', 'NOSEG:%.consultar'),
-  ('JUEZ', 'expediente.consultar'),
-  ('JUEZ', 'medida-expediente.%'),
-  ('JUEZ', 'documento-expediente.%'),
 
   -- CONS: solo lectura para fiscalización
   ('CONS', 'NOSEG:%.consultar');

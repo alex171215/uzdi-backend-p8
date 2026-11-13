@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as ExcelJS from 'exceljs';
-import PDFDocument from 'pdfkit';
+// pdfkit es CommonJS: sin esModuleInterop, "import X from" deja X undefined (500 al exportar PDF).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import PDFDocument = require('pdfkit');
 import { Adolescente } from '../adolescente/adolescente/entities/adolescente.entity';
 import { Expediente } from '../adolescente/expediente/entities/expediente.entity';
 import { Uzdi } from '../estructura-institucional/uzdi/entities/uzdi.entity';
@@ -20,7 +22,8 @@ export class ReportesService {
   ) {}
 
   async obtenerReporteAdolescentes(filtros: FiltroReporteDto) {
-    const qb = this.adolescenteRepo.createQueryBuilder('adlc')
+    const qb = this.adolescenteRepo
+      .createQueryBuilder('adlc')
       .leftJoinAndSelect('adlc.canton', 'cntn')
       .leftJoinAndSelect('cntn.provincia', 'prov')
       .leftJoinAndSelect('adlc.nacionalidad', 'nacn')
@@ -62,7 +65,8 @@ export class ReportesService {
   }
 
   async obtenerReporteExpedientes(filtros: FiltroReporteDto) {
-    const qb = this.expedienteRepo.createQueryBuilder('expe')
+    const qb = this.expedienteRepo
+      .createQueryBuilder('expe')
       .leftJoinAndSelect('expe.adolescente', 'adlc')
       .leftJoinAndSelect('expe.uzdi', 'uzdi')
       .leftJoinAndSelect('uzdi.canton', 'uzdi_cntn')
@@ -92,7 +96,8 @@ export class ReportesService {
         id: e.id,
         numero_causa: e.numero_causa ?? 'Sin número asignado',
         estado_procesal: e.estado_procesal,
-        adolescente: `${e.adolescente?.apellido ?? ''} ${e.adolescente?.nombre ?? ''}`.trim(),
+        adolescente:
+          `${e.adolescente?.apellido ?? ''} ${e.adolescente?.nombre ?? ''}`.trim(),
         cedula: e.adolescente?.cedula ?? '',
         sede_uzdi: e.uzdi?.nombre ?? 'No asignada',
         provincia_uzdi: e.uzdi?.canton?.provincia?.nombre ?? '',
@@ -122,9 +127,19 @@ export class ReportesService {
     // Título institucional
     sheet.mergeCells('A1:H1');
     const titleCell = sheet.getCell('A1');
-    titleCell.value = 'SERVICIO NACIONAL DE ATENCIÓN INTEGRAL — SISTEMA UZDI (SNAI - PUCE)';
-    titleCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
-    titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F497D' } };
+    titleCell.value =
+      'SERVICIO NACIONAL DE ATENCIÓN INTEGRAL — SISTEMA UZDI (SNAI - PUCE)';
+    titleCell.font = {
+      name: 'Calibri',
+      size: 14,
+      bold: true,
+      color: { argb: 'FFFFFFFF' },
+    };
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF1F497D' },
+    };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
     sheet.getRow(1).height = 30;
 
@@ -149,8 +164,17 @@ export class ReportesService {
     const headerRow = sheet.addRow(headers);
     headerRow.height = 24;
     headerRow.eachCell((cell) => {
-      cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
-      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF244062' } };
+      cell.font = {
+        name: 'Calibri',
+        size: 11,
+        bold: true,
+        color: { argb: 'FFFFFFFF' },
+      };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF244062' },
+      };
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
       cell.border = {
         top: { style: 'thin' },
@@ -162,9 +186,12 @@ export class ReportesService {
 
     // Filas de datos
     dataReporte.registros.forEach((r) => {
-      const medidasTexto = r.medidas.length > 0
-        ? r.medidas.map((m) => `[${m.orden}] ${m.tipo_medida} (${m.cumplimiento})`).join('; ')
-        : 'Sin medidas registradas';
+      const medidasTexto =
+        r.medidas.length > 0
+          ? r.medidas
+              .map((m) => `[${m.orden}] ${m.tipo_medida} (${m.cumplimiento})`)
+              .join('; ')
+          : 'Sin medidas registradas';
 
       const row = sheet.addRow([
         r.numero_causa,
@@ -302,9 +329,13 @@ export class ReportesService {
 
         // Fondo alternado para legibilidad
         if (index % 2 === 0) {
-          doc.rect(startX, startY, doc.page.width - 72, rowHeight).fill('#f8fafc');
+          doc
+            .rect(startX, startY, doc.page.width - 72, rowHeight)
+            .fill('#f8fafc');
         } else {
-          doc.rect(startX, startY, doc.page.width - 72, rowHeight).fill('#ffffff');
+          doc
+            .rect(startX, startY, doc.page.width - 72, rowHeight)
+            .fill('#ffffff');
         }
 
         // Línea divisoria
@@ -367,7 +398,9 @@ export class ReportesService {
   async generarHtmlPdf(filtros: FiltroReporteDto): Promise<string> {
     const data = await this.obtenerReporteExpedientes(filtros);
 
-    const rowsHtml = data.registros.map((r, i) => `
+    const rowsHtml = data.registros
+      .map(
+        (r, i) => `
       <tr style="background-color: ${i % 2 === 0 ? '#ffffff' : '#f8f9fa'};">
         <td style="padding: 8px; border: 1px solid #dee2e6; font-weight: bold;">${r.numero_causa}</td>
         <td style="padding: 8px; border: 1px solid #dee2e6;">${r.estado_procesal}</td>
@@ -379,7 +412,9 @@ export class ReportesService {
           ${r.medidas.map((m) => `• [Orden ${m.orden}] ${m.tipo_medida} — <em>${m.cumplimiento}</em>`).join('<br/>') || 'Sin medidas'}
         </td>
       </tr>
-    `).join('');
+    `,
+      )
+      .join('');
 
     return `
       <!DOCTYPE html>

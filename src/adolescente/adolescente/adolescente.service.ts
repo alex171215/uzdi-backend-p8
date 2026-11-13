@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateAdolescenteDto } from './dto/create-adolescente.dto';
 import { UpdateAdolescenteDto } from './dto/update-adolescente.dto';
 import { Adolescente } from './entities/adolescente.entity';
@@ -32,15 +32,23 @@ export class AdolescenteService {
     if (!query || !query.trim()) {
       throw new BadRequestException('El parámetro q es obligatorio');
     }
+    // Búsqueda sin distinguir mayúsculas ni tildes: "perez" encuentra "Pérez".
     const q = `%${query.trim()}%`;
-    return this.repository.find({
-      where: [
-        { nombre: ILike(q), estado: true },
-        { apellido: ILike(q), estado: true },
-        { cedula: ILike(q), estado: true },
-      ],
-      order: { apellido: 'ASC', nombre: 'ASC' },
-    });
+    const sinTildes = (col: string) =>
+      `translate(lower(${col}), 'áéíóúüñ', 'aeiouun')`;
+    return this.repository
+      .createQueryBuilder('a')
+      .where('a.estado = :activo', { activo: 'V' })
+      .andWhere(
+        `(${sinTildes('a.nombre')} LIKE ${sinTildes(':q')}
+          OR ${sinTildes('a.apellido')} LIKE ${sinTildes(':q')}
+          OR ${sinTildes("a.nombre || ' ' || a.apellido")} LIKE ${sinTildes(':q')}
+          OR lower(a.cedula) LIKE lower(:q))`,
+        { q },
+      )
+      .orderBy('a.apellido', 'ASC')
+      .addOrderBy('a.nombre', 'ASC')
+      .getMany();
   }
 
   async findOne(id: number) {

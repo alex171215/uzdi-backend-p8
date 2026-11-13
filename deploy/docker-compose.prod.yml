@@ -22,6 +22,7 @@ services:
       # Solo se ejecutan la PRIMERA vez (volumen vacío), en orden alfabético
       - '../Back Ecologia (1).sql:/docker-entrypoint-initdb.d/01_ddl_v8.sql:ro'
       - ../db/02_seguridad_rbac.sql:/docker-entrypoint-initdb.d/02_seguridad_rbac.sql:ro
+      - ../db/03_datos_iniciales_catalogos.sql:/docker-entrypoint-initdb.d/03_datos_iniciales_catalogos.sql:ro
     # La BD NO se publica a Internet; solo la ve la API por la red interna.
     # Para administrarla desde el propio servidor: 127.0.0.1:5432
     ports:
