@@ -5,7 +5,8 @@ services:
     plan: free
     region: oregon
     buildCommand: npm install --include=dev && npm run build
-    startCommand: npm run start:prod
+    # Crea tablas, usuario admin, permisos y catálogos si la BD está vacía
+    startCommand: node scripts/init-db.js && npm run start:prod
     healthCheckPath: /api/v1
     envVars:
       - key: NODE_ENV
