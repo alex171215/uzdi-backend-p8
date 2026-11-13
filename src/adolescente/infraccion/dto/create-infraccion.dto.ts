@@ -1,31 +1,48 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, Length } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 // DTO para registrar un delito o infraccion tipificada en el catalogo
 export class CreateInfraccionDto {
   // Nombre o tipificacion del delito (ej. Robo simple, Hurtos, etc.)
-  @ApiProperty({ description: 'Nombre de la infraccion tipificada', example: 'Robo simple' })
+  @ApiProperty({
+    description: 'Nombre o tipificación penal/socioeducativa de la infracción',
+    example: 'Robo simple',
+    maxLength: 255,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(1, 255)
   nombre: string;
 
   // Categoria de la infraccion segun el codigo penal
-  @ApiProperty({ description: 'Categoria del delito', example: 'Contra el derecho a la propiedad' })
+  @ApiProperty({
+    description: 'Categoría o gravedad de la infracción',
+    example: 'Delito contra la propiedad',
+    maxLength: 127,
+  })
   @IsString()
   @IsNotEmpty()
   @Length(1, 127)
   categoria: string;
 
   // Articulo correspondiente del Codigo de la Niñez y Adolescencia o COIP
-  @ApiPropertyOptional({ description: 'Articulo legal aplicable del CONA/COIP', example: 'Art. 305' })
+  @ApiProperty({
+    description: 'Artículo del Código Orgánico de la Niñez y Adolescencia o COIP',
+    example: 'Art. 189',
+    required: false,
+    maxLength: 50,
+  })
   @IsString()
   @IsOptional()
   @Length(0, 50)
   articulo_cona?: string;
 
   // Descripcion detallada de los elementos de la infraccion
-  @ApiPropertyOptional({ description: 'Descripcion detallada de la infraccion', example: 'Apoderamiento ilegitimo de cosa ajena con fuerza' })
+  @ApiProperty({
+    description: 'Descripción detallada de la conducta tipificada',
+    example: 'Apoderamiento ilegítimo de cosa mueble ajena sin violencia física',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   descripcion?: string;

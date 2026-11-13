@@ -11,12 +11,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ExpedienteService } from './expediente.service';
 import { CreateExpedienteDto } from './dto/create-expediente.dto';
 import { UpdateExpedienteDto } from './dto/update-expediente.dto';
@@ -56,7 +51,7 @@ export class ExpedienteController {
   // Endpoint para crear una causa judicial asociada a un adolescente
   @Post()
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Crear un nuevo expediente judicial' })
+  @ApiOperation({ summary: 'Aperturar un nuevo expediente judicial' })
   @ApiResponse({ status: 201, description: 'Expediente creado exitosamente' })
   create(@Body() createExpedienteDto: CreateExpedienteDto) {
     return this.expedienteService.create(createExpedienteDto);
@@ -65,8 +60,8 @@ export class ExpedienteController {
   // Endpoint para listar causas con filtros de busqueda opcionales
   @Get()
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar expedientes activos con filtros opcionales' })
-  @ApiResponse({ status: 200, description: 'Listado de expedientes encontrados' })
+  @ApiOperation({ summary: 'Listar expedientes judiciales con filtros opcionales' })
+  @ApiResponse({ status: 200, description: 'Listado de expedientes' })
   findAll(@Query() query: QueryExpedienteDto) {
     return this.expedienteService.findAll(query);
   }
@@ -74,8 +69,8 @@ export class ExpedienteController {
   // Endpoint para obtener la causa completa con sus medidas ordenadas por CONA
   @Get(':id')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Consultar un expediente con sus medidas socioeducativas' })
-  @ApiResponse({ status: 200, description: 'Expediente recuperado exitosamente' })
+  @ApiOperation({ summary: 'Obtener detalle de un expediente con sus medidas socioeducativas' })
+  @ApiResponse({ status: 200, description: 'Detalle del expediente' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.expedienteService.findOne(id);
   }
@@ -107,8 +102,8 @@ export class ExpedienteController {
   // Endpoint para dar de baja logica un expediente judicial
   @Delete(':id')
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Inactivar logicamente un expediente (DELETE)' })
-  @ApiResponse({ status: 200, description: 'Expediente inactivado exitosamente' })
+  @ApiOperation({ summary: 'Desactivar lógicamente un expediente judicial' })
+  @ApiResponse({ status: 200, description: 'Expediente desactivado' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.expedienteService.remove(id);
   }

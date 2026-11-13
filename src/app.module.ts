@@ -16,6 +16,7 @@ import { TalleresActividadesModule } from './talleres-actividades/talleres-activ
 import { GestionDocumentalModule } from './gestion-documental/gestion-documental.module';
 import { ReportesModule } from './reportes/reportes.module';
 import { AuditContextMiddleware } from './common/middleware/audit-context.middleware';
+import { AuditSubscriber } from './common/subscribers/audit.subscriber';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -44,6 +45,7 @@ import { RolesGuard } from './common/guards/roles.guard';
   controllers: [AppController],
   providers: [
     AppService,
+    AuditSubscriber,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

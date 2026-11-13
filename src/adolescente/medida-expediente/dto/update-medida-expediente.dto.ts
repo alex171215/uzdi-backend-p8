@@ -1,4 +1,4 @@
-import { OmitType, PartialType, ApiPropertyOptional } from '@nestjs/swagger';
+import { OmitType, PartialType, ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { CreateMedidaExpedienteDto } from './create-medida-expediente.dto';
 
@@ -6,8 +6,12 @@ import { CreateMedidaExpedienteDto } from './create-medida-expediente.dto';
 export class UpdateMedidaExpedienteDto extends PartialType(
   OmitType(CreateMedidaExpedienteDto, ['expe_id'] as const),
 ) {
-  // Estado logico de la asignacion de la medida (V=activa, F=inactiva)
-  @ApiPropertyOptional({ description: 'Estado logico de la medida', example: true })
+  // Estado logico de la asignacion de la medida (true=activa, false=inactiva)
+  @ApiProperty({
+    description: 'Estado activo/inactivo de la medida en el expediente',
+    example: true,
+    required: false,
+  })
   @IsOptional()
   @IsBoolean()
   estado?: boolean;

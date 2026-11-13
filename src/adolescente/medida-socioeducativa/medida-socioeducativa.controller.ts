@@ -11,12 +11,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { MedidaSocioeducativaService } from './medida-socioeducativa.service';
 import { CreateMedidaSocioeducativaDto } from './dto/create-medida-socioeducativa.dto';
 import { UpdateMedidaSocioeducativaDto } from './dto/update-medida-socioeducativa.dto';
@@ -58,8 +53,8 @@ export class MedidaSocioeducativaController {
   // Endpoint para registrar un nuevo tipo de medida socioeducativa
   @Post()
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Registrar un nuevo tipo de medida socioeducativa' })
-  @ApiResponse({ status: 201, description: 'Tipo de medida creado exitosamente' })
+  @ApiOperation({ summary: 'Crear una nueva medida socioeducativa' })
+  @ApiResponse({ status: 201, description: 'Medida creada exitosamente' })
   create(@Body() createMedidaSocioeducativaDto: CreateMedidaSocioeducativaDto) {
     return this.medidaSocioeducativaService.create(
       createMedidaSocioeducativaDto,
@@ -69,8 +64,9 @@ export class MedidaSocioeducativaController {
   // Endpoint para listar las medidas socioeducativas con soporte de filtro de inactivos
   @Get()
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar tipos de medidas socioeducativas' })
-  @ApiResponse({ status: 200, description: 'Listado de medidas obtenido exitosamente' })
+  @ApiOperation({ summary: 'Listar medidas socioeducativas' })
+  @ApiQuery({ name: 'incluirInactivos', required: false, type: Boolean })
+  @ApiResponse({ status: 200, description: 'Listado de medidas' })
   findAll(@Query() query: EstadoQueryDto) {
     return this.medidaSocioeducativaService.findAll(query.incluirInactivos);
   }
@@ -78,8 +74,8 @@ export class MedidaSocioeducativaController {
   // Endpoint para consultar un tipo de medida por su ID
   @Get(':id')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Consultar tipo de medida por su identificador' })
-  @ApiResponse({ status: 200, description: 'Tipo de medida obtenido exitosamente' })
+  @ApiOperation({ summary: 'Obtener detalle de una medida socioeducativa' })
+  @ApiResponse({ status: 200, description: 'Detalle de la medida' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.findOne(id);
   }
@@ -87,8 +83,8 @@ export class MedidaSocioeducativaController {
   // Endpoint para listar los expedientes donde se aplico este tipo de medida
   @Get(':id/expedientes')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar expedientes judiciales que aplican esta medida' })
-  @ApiResponse({ status: 200, description: 'Expedientes asociados obtenidos' })
+  @ApiOperation({ summary: 'Listar expedientes vinculados a una medida' })
+  @ApiResponse({ status: 200, description: 'Expedientes asociados' })
   findExpedientes(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.findExpedientes(id);
   }
@@ -126,8 +122,8 @@ export class MedidaSocioeducativaController {
   // Endpoint para dar de baja logica una medida socioeducativa
   @Delete(':id')
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Inactivar logicamente un tipo de medida (DELETE)' })
-  @ApiResponse({ status: 200, description: 'Tipo de medida inactivado exitosamente' })
+  @ApiOperation({ summary: 'Desactivar lógicamente una medida socioeducativa' })
+  @ApiResponse({ status: 200, description: 'Medida desactivada' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.medidaSocioeducativaService.remove(id);
   }

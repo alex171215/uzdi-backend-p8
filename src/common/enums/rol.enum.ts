@@ -8,4 +8,5 @@ export enum Rol {
   COORDINADOR        = 'Coordinador de área',
   ADMINISTRADOR      = 'Administrador',
   SUPERADMINISTRADOR = 'Superadministrador',
+  JUEZ               = 'Juez',
 }

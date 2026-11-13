@@ -11,12 +11,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InfraccionService } from './infraccion.service';
 import { CreateInfraccionDto } from './dto/create-infraccion.dto';
 import { UpdateInfraccionDto } from './dto/update-infraccion.dto';
@@ -56,8 +51,8 @@ export class InfraccionController {
   // Endpoint para registrar una nueva infraccion en el catalogo
   @Post()
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Registrar una nueva infraccion en el catalogo' })
-  @ApiResponse({ status: 201, description: 'Infraccion creada exitosamente' })
+  @ApiOperation({ summary: 'Crear una nueva infracción' })
+  @ApiResponse({ status: 201, description: 'Infracción creada exitosamente' })
   create(@Body() createInfraccionDto: CreateInfraccionDto) {
     return this.infraccionService.create(createInfraccionDto);
   }
@@ -65,8 +60,9 @@ export class InfraccionController {
   // Endpoint para listar infracciones con soporte para incluir inactivas
   @Get()
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar infracciones del catalogo' })
-  @ApiResponse({ status: 200, description: 'Listado de infracciones obtenido' })
+  @ApiOperation({ summary: 'Listar infracciones' })
+  @ApiQuery({ name: 'incluirInactivos', required: false, type: Boolean })
+  @ApiResponse({ status: 200, description: 'Listado de infracciones' })
   findAll(@Query() query: EstadoQueryDto) {
     return this.infraccionService.findAll(query.incluirInactivos);
   }
@@ -74,8 +70,8 @@ export class InfraccionController {
   // Endpoint para consultar una infraccion por su ID
   @Get(':id')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Consultar una infraccion por su identificador' })
-  @ApiResponse({ status: 200, description: 'Infraccion obtenida exitosamente' })
+  @ApiOperation({ summary: 'Obtener detalle de una infracción por ID' })
+  @ApiResponse({ status: 200, description: 'Detalle de la infracción' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.findOne(id);
   }
@@ -83,8 +79,8 @@ export class InfraccionController {
   // Endpoint para listar todos los expedientes judiciales asociados a esta infraccion
   @Get(':id/expedientes')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar expedientes vinculados a esta infraccion' })
-  @ApiResponse({ status: 200, description: 'Expedientes asociados obtenidos' })
+  @ApiOperation({ summary: 'Listar expedientes vinculados a una infracción' })
+  @ApiResponse({ status: 200, description: 'Expedientes asociados' })
   findExpedientes(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.findExpedientes(id);
   }
@@ -116,8 +112,8 @@ export class InfraccionController {
   // Endpoint para dar de baja logica una infraccion
   @Delete(':id')
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Inactivar logicamente una infraccion (DELETE)' })
-  @ApiResponse({ status: 200, description: 'Infraccion inactivada exitosamente' })
+  @ApiOperation({ summary: 'Desactivar lógicamente una infracción' })
+  @ApiResponse({ status: 200, description: 'Infracción desactivada' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.infraccionService.remove(id);
   }

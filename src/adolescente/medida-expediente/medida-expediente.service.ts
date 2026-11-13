@@ -100,7 +100,7 @@ export class MedidaExpedienteService {
 
   async remove(id: number) {
     await this.findOne(id);
-    // borrado logico: solo se cambia el estado a 'F'
+    // borrado logico: solo se cambia el estado a false
     await this.repository.update(id, { estado: false });
     return { id, estado: false };
   }

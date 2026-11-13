@@ -11,12 +11,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { MedidaExpedienteService } from './medida-expediente.service';
 import { CreateMedidaExpedienteDto } from './dto/create-medida-expediente.dto';
 import { UpdateMedidaExpedienteDto } from './dto/update-medida-expediente.dto';
@@ -58,8 +53,8 @@ export class MedidaExpedienteController {
   // Endpoint para vincular una medida socioeducativa con orden secuencial a la causa
   @Post()
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Asignar una medida socioeducativa al expediente (CONA)' })
-  @ApiResponse({ status: 201, description: 'Medida asignada exitosamente al expediente' })
+  @ApiOperation({ summary: 'Asignar una medida socioeducativa a un expediente' })
+  @ApiResponse({ status: 201, description: 'Medida asignada exitosamente' })
   create(@Body() dto: CreateMedidaExpedienteDto) {
     return this.medidaExpedienteService.create(dto);
   }
@@ -67,8 +62,8 @@ export class MedidaExpedienteController {
   // Endpoint para listar medidas con filtros opcionales por causa o tipo de medida
   @Get()
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Listar medidas de expedientes con filtros opcionales' })
-  @ApiResponse({ status: 200, description: 'Listado de medidas recuperado exitosamente' })
+  @ApiOperation({ summary: 'Listar medidas asignadas con filtros opcionales' })
+  @ApiResponse({ status: 200, description: 'Listado de medidas asignadas' })
   findAll(@Query() query: QueryMedidaExpedienteDto) {
     return this.medidaExpedienteService.findAll(query);
   }
@@ -76,8 +71,8 @@ export class MedidaExpedienteController {
   // Endpoint para consultar el detalle de una medida asignada por su ID
   @Get(':id')
   @Roles(...LECTURA)
-  @ApiOperation({ summary: 'Consultar una medida asignada por su identificador' })
-  @ApiResponse({ status: 200, description: 'Medida recuperada exitosamente' })
+  @ApiOperation({ summary: 'Obtener detalle de una medida asignada' })
+  @ApiResponse({ status: 200, description: 'Detalle de la medida asignada' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.medidaExpedienteService.findOne(id);
   }
@@ -97,8 +92,8 @@ export class MedidaExpedienteController {
   // Endpoint PATCH para actualizacion parcial de fechas o estado de cumplimiento
   @Patch(':id')
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Actualizar parcialmente la medida socioeducativa (PATCH)' })
-  @ApiResponse({ status: 200, description: 'Medida actualizada exitosamente' })
+  @ApiOperation({ summary: 'Actualizar seguimiento o estado de una medida asignada' })
+  @ApiResponse({ status: 200, description: 'Medida asignada actualizada' })
   updatePatch(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMedidaExpedienteDto,
@@ -109,8 +104,8 @@ export class MedidaExpedienteController {
   // Endpoint para dar de baja logica una medida de un expediente
   @Delete(':id')
   @Roles(...ESCRITURA_JUDICIAL)
-  @ApiOperation({ summary: 'Inactivar logicamente una medida de expediente (DELETE)' })
-  @ApiResponse({ status: 200, description: 'Medida inactivada exitosamente' })
+  @ApiOperation({ summary: 'Desactivar lógicamente una medida asignada' })
+  @ApiResponse({ status: 200, description: 'Medida asignada desactivada' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.medidaExpedienteService.remove(id);
   }
