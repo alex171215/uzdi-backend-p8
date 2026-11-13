@@ -70,11 +70,11 @@ export class MedidaExpedienteService {
     const where: any = { estado: true };
     if (query?.expe_id !== undefined && query?.expe_id !== null && (query.expe_id as any) !== '') {
       const val = Number(query.expe_id);
-      if (!isNaN(val)) where.expe_id = val;
+      if (!isNaN(val) && val > 0) where.expe_id = val;
     }
     if (query?.mdso_id !== undefined && query?.mdso_id !== null && (query.mdso_id as any) !== '') {
       const val = Number(query.mdso_id);
-      if (!isNaN(val)) where.mdso_id = val;
+      if (!isNaN(val) && val > 0) where.mdso_id = val;
     }
     return this.repository.find({
       where,

@@ -50,8 +50,10 @@ Desarrollado bajo convenio interinstitucional entre el **SNAI** y la **Pontifici
 
 ### 1.3. Diagrama Entidad-Relación Oficial (Modelo CAI / UZDI)
 El modelo físico relacional implementado en PostgreSQL (esquemas `seguridad`, `adolescente`, `contexto_familiar`, `estructura_institucional`, `gestion_documental` y `talleres_actividades`) se encuentra respaldado de forma íntegra en la documentación técnica del repositorio:
-* **Archivo gráfico de arquitectura:** [DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg](file:///c:/Users/ASUS/Documents/6to%20Semestre/Ecolog%C3%ADa%20Integral/RDA2/teoria/UZDI_BACK/UZDI_BACK/docs/DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg)
+* **Archivo gráfico de arquitectura:** [DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg](./DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg) y [modelo ER CAI.jpeg](./modelo%20ER%20CAI.jpeg)
 * **Script DDL v8 unificado:** `Back Ecologia (1).sql`
+
+![Diagrama Entidad Relación UZDI - CAI](./DIAGRAMA_ENTIDAD_RELACION_CAI_UZDI.jpeg)
 
 ---
 
