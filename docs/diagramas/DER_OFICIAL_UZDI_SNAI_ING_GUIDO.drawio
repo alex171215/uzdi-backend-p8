@@ -1,0 +1,220 @@
+<mxfile host="app.diagrams.net" modified="2026-11-12T12:00:00.000Z" agent="Mozilla/5.0" version="22.1.0" type="device">
+  <diagram id="DER_UZDI_GUIDO" name="DER Oficial UZDI SNAI - Ing. Guido">
+    <mxGraphModel dx="2200" dy="1600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3200" pageHeight="2200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITULO GENERAL Y ENCABEZADO METODOLOGIA ING. GUIDO -->
+        <mxCell id="title1" value="DIAGRAMA ENTIDAD-RELACIÓN OFICIAL — SISTEMA DE GESTIÓN INTEGRAL UZDI (SNAI - PUCE)&#xa;NOTACIÓN FORMAL Y DIRECTRICES DE CÁTEDRA ING. GUIDO (DDL VERSIÓN 8 + RECUADRO ER CAI)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#1F497D;strokeColor=#102A45;fontColor=#FFFFFF;fontSize=16;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="60" y="30" width="1080" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- LEYENDA Y CRITERIOS TECNICOS -->
+        <mxCell id="leyenda" value="NOTAS DE MODELADO Y CONVENCIONES ING. GUIDO:&#xa;• Todas las tablas incluyen obligatoriamente los atributos de auditoría: fcCrea (TIMESTAMP) y fcMod (TIMESTAMP).&#xa;• Estado lógico: estado CHAR(1) ('V'/'F') para borrado lógico uniforme en todas las entidades.&#xa;• Dominio Judicial CONA: medida_expediente desacopla mdso_id de expediente y añade el atributo obligatorio 'orden'.&#xa;• Recuadro de Seguridad ER CAI: prsn, prfl, accn, prms, sesn, prpf para control de acceso dinámico RBAC." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F4F7;strokeColor=#B0BEC5;fontColor=#263238;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="30" width="980" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 1: ESTRUCTURA INSTITUCIONAL Y GEOGRAFICA -->
+        <!-- ======================================================== -->
+        <mxCell id="group_geo" value="SUBSISTEMA: ESTRUCTURA INSTITUCIONAL Y GEOGRÁFICA" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#E8F0FE;strokeColor=#4285F4;fontColor=#1A73E8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="480" height="520" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA PROVINCIA -->
+        <mxCell id="tbl_provincia" value="estructura_institucional.provincia&#xa;--------------------------------------------&#xa;+ prov_id : INT4 [PK]&#xa;  provcdgo : VARCHAR(20) [UQ]&#xa;  provnmbr : VARCHAR(100)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=10;" vertex="1" parent="group_geo">
+          <mxGeometry y="26" width="480" height="134" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA CANTON -->
+        <mxCell id="tbl_canton" value="estructura_institucional.canton&#xa;--------------------------------------------&#xa;+ cntn_id : INT4 [PK]&#xa;* prov_id : INT4 [FK -&gt; provincia]&#xa;  cntncdgo : VARCHAR(20) [UQ]&#xa;  cntnnmbr : VARCHAR(100)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=10;" vertex="1" parent="group_geo">
+          <mxGeometry y="160" width="480" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA UZDI -->
+        <mxCell id="tbl_uzdi" value="estructura_institucional.uzdi&#xa;--------------------------------------------&#xa;+ uzdi_id : INT4 [PK]&#xa;* cntn_id : INT4 [FK -&gt; canton]&#xa;  uzdinmbr : VARCHAR(255)&#xa;  uzdizona : VARCHAR(100)&#xa;  uzdidrcc : VARCHAR(255)&#xa;  uzditlfn : VARCHAR(20)&#xa;  uzdimail : VARCHAR(100)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#4285F4;fontSize=10;" vertex="1" parent="group_geo">
+          <mxGeometry y="310" width="480" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 2: NUCLEO SOCIODEMOGRAFICO DEL ADOLESCENTE -->
+        <!-- ======================================================== -->
+        <mxCell id="group_adlc" value="SUBSISTEMA: NÚCLEO SOCIODEMOGRÁFICO DEL ADOLESCENTE" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#E6F4EA;strokeColor=#34A853;fontColor=#137333;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="130" width="560" height="780" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA ADOLESCENTE -->
+        <mxCell id="tbl_adolescente" value="adolescente.adolescente&#xa;--------------------------------------------&#xa;+ adlc_id : INT4 [PK]&#xa;  adlccdla : VARCHAR(20) [UQ] (Cédula o Pasaporte)&#xa;  adlcnmbr : VARCHAR(100)&#xa;  adlcapll : VARCHAR(100)&#xa;  adlcfcna : DATE&#xa;  adlcsexo : CHAR(1) [CHECK 'M','F','O']&#xa;  adlcfcin : DATE&#xa;* nacn_id : INT4 [FK -&gt; nacionalidad]&#xa;* etcv_id : INT4 [FK -&gt; estado_civil]&#xa;* etna_id : INT4 [FK -&gt; etnia]&#xa;* cntn_id : INT4 [FK -&gt; canton]&#xa;* gdo_id : INT4 [FK -&gt; gdo] (Opcional)&#xa;  adlcnved : VARCHAR(100) (Nivel educativo)&#xa;  adlchjos : INT4 DEFAULT 0&#xa;  adlcrncd : CHAR(1) DEFAULT 'F' (Reincidencia)&#xa;  adlchppl : CHAR(1) DEFAULT 'F' (Hijo de PPL)&#xa;  adlcsitu : VARCHAR(50) (Estado sociodemográfico)&#xa;  adlcmtvb : VARCHAR(100) (Motivo de baja)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#34A853;fontSize=10;" vertex="1" parent="group_adlc">
+          <mxGeometry y="26" width="560" height="340" as="geometry" />
+        </mxCell>
+
+        <!-- CATALOGOS ADOLESCENTE: NACIONALIDAD, ESTADO CIVIL, ETNIA, GDO -->
+        <mxCell id="tbl_catalogos_adlc" value="CATÁLOGOS PARAMÉTRICOS DEL ADOLESCENTE:&#xa;--------------------------------------------------------------&#xa;adolescente.nacionalidad: + nacn_id [PK], nacnnmbr, estado, fcCrea, fcMod&#xa;adolescente.estado_civil: + etcv_id [PK], etcvnmbr, estado, fcCrea, fcMod&#xa;adolescente.etnia:        + etna_id [PK], etnanmbr, estado, fcCrea, fcMod&#xa;adolescente.gdo:          + gdo_id [PK], gdonmbr, estado, fcCrea, fcMod" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#F8F9FA;strokeColor=#34A853;fontSize=10;" vertex="1" parent="group_adlc">
+          <mxGeometry y="366" width="560" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 3: DOMINIO JUDICIAL Y MEDIDAS CONA -->
+        <!-- ======================================================== -->
+        <mxCell id="group_judicial" value="SUBSISTEMA: DOMINIO JUDICIAL Y MEDIDAS CONA (DESACOPLE DDL v8)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#FCE8E6;strokeColor=#EA4335;fontColor=#C5221F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="130" width="580" height="780" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA INFRACCION -->
+        <mxCell id="tbl_infraccion" value="adolescente.infraccion&#xa;--------------------------------------------&#xa;+ infc_id : INT4 [PK]&#xa;  infcnmbr : VARCHAR(255)&#xa;  infcctgr : VARCHAR(127)&#xa;  infcartc : VARCHAR(50) (Artículo CONA/COIP)&#xa;  infcdscr : TEXT&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#EA4335;fontSize=10;" vertex="1" parent="group_judicial">
+          <mxGeometry y="26" width="580" height="144" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA MEDIDA_SOCIOEDUCATIVA -->
+        <mxCell id="tbl_medida_socioeducativa" value="adolescente.medida_socioeducativa (Catálogo)&#xa;--------------------------------------------&#xa;+ mdso_id : INT4 [PK]&#xa;  mdsonmbr : VARCHAR(255)&#xa;  mdsodrcn : INT4 (Duración estimada en meses)&#xa;  mdsodscr : TEXT&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#EA4335;fontSize=10;" vertex="1" parent="group_judicial">
+          <mxGeometry y="170" width="580" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA EXPEDIENTE -->
+        <mxCell id="tbl_expediente" value="adolescente.expediente&#xa;--------------------------------------------&#xa;+ expe_id : INT4 [PK]&#xa;* adlc_id : INT4 [FK -&gt; adolescente]&#xa;* uzdi_id : INT4 [FK -&gt; uzdi]&#xa;* infc_id : INT4 [FK -&gt; infraccion]&#xa;  numero_causa : VARCHAR(100) (Único en expedientes activos)&#xa;  expeetps : VARCHAR(50) (En proceso, Atraso, Incomparecencia, etc.)&#xa;  expeobsr : TEXT&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#EA4335;fontSize=10;" vertex="1" parent="group_judicial">
+          <mxGeometry y="300" width="580" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA MEDIDA_EXPEDIENTE (NOVEDAD CONA DDL v8) -->
+        <mxCell id="tbl_medida_expediente" value="adolescente.medida_expediente (Relación 1:N Expediente -&gt; Medidas)&#xa;--------------------------------------------------------------------------------&#xa;+ mdex_id : INT4 [PK]&#xa;* expe_id : INT4 [FK -&gt; expediente]&#xa;* mdso_id : INT4 [FK -&gt; medida_socioeducativa]&#xa;  orden : INT4 NOT NULL [CHECK &gt;= 1] (Regla CONA: orden de cumplimiento)&#xa;  fecha_inicio : DATE NOT NULL&#xa;  fecha_fin : DATE [CHECK &gt;= fecha_inicio]&#xa;  estado_cumplimiento : VARCHAR(50) DEFAULT 'En proceso'&#xa;  observaciones : TEXT&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=left;spacingLeft=6;fillColor=#FFEBEE;strokeColor=#C62828;fontSize=10;" vertex="1" parent="group_judicial">
+          <mxGeometry y="480" width="580" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 4: RECUADRO DE SEGURIDAD Y AUDITORIA ER CAI -->
+        <!-- ======================================================== -->
+        <mxCell id="group_seguridad" value="SUBSISTEMA: RECUADRO DE SEGURIDAD ER CAI Y AUDITORÍA TRANSACCIONAL" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#FEF7E0;strokeColor=#FBBC04;fontColor=#B06000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1800" y="130" width="600" height="980" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA TIPO_PERSONA -->
+        <mxCell id="tbl_tipo_persona" value="seguridad.tipo_persona (Perfil Institucional Base RF-12)&#xa;---------------------------------------------------------&#xa;+ tppr_id : INT4 [PK]&#xa;  tpprcdgo : VARCHAR(20) [UQ]&#xa;  tpprnmbr : VARCHAR(100)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="26" width="600" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA PRSN (PERSONA / USUARIO) -->
+        <mxCell id="tbl_prsn" value="seguridad.prsn (Usuario Institucional)&#xa;--------------------------------------------&#xa;+ prsn_id : INT4 [PK]&#xa;* tppr_id : INT4 [FK -&gt; tipo_persona] (Precedencia RF-12)&#xa;* uzdi_id : INT4 [FK -&gt; uzdi] (Opcional)&#xa;  prsnnmbr : VARCHAR(100)&#xa;  prsnapll : VARCHAR(100)&#xa;  prsnmail : VARCHAR(100) [UQ]&#xa;  prsnlgin : VARCHAR(50) [UQ]&#xa;  prsnpswd : VARCHAR(255) (Hash bcrypt)&#xa;  prsnsexo : CHAR(1)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="146" width="600" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA PRFL (PERFIL) -->
+        <mxCell id="tbl_prfl" value="seguridad.prfl (Perfiles: ADM, LEGAL, CORD, TSOC, PSIC, EDUC)&#xa;--------------------------------------------------------------&#xa;+ prfl_id : INT4 [PK]&#xa;  prflcdgo : VARCHAR(20) [UQ]&#xa;  prflnmbr : VARCHAR(100)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="356" width="600" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA PRPF (PERSONA_PERFIL) -->
+        <mxCell id="tbl_prpf" value="seguridad.prpf (Asignación Relacional Persona &lt;-&gt; Perfil)&#xa;-------------------------------------------------------&#xa;+ prpf_id : INT4 [PK]&#xa;* prsn_id : INT4 [FK -&gt; prsn]&#xa;* prfl_id : INT4 [FK -&gt; prfl]&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="476" width="600" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA ACCN (ACCION OPERATIVA) -->
+        <mxCell id="tbl_accn" value="seguridad.accn (Catálogo de Acciones del Sistema)&#xa;------------------------------------------------&#xa;+ accn_id : INT4 [PK]&#xa;  accnnmbr : VARCHAR(100) [UQ] (ej: adolescente.consultar)&#xa;  accndscr : VARCHAR(255)&#xa;  accnadbl : CHAR(1) DEFAULT '1'&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="596" width="600" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA PRMS (PERMISOS RBAC) -->
+        <mxCell id="tbl_prms" value="seguridad.prms (Matriz de Autorización RBAC: Perfil &lt;-&gt; Acción)&#xa;--------------------------------------------------------------&#xa;+ prms_id : INT4 [PK]&#xa;* prfl_id : INT4 [FK -&gt; prfl]&#xa;* accn_id : INT4 [FK -&gt; accn]&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="726" width="600" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA SESN (SESIONES) -->
+        <mxCell id="tbl_sesn" value="seguridad.sesn (Registro de Sesiones JWT)&#xa;------------------------------------------------&#xa;+ sesn_id : INT4 [PK]&#xa;* prsn_id : INT4 [FK -&gt; prsn]&#xa;* prfl_id : INT4 [FK -&gt; prfl]&#xa;  sesnfcin : TIMESTAMP (Apertura de sesión)&#xa;  sesnfcfn : TIMESTAMP (Cierre de sesión / Logout)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#FBBC04;fontSize=10;" vertex="1" parent="group_seguridad">
+          <mxGeometry y="846" width="600" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 5: CONTEXTO FAMILIAR -->
+        <!-- ======================================================== -->
+        <mxCell id="group_familiar" value="SUBSISTEMA: CONTEXTO FAMILIAR Y TUTORÍA LEGAL" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#F3E8FD;strokeColor=#9334E6;fontColor=#681DA8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="680" width="480" height="520" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA TIPO_PARENTESCO -->
+        <mxCell id="tbl_tipo_parentesco" value="contexto_familiar.tipo_parentesco&#xa;--------------------------------------------&#xa;+ tprt_id : INT4 [PK]&#xa;  tprtnmbr : VARCHAR(100) (Madre, Padre, Tío, etc.)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#9334E6;fontSize=10;" vertex="1" parent="group_familiar">
+          <mxGeometry y="26" width="480" height="114" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA REPRESENTANTE -->
+        <mxCell id="tbl_representante" value="contexto_familiar.representante (Tutor Legal)&#xa;--------------------------------------------&#xa;+ repr_id : INT4 [PK]&#xa;* cntn_id : INT4 [FK -&gt; canton]&#xa;  reprcdla : VARCHAR(20) [UQ]&#xa;  reprnmbr : VARCHAR(100)&#xa;  reprapll : VARCHAR(100)&#xa;  reprtlfn : VARCHAR(20)&#xa;  reprdrcc : VARCHAR(255)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#9334E6;fontSize=10;" vertex="1" parent="group_familiar">
+          <mxGeometry y="140" width="480" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA ADOLESCENTE_REPRESENTANTE -->
+        <mxCell id="tbl_adolescente_representante" value="contexto_familiar.adolescente_representante (Vínculo)&#xa;----------------------------------------------------&#xa;+ adre_id : INT4 [PK]&#xa;* adlc_id : INT4 [FK -&gt; adolescente]&#xa;* repr_id : INT4 [FK -&gt; representante]&#xa;* tprt_id : INT4 [FK -&gt; tipo_parentesco]&#xa;  adre_es_referente : CHAR(1) DEFAULT 'V'&#xa;  adrefcin : DATE&#xa;  adrefcfn : DATE&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#9334E6;fontSize=10;" vertex="1" parent="group_familiar">
+          <mxGeometry y="310" width="480" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- ======================================================== -->
+        <!-- SUBSISTEMA 6: TALLERES Y GESTION DOCUMENTAL -->
+        <!-- ======================================================== -->
+        <mxCell id="group_actividades" value="SUBSISTEMA: TALLERES, ASISTENCIA Y GESTIÓN DOCUMENTAL" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#E0F2F1;strokeColor=#00897B;fontColor=#004D40;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="940" width="1180" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA TALLER -->
+        <mxCell id="tbl_taller" value="talleres_actividades.taller&#xa;--------------------------------------------&#xa;+ tall_id : INT4 [PK]&#xa;* uzdi_id : INT4 [FK -&gt; uzdi]&#xa;* prsn_id : INT4 [FK -&gt; prsn] (Responsable)&#xa;  tallnmbr : VARCHAR(255)&#xa;  talltema : VARCHAR(255)&#xa;  tallfcha : DATE&#xa;  tallhrin : TIME&#xa;  tallhrfn : TIME&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#00897B;fontSize=10;" vertex="1" parent="group_actividades">
+          <mxGeometry y="26" width="380" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA ASISTENCIA_TALLER -->
+        <mxCell id="tbl_asistencia_taller" value="talleres_actividades.asistencia_taller&#xa;--------------------------------------------&#xa;+ astl_id : INT4 [PK]&#xa;* tall_id : INT4 [FK -&gt; taller]&#xa;  tipo_asistente : VARCHAR(20) ['adolescente','representante']&#xa;* adlc_id : INT4 [FK -&gt; adlc] (Excluyente)&#xa;* adre_id : INT4 [FK -&gt; adre] (Excluyente)&#xa;  astlasst : CHAR(1) DEFAULT 'V' (Asistió)&#xa;  estado : CHAR(1) [CHECK 'V','F']&#xa;  fcCrea : TIMESTAMP [NOW()]&#xa;  fcMod : TIMESTAMP [NOW()]" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#00897B;fontSize=10;" vertex="1" parent="group_actividades">
+          <mxGeometry x="380" y="26" width="400" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- TABLA GESTION DOCUMENTAL -->
+        <mxCell id="tbl_gestion_documental" value="GESTIÓN DOCUMENTAL:&#xa;--------------------------------------------------------------&#xa;gestion_documental.tipo_documento:&#xa;+ tpdc_id [PK], tpdcnmbr, tpdcdscr, estado, fcCrea, fcMod&#xa;&#xa;gestion_documental.documento_expediente:&#xa;+ dcex_id [PK], * expe_id [FK], * prsn_id [FK], * tpdc_id [FK],&#xa;  dcexnmro, dcexfcha, dcexemsr, dcexes_h, dcex_est,&#xa;  estado, fcCrea, fcMod" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#00897B;fontSize=10;" vertex="1" parent="group_actividades">
+          <mxGeometry x="780" y="26" width="400" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- RELACIONES CLAVE CON NOTACION CARDINALIDAD -->
+        <!-- Canton -> Provincia -->
+        <mxCell id="rel_cntn_prov" edge="1" parent="1" source="tbl_canton" target="tbl_provincia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4285F4;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- UZDI -> Canton -->
+        <mxCell id="rel_uzdi_cntn" edge="1" parent="1" source="tbl_uzdi" target="tbl_canton" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#4285F4;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Expediente -> Adolescente -->
+        <mxCell id="rel_expe_adlc" edge="1" parent="1" source="tbl_expediente" target="tbl_adolescente" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA4335;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- MedidaExpediente -> Expediente -->
+        <mxCell id="rel_mdex_expe" edge="1" parent="1" source="tbl_medida_expediente" target="tbl_expediente" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C62828;strokeWidth=3;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- MedidaExpediente -> MedidaSocioeducativa -->
+        <mxCell id="rel_mdex_mdso" edge="1" parent="1" source="tbl_medida_expediente" target="tbl_medida_socioeducativa" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C62828;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Expediente -> Infraccion -->
+        <mxCell id="rel_expe_infc" edge="1" parent="1" source="tbl_expediente" target="tbl_infraccion" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA4335;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- PersonaPerfil -> Persona y Perfil -->
+        <mxCell id="rel_prpf_prsn" edge="1" parent="1" source="tbl_prpf" target="tbl_prsn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FBBC04;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_prpf_prfl" edge="1" parent="1" source="tbl_prpf" target="tbl_prfl" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FBBC04;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Permiso -> Perfil y Accion -->
+        <mxCell id="rel_prms_prfl" edge="1" parent="1" source="tbl_prms" target="tbl_prfl" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FBBC04;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_prms_accn" edge="1" parent="1" source="tbl_prms" target="tbl_accn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FBBC04;strokeWidth=2;endArrow=ERmany;startArrow=ERone;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

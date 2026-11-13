@@ -4,6 +4,7 @@ export enum Rol {
   PSICOLOGO          = 'Psicólogo',
   EDUCADOR           = 'Educador',
   JURIDICO           = 'Jurídico',
+  JUEZ               = 'Juez',
   COORDINADOR        = 'Coordinador de área',
   ADMINISTRADOR      = 'Administrador',
   SUPERADMINISTRADOR = 'Superadministrador',

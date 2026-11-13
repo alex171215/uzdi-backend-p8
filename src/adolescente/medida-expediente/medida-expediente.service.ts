@@ -65,16 +65,14 @@ export class MedidaExpedienteService {
     return this.findOne(saved.id);
   }
 
-  // si mandan expe_id salen las medidas de ese expediente en orden
+  // Listamos las medidas activas filtrando solo parametros con valores validos
   findAll(query: QueryMedidaExpedienteDto = {}) {
     const where: any = { estado: true };
-    if (query?.expe_id !== undefined && query?.expe_id !== null && (query.expe_id as any) !== '') {
-      const val = Number(query.expe_id);
-      if (!isNaN(val) && val > 0) where.expe_id = val;
+    if (query.expe_id && Number(query.expe_id) > 0) {
+      where.expe_id = Number(query.expe_id);
     }
-    if (query?.mdso_id !== undefined && query?.mdso_id !== null && (query.mdso_id as any) !== '') {
-      const val = Number(query.mdso_id);
-      if (!isNaN(val) && val > 0) where.mdso_id = val;
+    if (query.mdso_id && Number(query.mdso_id) > 0) {
+      where.mdso_id = Number(query.mdso_id);
     }
     return this.repository.find({
       where,
@@ -102,7 +100,7 @@ export class MedidaExpedienteService {
 
   async remove(id: number) {
     await this.findOne(id);
-    // borrado logico: solo se cambia el estado a 'F'
+    // borrado logico: solo se cambia el estado a false
     await this.repository.update(id, { estado: false });
     return { id, estado: false };
   }

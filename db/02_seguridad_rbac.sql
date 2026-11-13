@@ -73,6 +73,11 @@ SELECT u.prsn_id, f.prfl_id, 'V'
  WHERE u.prsnlogn = 'admin'
 ON CONFLICT (prsn_id, prfl_id) DO NOTHING;
 
+-- Perfil institucional JUEZ (Tarea 2.4 / Competencia Judicial)
+INSERT INTO seguridad.prfl (prflcdgo, prflnmbr, prfldscr, estado)
+VALUES ('JUEZ', 'Juez de Garantías Penitenciarias', 'Autoridad judicial que dictamina y supervisa medidas', 'V')
+ON CONFLICT (prflcdgo) DO NOTHING;
+
 -- ------------------------------------------------------------
 -- 2. Catálogo de acciones
 --    Cada recurso = ruta del controlador (/api/v1/<recurso>).
@@ -137,6 +142,12 @@ INSERT INTO tmp_matriz (codigo, patron) VALUES
   ('LEGAL', 'infraccion.%'), ('LEGAL', 'medida-socioeducativa.%'),
   ('LEGAL', 'documento-expediente.%'),
   ('LEGAL', 'adolescente.crear'), ('LEGAL', 'adolescente.actualizar'),
+
+  -- JUEZ: resoluciones judiciales y seguimiento procesal de medidas
+  ('JUEZ', 'NOSEG:%.consultar'),
+  ('JUEZ', 'expediente.%'), ('JUEZ', 'medida-expediente.%'),
+  ('JUEZ', 'infraccion.%'), ('JUEZ', 'medida-socioeducativa.%'),
+  ('JUEZ', 'documento-expediente.%'),
 
   -- TSOC: entorno familiar
   ('TSOC', 'NOSEG:%.consultar'),

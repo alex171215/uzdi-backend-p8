@@ -10,7 +10,9 @@ import {
 import { Type } from 'class-transformer';
 import { ESTADOS_CUMPLIMIENTO } from '../entities/medida-expediente.entity';
 
+// DTO para asignar una medida socioeducativa a un expediente judicial
 export class CreateMedidaExpedienteDto {
+  // Clave foranea del expediente judicial contenedor
   @ApiProperty({
     description: 'ID del expediente judicial al que se asigna la medida',
     example: 1,
@@ -20,6 +22,7 @@ export class CreateMedidaExpedienteDto {
   @Type(() => Number)
   expe_id: number;
 
+  // Clave foranea del tipo de medida socioeducativa
   @ApiProperty({
     description: 'ID del catálogo de medidas socioeducativas',
     example: 1,
@@ -40,6 +43,7 @@ export class CreateMedidaExpedienteDto {
   @Type(() => Number)
   orden: number;
 
+  // Fecha de inicio de aplicacion de la medida socioeducativa
   @ApiProperty({
     description: 'Fecha de inicio dispuesta judicialmente (YYYY-MM-DD)',
     example: '2026-03-01',
@@ -47,6 +51,7 @@ export class CreateMedidaExpedienteDto {
   @IsDateString()
   fecha_inicio: string;
 
+  // Fecha estimada o real de finalizacion de la medida
   @ApiProperty({
     description: 'Fecha de finalización o cumplimiento (YYYY-MM-DD)',
     example: '2026-09-01',
@@ -56,6 +61,7 @@ export class CreateMedidaExpedienteDto {
   @IsDateString()
   fecha_fin?: string;
 
+  // Estado del cumplimiento de la medida socioeducativa
   @ApiProperty({
     description: 'Estado de cumplimiento de la medida',
     example: 'Cumpliendo',
@@ -68,6 +74,7 @@ export class CreateMedidaExpedienteDto {
   @IsIn(ESTADOS_CUMPLIMIENTO)
   estado_cumplimiento?: string;
 
+  // Observaciones sobre la ejecucion y seguimiento de la medida
   @ApiProperty({
     description: 'Observaciones de avance o seguimiento',
     example: 'Adolescente asiste puntualmente a las sesiones semanales',

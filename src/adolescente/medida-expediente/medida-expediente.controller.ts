@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Patch,
   Param,
@@ -19,6 +20,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Rol } from '../../common/enums/rol.enum';
 
+// Roles autorizados a consultar las medidas socioeducativas del expediente
 const LECTURA = [
   Rol.ADMINISTRADOR,
   Rol.SUPERADMINISTRADOR,
@@ -26,10 +28,20 @@ const LECTURA = [
   Rol.PSICOLOGO,
   Rol.EDUCADOR,
   Rol.JURIDICO,
+  Rol.JUEZ,
+  Rol.COORDINADOR,
 ];
-const ESCRITURA = [Rol.ADMINISTRADOR, Rol.SUPERADMINISTRADOR, Rol.JURIDICO];
 
-@ApiTags('Medidas por Expediente')
+// Roles autorizados con competencia judicial para asignar o modificar medidas (CONA)
+const ESCRITURA_JUDICIAL = [
+  Rol.ADMINISTRADOR,
+  Rol.SUPERADMINISTRADOR,
+  Rol.JURIDICO,
+  Rol.JUEZ,
+];
+
+// Controlador REST para la administracion de medidas asignadas a expedientes
+@ApiTags('Medidas Expediente')
 @ApiBearerAuth('JWT-auth')
 @Controller('medida-expediente')
 @UseGuards(RolesGuard)
@@ -38,15 +50,16 @@ export class MedidaExpedienteController {
     private readonly medidaExpedienteService: MedidaExpedienteService,
   ) {}
 
+  // Endpoint para vincular una medida socioeducativa con orden secuencial a la causa
   @Post()
-  @Roles(...ESCRITURA)
+  @Roles(...ESCRITURA_JUDICIAL)
   @ApiOperation({ summary: 'Asignar una medida socioeducativa a un expediente' })
   @ApiResponse({ status: 201, description: 'Medida asignada exitosamente' })
   create(@Body() dto: CreateMedidaExpedienteDto) {
     return this.medidaExpedienteService.create(dto);
   }
 
-  // filtros opcionales: ?expe_id=&mdso_id=
+  // Endpoint para listar medidas con filtros opcionales por causa o tipo de medida
   @Get()
   @Roles(...LECTURA)
   @ApiOperation({ summary: 'Listar medidas asignadas con filtros opcionales' })
@@ -55,6 +68,7 @@ export class MedidaExpedienteController {
     return this.medidaExpedienteService.findAll(query);
   }
 
+  // Endpoint para consultar el detalle de una medida asignada por su ID
   @Get(':id')
   @Roles(...LECTURA)
   @ApiOperation({ summary: 'Obtener detalle de una medida asignada' })
@@ -63,19 +77,33 @@ export class MedidaExpedienteController {
     return this.medidaExpedienteService.findOne(id);
   }
 
-  @Patch(':id')
-  @Roles(...ESCRITURA)
-  @ApiOperation({ summary: 'Actualizar seguimiento o estado de una medida asignada' })
-  @ApiResponse({ status: 200, description: 'Medida asignada actualizada' })
-  update(
+  // Endpoint PUT para actualizacion completa de la medida socioeducativa
+  @Put(':id')
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Actualizar completamente la medida socioeducativa (PUT)' })
+  @ApiResponse({ status: 200, description: 'Medida actualizada exitosamente' })
+  updatePut(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateMedidaExpedienteDto,
   ) {
     return this.medidaExpedienteService.update(id, dto);
   }
 
+  // Endpoint PATCH para actualizacion parcial de fechas o estado de cumplimiento
+  @Patch(':id')
+  @Roles(...ESCRITURA_JUDICIAL)
+  @ApiOperation({ summary: 'Actualizar seguimiento o estado de una medida asignada' })
+  @ApiResponse({ status: 200, description: 'Medida asignada actualizada' })
+  updatePatch(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateMedidaExpedienteDto,
+  ) {
+    return this.medidaExpedienteService.update(id, dto);
+  }
+
+  // Endpoint para dar de baja logica una medida de un expediente
   @Delete(':id')
-  @Roles(...ESCRITURA)
+  @Roles(...ESCRITURA_JUDICIAL)
   @ApiOperation({ summary: 'Desactivar lógicamente una medida asignada' })
   @ApiResponse({ status: 200, description: 'Medida asignada desactivada' })
   remove(@Param('id', ParseIntPipe) id: number) {

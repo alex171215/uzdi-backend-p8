@@ -11,7 +11,9 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { ESTADOS_PROCESALES } from '../entities/expediente.entity';
 
+// DTO para registrar un nuevo expediente judicial en el sistema
 export class CreateExpedienteDto {
+  // Clave foranea que relaciona el expediente con el adolescente
   @ApiProperty({
     description: 'ID del adolescente asociado al expediente judicial',
     example: 1,
@@ -21,6 +23,7 @@ export class CreateExpedienteDto {
   @Type(() => Number)
   adlc_id: number;
 
+  // Clave foranea que indica la sede UZDI asignada
   @ApiProperty({
     description: 'ID de la sede UZDI responsable del seguimiento',
     example: 1,
@@ -30,6 +33,7 @@ export class CreateExpedienteDto {
   @Type(() => Number)
   uzdi_id: number;
 
+  // Clave foranea que tipifica el delito o infraccion cometida
   @ApiProperty({
     description: 'ID de la infracción tipificada en la causa',
     example: 1,
@@ -58,6 +62,7 @@ export class CreateExpedienteDto {
   })
   numero_causa?: string;
 
+  // Estado legal del proceso judicial del menor
   @ApiProperty({
     description: 'Estado procesal actual del expediente',
     example: 'En proceso',
@@ -70,6 +75,7 @@ export class CreateExpedienteDto {
   @IsIn(ESTADOS_PROCESALES)
   estado_procesal?: string;
 
+  // Notas u observaciones adicionales sobre el proceso
   @ApiProperty({
     description: 'Observaciones procesales o institucionales adicionales',
     example: 'Expediente remitido por la Unidad Judicial de Familia, Mujer, Niñez y Adolescencia',
