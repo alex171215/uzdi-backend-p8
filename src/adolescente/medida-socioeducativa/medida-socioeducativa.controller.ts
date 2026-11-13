@@ -33,6 +33,7 @@ const LECTURA = [
   Rol.PSICOLOGO,
   Rol.EDUCADOR,
   Rol.JURIDICO,
+  Rol.JUEZ,
   Rol.COORDINADOR,
 ];
 
@@ -41,6 +42,7 @@ const ESCRITURA_JUDICIAL = [
   Rol.ADMINISTRADOR,
   Rol.SUPERADMINISTRADOR,
   Rol.JURIDICO,
+  Rol.JUEZ,
 ];
 
 // Controlador REST para el catalogo de tipos de medidas socioeducativas segun CONA

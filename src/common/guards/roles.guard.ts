@@ -20,6 +20,7 @@ export const ROL_A_PERFIL: Record<Rol, string> = {
   [Rol.SUPERADMINISTRADOR]: 'ADM',
   [Rol.COORDINADOR]: 'CORD',
   [Rol.JURIDICO]: 'LEGAL',
+  [Rol.JUEZ]: 'JUEZ',
   [Rol.TRABAJADOR_SOCIAL]: 'TSOC',
   [Rol.PSICOLOGO]: 'PSIC',
   [Rol.EDUCADOR]: 'EDUC',

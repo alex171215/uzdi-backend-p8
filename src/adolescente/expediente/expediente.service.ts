@@ -91,10 +91,20 @@ export class ExpedienteService {
     return this.repository.save(entity);
   }
 
-  // Listamos expedientes activos con filtros opcionales de busqueda
+  // Listamos expedientes activos limpiando cualquier parametro nulo o vacio
   findAll(query: QueryExpedienteDto = {}) {
+    const where: any = { estado: true };
+    if (query.adlc_id && Number(query.adlc_id) > 0) {
+      where.adlc_id = Number(query.adlc_id);
+    }
+    if (query.infc_id && Number(query.infc_id) > 0) {
+      where.infc_id = Number(query.infc_id);
+    }
+    if (query.uzdi_id && Number(query.uzdi_id) > 0) {
+      where.uzdi_id = Number(query.uzdi_id);
+    }
     return this.repository.find({
-      where: { estado: true, ...query },
+      where,
       order: { id: 'DESC' },
     });
   }

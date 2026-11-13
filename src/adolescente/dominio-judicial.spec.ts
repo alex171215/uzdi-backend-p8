@@ -145,6 +145,26 @@ describe('Dominio Judicial y Medidas CONA (Parte 2)', () => {
       expect(resultado).toEqual({ id: 1, estado: false });
       expect(mockExpRepo.update).toHaveBeenCalledWith(1, { estado: false });
     });
+
+    // Validamos que findAll limpie filtros vacios y no envie NaN/undefined a la base (soluciona error 500)
+    it('evita error 500 al filtrar expedientes con parámetros vacíos o undefined', async () => {
+      const mockExpRepo = {
+        find: jest.fn().mockResolvedValue([]),
+      } as unknown as Repository<Expediente>;
+
+      const service = new ExpedienteService(
+        mockExpRepo,
+        {} as Repository<Infraccion>,
+        {} as Repository<Adolescente>,
+        {} as Repository<Uzdi>,
+      );
+
+      await service.findAll({ adlc_id: undefined, infc_id: undefined, uzdi_id: undefined } as any);
+      expect(mockExpRepo.find).toHaveBeenCalledWith({
+        where: { estado: true },
+        order: { id: 'DESC' },
+      });
+    });
   });
 
   // --------------------------------------------------------------------------
@@ -257,50 +277,54 @@ describe('Dominio Judicial y Medidas CONA (Parte 2)', () => {
   // TAREA 2.4: MATRIZ DE CONTROL DE ACCESO JUDICIAL (RBAC)
   // --------------------------------------------------------------------------
   describe('Tarea 2.4: Matriz de Control de Acceso Judicial (LEGAL, JUEZ, ADM)', () => {
-    // Comprobamos que el controlador de expedientes conceda permisos de escritura a Juridico y Admin
-    it('valida que ExpedienteController otorgue permisos de escritura a Jurídico y Administrador', () => {
+    // Comprobamos que el controlador de expedientes conceda permisos de escritura a Juridico, Juez y Admin
+    it('valida que ExpedienteController otorgue permisos de escritura a Jurídico, Juez y Administrador', () => {
       const createRoles: Rol[] = Reflect.getMetadata(
         ROLES_KEY,
         ExpedienteController.prototype.create,
       );
       expect(createRoles).toBeDefined();
       expect(createRoles).toContain(Rol.JURIDICO);
+      expect(createRoles).toContain(Rol.JUEZ);
       expect(createRoles).toContain(Rol.ADMINISTRADOR);
       expect(createRoles).not.toContain(Rol.TRABAJADOR_SOCIAL);
       expect(createRoles).not.toContain(Rol.USUARIO);
     });
 
     // Comprobamos que la creacion de medidas solo permita perfiles juridicos y administracion
-    it('valida que MedidaExpedienteController proteja la asignación de medidas con perfil legal', () => {
+    it('valida que MedidaExpedienteController proteja la asignación de medidas con perfil legal y juez', () => {
       const createRoles: Rol[] = Reflect.getMetadata(
         ROLES_KEY,
         MedidaExpedienteController.prototype.create,
       );
       expect(createRoles).toBeDefined();
       expect(createRoles).toContain(Rol.JURIDICO);
+      expect(createRoles).toContain(Rol.JUEZ);
       expect(createRoles).toContain(Rol.ADMINISTRADOR);
       expect(createRoles).not.toContain(Rol.EDUCADOR);
     });
 
-    // Comprobamos que el catalogo de infracciones admita escritura para perfil Juridico
-    it('valida que InfraccionController admita rol Jurídico para escritura', () => {
+    // Comprobamos que el catalogo de infracciones admita escritura para perfil Juridico y Juez
+    it('valida que InfraccionController admita rol Jurídico y Juez para escritura', () => {
       const createRoles: Rol[] = Reflect.getMetadata(
         ROLES_KEY,
         InfraccionController.prototype.create,
       );
       expect(createRoles).toBeDefined();
       expect(createRoles).toContain(Rol.JURIDICO);
+      expect(createRoles).toContain(Rol.JUEZ);
       expect(createRoles).toContain(Rol.ADMINISTRADOR);
     });
 
-    // Comprobamos que el catalogo de medidas socioeducativas admita escritura para perfil Juridico
-    it('valida que MedidaSocioeducativaController admita rol Jurídico para escritura', () => {
+    // Comprobamos que el catalogo de medidas socioeducativas admita escritura para perfil Juridico y Juez
+    it('valida que MedidaSocioeducativaController admita rol Jurídico y Juez para escritura', () => {
       const createRoles: Rol[] = Reflect.getMetadata(
         ROLES_KEY,
         MedidaSocioeducativaController.prototype.create,
       );
       expect(createRoles).toBeDefined();
       expect(createRoles).toContain(Rol.JURIDICO);
+      expect(createRoles).toContain(Rol.JUEZ);
       expect(createRoles).toContain(Rol.ADMINISTRADOR);
     });
   });
