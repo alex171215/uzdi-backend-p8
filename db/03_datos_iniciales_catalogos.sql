@@ -142,3 +142,4 @@ ON CONFLICT (nombre) DO UPDATE SET estado = 'V', duracion_meses = EXCLUDED.durac
 SELECT setval('adolescente.medida_socioeducativa_mdso_id_seq', (SELECT MAX(mdso_id) FROM adolescente.medida_socioeducativa));
 
 COMMIT;
+
