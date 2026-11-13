@@ -13,7 +13,7 @@
 | Tabla | Qué guarda |
 |---|---|
 | `seguridad.prsn` | Usuarios del sistema |
-| `seguridad.prfl` | Perfiles: ADM, CORD, LEGAL, TSOC, PSIC, EDUC, CONS |
+| `seguridad.prfl` | Perfiles: ADM, CORD, LEGAL, TSOC, PSIC, EDUC, CONS, JUEZ |
 | `seguridad.prpf` | **Perfiles asignados a cada usuario**. La crea `db/02_seguridad_rbac.sql`, porque el DDL v8 tenía `sesn.prpf_id` pero no la tabla |
 | `seguridad.accn` | Acciones del sistema, con formato `recurso.operacion` (ej. `adolescente.crear`) |
 | `seguridad.prms` | Qué acciones puede ejecutar cada perfil |
@@ -51,6 +51,7 @@ Son 27 recursos × 4 operaciones = **108 acciones**.
 | ADM | 108 | Todo |
 | CORD | 43 | Consulta todo, incluida la seguridad. Crea y actualiza casos, familia, talleres y documentos |
 | LEGAL | 37 | Consulta lo operativo. CRUD completo de expediente, medidas, infracciones y documentos |
+| JUEZ | 35 | Consulta lo operativo. CRUD de expediente, medidas, infracciones, catálogo de medidas y documentos (tarea 2.4) |
 | TSOC | 30 | Consulta lo operativo. CRUD de representantes y vínculos familiares |
 | EDUC | 26 | Consulta lo operativo. CRUD de talleres y asistencias |
 | PSIC | 22 | Consulta lo operativo. Registra documentos del expediente |
