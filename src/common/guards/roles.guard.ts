@@ -25,7 +25,6 @@ export const ROL_A_PERFIL: Record<Rol, string> = {
   [Rol.PSICOLOGO]: 'PSIC',
   [Rol.EDUCADOR]: 'EDUC',
   [Rol.USUARIO]: 'CONS',
-  [Rol.JUEZ]: 'JUEZ',
 };
 
 const OPERACION_POR_METODO: Record<string, string> = {
