@@ -135,3 +135,4 @@ Para evitar redundancias observadas por el docente (donde el campo `path` no apo
 3. **Consumo Seguro:**
    - Debe enviarse en el encabezado `Authorization: Bearer <token>`.
    - Toda solicitud sin cabecera o con firma inválida es rechazada de inmediato en el paso 1 del pipeline.
+

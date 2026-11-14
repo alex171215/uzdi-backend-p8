@@ -55,3 +55,4 @@ echo "📍 API disponible internamente en: http://127.0.0.1:3000/api/v1"
 echo "📖 Swagger Docs: http://127.0.0.1:3000/api/docs"
 echo "🩺 Health Check: http://127.0.0.1:3000/api/v1/health"
 echo "=============================================================================="
+
