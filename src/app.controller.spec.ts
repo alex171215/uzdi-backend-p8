@@ -15,8 +15,15 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return health status UP', () => {
+      const res = appController.getHello();
+      expect(res.status).toBe('UP');
+      expect(res.service).toBe('UZDI Backend API');
+    });
+
+    it('should return health status UP on /health', () => {
+      const res = appController.getHealth();
+      expect(res.status).toBe('UP');
     });
   });
 });

@@ -11,7 +11,26 @@ export class AppController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'Verificación de estado de la API' })
-  getHello(): string {
-    return this.appService.getHello();
+  getHello() {
+    return {
+      status: 'UP',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      service: 'UZDI Backend API',
+      version: '1.0.0',
+    };
+  }
+
+  @Public()
+  @Get('health')
+  @ApiOperation({ summary: 'Endpoint explícito de health check' })
+  getHealth() {
+    return {
+      status: 'UP',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+      service: 'UZDI Backend API',
+      version: '1.0.0',
+    };
   }
 }
