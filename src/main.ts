@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SanitizationPipe } from './common/pipes/sanitization.pipe';
 import { ResponseTransformInterceptor } from './common/interceptors/transform.interceptor';
 import { CustomHttpExceptionFilter } from './common/filters/http-exception.filter';
+import { enrichSwaggerDocument } from './common/swagger/enrich-swagger-document';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,7 +28,9 @@ async function bootstrap() {
         allowedPatterns.some((pattern) => pattern.test(origin)) ||
         (process.env.CORS_ORIGIN &&
           (process.env.CORS_ORIGIN === '*' ||
-            process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).includes(origin)));
+            process.env.CORS_ORIGIN.split(',')
+              .map((o) => o.trim())
+              .includes(origin)));
 
       if (isAllowed || process.env.NODE_ENV !== 'production') {
         return callback(null, true);
@@ -35,7 +38,14 @@ async function bootstrap() {
       return callback(new Error('Bloqueado por política de CORS UZDI'), false);
     },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With', 'x-usuario-id', 'x-user-id'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+      'x-usuario-id',
+      'x-user-id',
+    ],
     credentials: true,
   });
 
@@ -65,8 +75,8 @@ async function bootstrap() {
     .setTitle('Sistema SNAI - UZDI API REST')
     .setDescription(
       'Documentación interactiva de la API REST para el Sistema de Gestión Integral UZDI (SNAI - PUCE). ' +
-      'Permite consultar, registrar y probar endpoints operativos de Adolescentes, Expedientes, Medidas, ' +
-      'Estructura Institucional, Contexto Familiar y Seguridad.',
+        'Permite consultar, registrar y probar endpoints operativos de Adolescentes, Expedientes, Medidas, ' +
+        'Estructura Institucional, Contexto Familiar y Seguridad.',
     )
     .setVersion('2.0')
     .addBearerAuth(
@@ -79,25 +89,51 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('Auth', 'Autenticación y ciclo de vida de sesiones')
-    .addTag('Adolescentes', 'Registro y gestión sociodemográfica de adolescentes')
+    .addTag(
+      'Adolescentes',
+      'Registro y gestión sociodemográfica de adolescentes',
+    )
     .addTag('Expedientes', 'Gestión procesal de causas judiciales')
-    .addTag('Medidas Expediente', 'Asociación y control secuencial de medidas según el CONA')
+    .addTag(
+      'Medidas Expediente',
+      'Asociación y control secuencial de medidas según el CONA',
+    )
     .addTag('Infracciones', 'Catálogo de infracciones tipificadas')
-    .addTag('Medidas Socioeducativas', 'Catálogo de medidas socioeducativas no privativas de libertad')
-    .addTag('Estructura Institucional', 'Gestión geográfica (Provincias, Cantones y UZDIs)')
-    .addTag('Usuarios y Seguridad', 'Administración de usuarios, roles y auditoría')
-    .addTag('Reportes', 'Generación y exportación de reportes institucionales SNAI (Excel y PDF)')
+    .addTag(
+      'Medidas Socioeducativas',
+      'Catálogo de medidas socioeducativas no privativas de libertad',
+    )
+    .addTag(
+      'Estructura Institucional',
+      'Gestión geográfica (Provincias, Cantones y UZDIs)',
+    )
+    .addTag(
+      'Usuarios y Seguridad',
+      'Administración de usuarios, roles y auditoría',
+    )
+    .addTag(
+      'Reportes',
+      'Generación y exportación de reportes institucionales SNAI (Excel y PDF)',
+    )
     .build();
 
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  const swaggerDocument = enrichSwaggerDocument(
+    SwaggerModule.createDocument(app, swaggerConfig),
+  );
   SwaggerModule.setup('api/docs', app, swaggerDocument, {
     customSiteTitle: 'SNAI UZDI — API Docs',
   });
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Servidor Backend UZDI ejecutándose en: http://localhost:${port}/api/v1`);
-  console.log(`🌐 Acceso en red local disponible en: http://0.0.0.0:${port}/api/v1`);
-  console.log(`📖 Documentación Swagger interactiva lista en: http://localhost:${port}/api/docs`);
+  console.log(
+    `🚀 Servidor Backend UZDI ejecutándose en: http://localhost:${port}/api/v1`,
+  );
+  console.log(
+    `🌐 Acceso en red local disponible en: http://0.0.0.0:${port}/api/v1`,
+  );
+  console.log(
+    `📖 Documentación Swagger interactiva lista en: http://localhost:${port}/api/docs`,
+  );
 }
 bootstrap();

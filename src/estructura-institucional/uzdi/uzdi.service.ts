@@ -31,14 +31,16 @@ export class UzdiService {
     });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({
+  async findOne(id: number) {
+    const entity = await this.repository.findOne({
       where: {
         id,
         estado: true,
         canton: { estado: true, provincia: { estado: true } },
       },
     });
+    if (!entity) throw new NotFoundException('UZDI activa no encontrada');
+    return entity;
   }
 
   async update(id: number, updateUzdiDto: UpdateUzdiDto) {
