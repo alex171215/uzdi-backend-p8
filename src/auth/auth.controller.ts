@@ -22,6 +22,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Iniciar sesión y obtener token JWT de acceso' })
   @ApiResponse({
     status: 200,

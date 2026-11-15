@@ -104,7 +104,7 @@ export class CustomHttpExceptionFilter implements ExceptionFilter {
         `Error no controlado: ${exception.message}`,
         exception.stack,
       );
-      message = exception.message;
+      message = 'Error interno del servidor';
     }
 
     response.status(status).json({

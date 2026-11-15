@@ -21,8 +21,12 @@ export class GdoService {
     return this.repository.find({ where: { estado: true } });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id, estado: true } });
+  async findOne(id: number) {
+    const entity = await this.repository.findOne({
+      where: { id, estado: true },
+    });
+    if (!entity) throw new NotFoundException('GDO activo no encontrado');
+    return entity;
   }
 
   async update(id: number, updateGdoDto: UpdateGdoDto) {
