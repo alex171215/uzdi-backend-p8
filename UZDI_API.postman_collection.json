@@ -1,0 +1,4283 @@
+{
+  "info": {
+    "name": "UZDI API",
+    "description": "Colección generada desde OpenAPI. Configure login/password, ejecute Auth > POST /auth/login y use token Bearer automáticamente. Las peticiones de escritura modifican datos; utilice un entorno de demostración.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"La API no devuelve 500\", () => pm.expect(pm.response.code).to.be.below(500));",
+          "const tipo = pm.response.headers.get(\"Content-Type\") || \"\";",
+          "if (tipo.includes(\"application/json\")) {",
+          "  pm.test(\"Respuesta JSON con contrato UZDI\", () => {",
+          "    const body = pm.response.json();",
+          "    pm.expect(body).to.have.property(\"ok\");",
+          "    if (pm.response.code >= 400) pm.expect(body).to.have.property(\"message\");",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Salud",
+      "item": [
+        {
+          "name": "GET ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1"
+              ]
+            },
+            "description": "Verificación de estado de la API",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            },
+            "description": "Endpoint explícito de health check"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Iniciar sesión y obtener token JWT de acceso",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const token = pm.response.json()?.data?.token;",
+                  "  if (token) pm.collectionVariables.set(\"token\", token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /auth/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Usuario autenticado, su perfil y las acciones que puede ejecutar"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Cerrar sesión activa en seguridad.sesn",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sesionId\": 45\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /auth/change-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "Cambiar contraseña de usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"currentPassword\": \"{{password}}\",\n  \"newPassword\": \"{{newPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Adolescentes",
+      "item": [
+        {
+          "name": "GET /adolescente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente"
+              ]
+            },
+            "description": "Listar todos los adolescentes activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /adolescente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente"
+              ]
+            },
+            "description": "Registrar un nuevo adolescente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1723456789\",\n  \"nombre\": \"Carlos Andrés\",\n  \"apellido\": \"Pérez Gómez\",\n  \"fecha_nac\": \"2008-05-14\",\n  \"sexo\": \"M\",\n  \"nved_nombre\": \"Educación General Básica Superior\",\n  \"hijos\": 0,\n  \"reincide\": false,\n  \"fecha_ingr\": \"2026-02-01\",\n  \"hijoPpl\": false,\n  \"observaciones\": \"Adolescente reside con abuela materna\",\n  \"nacn_id\": 1,\n  \"etcv_id\": 1,\n  \"etna_id\": 1,\n  \"cntn_id\": 1,\n  \"gdo_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /adolescente/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Pérez",
+                  "description": "Texto de búsqueda (nombre, apellido o cédula)",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Buscar adolescentes activos por coincidencia en nombre, apellido o cédula"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /adolescente/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar ficha de adolescente por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /adolescente/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar datos de un adolescente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1723456789\",\n  \"nombre\": \"Carlos Andrés\",\n  \"apellido\": \"Pérez Gómez\",\n  \"fecha_nac\": \"2008-05-14\",\n  \"sexo\": \"M\",\n  \"nved_nombre\": \"Educación General Básica Superior\",\n  \"hijos\": 0,\n  \"reincide\": false,\n  \"fecha_ingr\": \"2026-02-01\",\n  \"hijoPpl\": false,\n  \"observaciones\": \"Adolescente reside con abuela materna\",\n  \"nacn_id\": 1,\n  \"etcv_id\": 1,\n  \"etna_id\": 1,\n  \"cntn_id\": 1,\n  \"gdo_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /adolescente/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar adolescente (borrado lógico)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Expedientes",
+      "item": [
+        {
+          "name": "GET /expediente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente"
+              ],
+              "query": [
+                {
+                  "key": "adlc_id",
+                  "value": "1",
+                  "description": "Filtrar por ID del adolescente",
+                  "disabled": true
+                },
+                {
+                  "key": "infc_id",
+                  "value": "1",
+                  "description": "Filtrar por ID de la infracción",
+                  "disabled": true
+                },
+                {
+                  "key": "uzdi_id",
+                  "value": "1",
+                  "description": "Filtrar por ID de sede UZDI",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar expedientes judiciales con filtros opcionales"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente"
+              ]
+            },
+            "description": "Aperturar un nuevo expediente judicial",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adlc_id\": 1,\n  \"uzdi_id\": 1,\n  \"infc_id\": 1,\n  \"numero_causa\": \"EXP-2026-0042\",\n  \"estado_procesal\": \"En proceso\",\n  \"observaciones\": \"Expediente remitido por la Unidad Judicial de Familia, Mujer, Niñez y Adolescencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /expediente/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de un expediente con sus medidas socioeducativas"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /expediente/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar completamente los datos de un expediente (PUT)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adlc_id\": 1,\n  \"uzdi_id\": 1,\n  \"infc_id\": 1,\n  \"numero_causa\": \"EXP-2026-0042\",\n  \"estado_procesal\": \"En proceso\",\n  \"observaciones\": \"Expediente remitido por la Unidad Judicial de Familia, Mujer, Niñez y Adolescencia\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /expediente/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar parcialmente un expediente (PATCH)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adlc_id\": 1,\n  \"uzdi_id\": 1,\n  \"infc_id\": 1,\n  \"numero_causa\": \"EXP-2026-0042\",\n  \"estado_procesal\": \"En proceso\",\n  \"observaciones\": \"Expediente remitido por la Unidad Judicial de Familia, Mujer, Niñez y Adolescencia\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /expediente/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente un expediente judicial"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Medidas",
+      "item": [
+        {
+          "name": "GET /medida-socioeducativa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa"
+              ],
+              "query": [
+                {
+                  "key": "incluirInactivos",
+                  "value": "true",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar medidas socioeducativas"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /medida-socioeducativa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa"
+              ]
+            },
+            "description": "Crear una nueva medida socioeducativa",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Amonestación e imposición de reglas de conducta\",\n  \"duracion_meses\": 6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /medida-socioeducativa/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una medida socioeducativa"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /medida-socioeducativa/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar completamente el tipo de medida (PUT)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Amonestación e imposición de reglas de conducta\",\n  \"duracion_meses\": 6,\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /medida-socioeducativa/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar parcialmente el tipo de medida (PATCH)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Amonestación e imposición de reglas de conducta\",\n  \"duracion_meses\": 6,\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /medida-socioeducativa/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una medida socioeducativa"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /medida-socioeducativa/{id}/expedientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-socioeducativa/{{id}}/expedientes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-socioeducativa",
+                "{{id}}",
+                "expedientes"
+              ]
+            },
+            "description": "Listar expedientes vinculados a una medida"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /medida-expediente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente"
+              ],
+              "query": [
+                {
+                  "key": "expe_id",
+                  "value": "1",
+                  "description": "Filtrar medidas por ID de expediente",
+                  "disabled": true
+                },
+                {
+                  "key": "mdso_id",
+                  "value": "1",
+                  "description": "Filtrar medidas por ID de catálogo de medida",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar medidas asignadas con filtros opcionales"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /medida-expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente"
+              ]
+            },
+            "description": "Asignar una medida socioeducativa a un expediente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expe_id\": 1,\n  \"mdso_id\": 1,\n  \"orden\": 1,\n  \"fecha_inicio\": \"2026-03-01\",\n  \"fecha_fin\": \"2026-09-01\",\n  \"estado_cumplimiento\": \"Cumpliendo\",\n  \"observaciones\": \"Adolescente asiste puntualmente a las sesiones semanales\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /medida-expediente/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una medida asignada"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /medida-expediente/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar completamente la medida socioeducativa (PUT)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mdso_id\": 1,\n  \"orden\": 1,\n  \"fecha_inicio\": \"2026-03-01\",\n  \"fecha_fin\": \"2026-09-01\",\n  \"estado_cumplimiento\": \"Cumpliendo\",\n  \"observaciones\": \"Adolescente asiste puntualmente a las sesiones semanales\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /medida-expediente/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar seguimiento o estado de una medida asignada",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mdso_id\": 1,\n  \"orden\": 1,\n  \"fecha_inicio\": \"2026-03-01\",\n  \"fecha_fin\": \"2026-09-01\",\n  \"estado_cumplimiento\": \"Cumpliendo\",\n  \"observaciones\": \"Adolescente asiste puntualmente a las sesiones semanales\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /medida-expediente/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/medida-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "medida-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una medida asignada"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Talleres",
+      "item": [
+        {
+          "name": "GET /taller",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/taller",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "taller"
+              ]
+            },
+            "description": "Listar todos los talleres activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /taller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/taller",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "taller"
+              ]
+            },
+            "description": "Planificar y registrar un nuevo taller formativo",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uzdi_id\": 1,\n  \"prsn_id\": 1,\n  \"nombre\": \"Taller de Habilidades para la Vida\",\n  \"tema\": \"Manejo del Estrés y Resolución Asertiva\",\n  \"objetivo\": \"Desarrollar capacidades socioemocionales de afrontamiento\",\n  \"fecha\": \"2026-03-15\",\n  \"hora_inicio\": \"09:00:00\",\n  \"hora_fin\": \"11:00:00\",\n  \"lugar\": \"Auditorio Principal UZDI Ambato\",\n  \"observaciones\": \"Se contó con la presencia de observadores pedagógicos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /taller/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar información detallada de un taller por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /taller/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar información de un taller",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uzdi_id\": 1,\n  \"prsn_id\": 1,\n  \"nombre\": \"Taller de Habilidades para la Vida\",\n  \"tema\": \"Manejo del Estrés y Resolución Asertiva\",\n  \"objetivo\": \"Desarrollar capacidades socioemocionales de afrontamiento\",\n  \"fecha\": \"2026-03-15\",\n  \"hora_inicio\": \"09:00:00\",\n  \"hora_fin\": \"11:00:00\",\n  \"lugar\": \"Auditorio Principal UZDI Ambato\",\n  \"observaciones\": \"Se contó con la presencia de observadores pedagógicos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /taller/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar taller (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /asistencia-taller",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller"
+              ]
+            },
+            "description": "Listar registros de asistencia activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /asistencia-taller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller"
+              ]
+            },
+            "description": "Registrar asistencia a taller (valida restricción: adolescente o representante)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tall_id\": 1,\n  \"tipo_asistente\": \"adolescente\",\n  \"adlc_id\": 1,\n  \"adre_id\": 1,\n  \"asistio\": true,\n  \"observaciones\": \"Participó activamente en las dinámicas grupales\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /asistencia-taller/taller/{tall_id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller/taller/{{tall_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller",
+                "taller",
+                "{{tall_id}}"
+              ]
+            },
+            "description": "Consultar listado de asistencia para un taller específico"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /asistencia-taller/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar registro de asistencia por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /asistencia-taller/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar estado de asistencia u observaciones",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tall_id\": 1,\n  \"tipo_asistente\": \"adolescente\",\n  \"adlc_id\": 1,\n  \"adre_id\": 1,\n  \"asistio\": true,\n  \"observaciones\": \"Participó activamente en las dinámicas grupales\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /asistencia-taller/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/asistencia-taller/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "asistencia-taller",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar registro de asistencia (borrado lógico)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "GET /reportes/uzdi/adolescentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/uzdi/adolescentes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reportes",
+                "uzdi",
+                "adolescentes"
+              ],
+              "query": [
+                {
+                  "key": "uzdi_id",
+                  "value": "1",
+                  "description": "ID de la sede UZDI para filtrar",
+                  "disabled": true
+                },
+                {
+                  "key": "prov_id",
+                  "value": "1",
+                  "description": "ID de la provincia",
+                  "disabled": true
+                },
+                {
+                  "key": "cntn_id",
+                  "value": "1",
+                  "description": "ID del cantón",
+                  "disabled": true
+                },
+                {
+                  "key": "estado_procesal",
+                  "value": "En proceso",
+                  "description": "Estado procesal del expediente",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Consolidado de adolescentes activos por provincia, cantón y sede UZDI"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /reportes/expedientes/medidas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/expedientes/medidas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reportes",
+                "expedientes",
+                "medidas"
+              ],
+              "query": [
+                {
+                  "key": "uzdi_id",
+                  "value": "1",
+                  "description": "ID de la sede UZDI para filtrar",
+                  "disabled": true
+                },
+                {
+                  "key": "prov_id",
+                  "value": "1",
+                  "description": "ID de la provincia",
+                  "disabled": true
+                },
+                {
+                  "key": "cntn_id",
+                  "value": "1",
+                  "description": "ID del cantón",
+                  "disabled": true
+                },
+                {
+                  "key": "estado_procesal",
+                  "value": "En proceso",
+                  "description": "Estado procesal del expediente",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Resumen procesal de expedientes con infracciones y medidas socioeducativas"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /reportes/export/excel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/export/excel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reportes",
+                "export",
+                "excel"
+              ],
+              "query": [
+                {
+                  "key": "uzdi_id",
+                  "value": "1",
+                  "description": "ID de la sede UZDI para filtrar",
+                  "disabled": true
+                },
+                {
+                  "key": "prov_id",
+                  "value": "1",
+                  "description": "ID de la provincia",
+                  "disabled": true
+                },
+                {
+                  "key": "cntn_id",
+                  "value": "1",
+                  "description": "ID del cantón",
+                  "disabled": true
+                },
+                {
+                  "key": "estado_procesal",
+                  "value": "En proceso",
+                  "description": "Estado procesal del expediente",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Descarga del reporte consolidado en formato Microsoft Excel (.xlsx)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /reportes/export/pdf",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/export/pdf",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reportes",
+                "export",
+                "pdf"
+              ],
+              "query": [
+                {
+                  "key": "uzdi_id",
+                  "value": "1",
+                  "description": "ID de la sede UZDI para filtrar",
+                  "disabled": true
+                },
+                {
+                  "key": "prov_id",
+                  "value": "1",
+                  "description": "ID de la provincia",
+                  "disabled": true
+                },
+                {
+                  "key": "cntn_id",
+                  "value": "1",
+                  "description": "ID del cantón",
+                  "disabled": true
+                },
+                {
+                  "key": "estado_procesal",
+                  "value": "En proceso",
+                  "description": "Estado procesal del expediente",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Descarga de la ficha ejecutiva institucional en formato binario PDF"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catálogos",
+      "item": [
+        {
+          "name": "GET /nacionalidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/nacionalidad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "nacionalidad"
+              ]
+            },
+            "description": "Listar nacionalidades activas"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /nacionalidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/nacionalidad",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "nacionalidad"
+              ]
+            },
+            "description": "Crear una nueva nacionalidad",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ecuatoriana\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /nacionalidad/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/nacionalidad/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "nacionalidad",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una nacionalidad por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /nacionalidad/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/nacionalidad/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "nacionalidad",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar una nacionalidad",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ecuatoriana\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /nacionalidad/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/nacionalidad/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "nacionalidad",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una nacionalidad"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /estado-civil",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/estado-civil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "estado-civil"
+              ]
+            },
+            "description": "Listar estados civiles activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /estado-civil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/estado-civil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "estado-civil"
+              ]
+            },
+            "description": "Crear un nuevo estado civil",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Soltero\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /estado-civil/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/estado-civil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "estado-civil",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de un estado civil por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /estado-civil/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/estado-civil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "estado-civil",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar un estado civil",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Soltero\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /estado-civil/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/estado-civil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "estado-civil",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente un estado civil"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /etnia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/etnia",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "etnia"
+              ]
+            },
+            "description": "Listar etnias activas"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /etnia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/etnia",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "etnia"
+              ]
+            },
+            "description": "Crear una nueva etnia",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mestiza\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /etnia/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/etnia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "etnia",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una etnia por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /etnia/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/etnia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "etnia",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar una etnia",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mestiza\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /etnia/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/etnia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "etnia",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una etnia"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gdo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/gdo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "gdo"
+              ]
+            },
+            "description": "Listar GDOs activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /gdo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/gdo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "gdo"
+              ]
+            },
+            "description": "Registrar un nuevo GDO en catálogo",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Grupo de referencia 1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /gdo/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/gdo/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "gdo",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de un GDO por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /gdo/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/gdo/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "gdo",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar un GDO",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Grupo de referencia 1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /gdo/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/gdo/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "gdo",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente un GDO"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /infraccion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion"
+              ],
+              "query": [
+                {
+                  "key": "incluirInactivos",
+                  "value": "true",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar infracciones"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /infraccion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion"
+              ]
+            },
+            "description": "Crear una nueva infracción",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Robo simple\",\n  \"categoria\": \"Delito contra la propiedad\",\n  \"articulo_cona\": \"Art. 189\",\n  \"descripcion\": \"Apoderamiento ilegítimo de cosa mueble ajena sin violencia física\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /infraccion/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una infracción por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /infraccion/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar completamente una infraccion (PUT)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Robo simple\",\n  \"categoria\": \"Delito contra la propiedad\",\n  \"articulo_cona\": \"Art. 189\",\n  \"descripcion\": \"Apoderamiento ilegítimo de cosa mueble ajena sin violencia física\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /infraccion/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar parcialmente una infraccion (PATCH)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Robo simple\",\n  \"categoria\": \"Delito contra la propiedad\",\n  \"articulo_cona\": \"Art. 189\",\n  \"descripcion\": \"Apoderamiento ilegítimo de cosa mueble ajena sin violencia física\",\n  \"estado\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /infraccion/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una infracción"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /infraccion/{id}/expedientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/infraccion/{{id}}/expedientes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "infraccion",
+                "{{id}}",
+                "expedientes"
+              ]
+            },
+            "description": "Listar expedientes vinculados a una infracción"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /tipo-parentesco",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-parentesco",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-parentesco"
+              ]
+            },
+            "description": "Listar todos los tipos de parentesco activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /tipo-parentesco",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-parentesco",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-parentesco"
+              ]
+            },
+            "description": "Crear nuevo tipo de parentesco",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Madre\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /tipo-parentesco/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-parentesco/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-parentesco",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener un tipo de parentesco por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /tipo-parentesco/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-parentesco/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-parentesco",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar tipo de parentesco",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Madre\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /tipo-parentesco/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-parentesco/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-parentesco",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar tipo de parentesco (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /tipo-documento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-documento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-documento"
+              ]
+            },
+            "description": "Listar todos los tipos de documento activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /tipo-documento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-documento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-documento"
+              ]
+            },
+            "description": "Registrar un nuevo tipo de documento",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Resolución Judicial de Medida\",\n  \"descripcion\": \"Auto resolutivo emitido por juez de la niñez y adolescencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /tipo-documento/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-documento/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-documento",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar tipo de documento por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /tipo-documento/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-documento/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-documento",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar tipo de documento",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Resolución Judicial de Medida\",\n  \"descripcion\": \"Auto resolutivo emitido por juez de la niñez y adolescencia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /tipo-documento/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tipo-documento/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tipo-documento",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar tipo de documento (borrado lógico)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Geografía",
+      "item": [
+        {
+          "name": "GET /provincia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provincia",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provincia"
+              ]
+            },
+            "description": "Listar todas las provincias activas"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /provincia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provincia",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provincia"
+              ]
+            },
+            "description": "Crear una nueva provincia",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pichincha\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /provincia/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provincia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provincia",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una provincia por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /provincia/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provincia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provincia",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar datos de una provincia",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pichincha\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /provincia/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provincia/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provincia",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una provincia"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /canton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/canton",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "canton"
+              ],
+              "query": [
+                {
+                  "key": "prov_id",
+                  "value": "1",
+                  "description": "Filtrar por ID de provincia",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar todos los cantones activos (filtrable por prov_id)"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /canton",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/canton",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "canton"
+              ]
+            },
+            "description": "Crear un nuevo cantón",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prov_id\": 1,\n  \"nombre\": \"Quito\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /canton/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/canton/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "canton",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de un cantón por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /canton/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/canton/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "canton",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar un cantón existente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prov_id\": 1,\n  \"nombre\": \"Quito\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /canton/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/canton/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "canton",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente un cantón"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /uzdi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uzdi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uzdi"
+              ],
+              "query": [
+                {
+                  "key": "cntn_id",
+                  "value": "1",
+                  "description": "Filtrar por ID de cantón",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar todas las sedes UZDI activas (filtrable por cntn_id)"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /uzdi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uzdi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uzdi"
+              ]
+            },
+            "description": "Crear una nueva sede UZDI",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cntn_id\": 1,\n  \"nombre\": \"UZDI Centro Norte Quito\",\n  \"zona\": \"Zona 9 - DMQ\",\n  \"direccion\": \"Av. 10 de Agosto N25-32 y Colón\",\n  \"telefono\": \"022567890\",\n  \"correo\": \"uzdi.pichincha@snai.gob.ec\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /uzdi/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uzdi/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uzdi",
+                "{{id}}"
+              ]
+            },
+            "description": "Obtener detalle de una sede UZDI por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /uzdi/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uzdi/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uzdi",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar una sede UZDI",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cntn_id\": 1,\n  \"nombre\": \"UZDI Centro Norte Quito\",\n  \"zona\": \"Zona 9 - DMQ\",\n  \"direccion\": \"Av. 10 de Agosto N25-32 y Colón\",\n  \"telefono\": \"022567890\",\n  \"correo\": \"uzdi.pichincha@snai.gob.ec\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /uzdi/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uzdi/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uzdi",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar lógicamente una sede UZDI"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Familia",
+      "item": [
+        {
+          "name": "GET /representante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante"
+              ]
+            },
+            "description": "Listar todos los representantes activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /representante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante"
+              ]
+            },
+            "description": "Registrar nuevo representante legal o tutor",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cntn_id\": 1,\n  \"nombre\": \"María Elena\",\n  \"apellido\": \"López Morales\",\n  \"cedula\": \"1801234567\",\n  \"telefono\": \"0991234567\",\n  \"direccion\": \"Av. Cevallos y Montalvo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /representante/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar representante por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /representante/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar datos de un representante",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cntn_id\": 1,\n  \"nombre\": \"María Elena\",\n  \"apellido\": \"López Morales\",\n  \"cedula\": \"1801234567\",\n  \"telefono\": \"0991234567\",\n  \"direccion\": \"Av. Cevallos y Montalvo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /representante/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar representante (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /representante/cedula/{cedula}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/representante/cedula/{{cedula}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "representante",
+                "cedula",
+                "{{cedula}}"
+              ]
+            },
+            "description": "Consultar representante por número de cédula"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /adolescente-representante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante"
+              ]
+            },
+            "description": "Listar todos los vínculos de adolescentes y representantes"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /adolescente-representante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante"
+              ]
+            },
+            "description": "Vincular un representante legal o tutor a un adolescente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adlc_id\": 1,\n  \"repr_id\": 1,\n  \"tprt_id\": 1,\n  \"es_referente\": true,\n  \"fecha_inicio\": \"2026-01-15\",\n  \"fecha_fin\": \"2026-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /adolescente-representante/adolescente/{adlc_id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante/adolescente/{{adlc_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante",
+                "adolescente",
+                "{{adlc_id}}"
+              ]
+            },
+            "description": "Listar los representantes legales asociados a un adolescente"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /adolescente-representante/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar un vínculo por su ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /adolescente-representante/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar un vínculo adolescente-representante",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adlc_id\": 1,\n  \"repr_id\": 1,\n  \"tprt_id\": 1,\n  \"es_referente\": true,\n  \"fecha_inicio\": \"2026-01-15\",\n  \"fecha_fin\": \"2026-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /adolescente-representante/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/adolescente-representante/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "adolescente-representante",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar vínculo adolescente-representante (borrado lógico)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Documentos",
+      "item": [
+        {
+          "name": "GET /documento-expediente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente"
+              ]
+            },
+            "description": "Listar todos los documentos de expedientes activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /documento-expediente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente"
+              ]
+            },
+            "description": "Registrar documento o evidencia en un expediente judicial",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expe_id\": 1,\n  \"prsn_id\": 1,\n  \"tpdc_id\": 1,\n  \"es_habilitante\": true,\n  \"estado_tramite\": \"pendiente\",\n  \"numero_documento\": \"OFI-2026-0045-JNA\",\n  \"fecha_documento\": \"2026-02-20\",\n  \"emisor\": \"Juzgado Primero de la Familia, Niñez y Adolescencia\",\n  \"observaciones\": \"Documento original foliado en expediente físico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /documento-expediente/expediente/{expe_id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente/expediente/{{expe_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente",
+                "expediente",
+                "{{expe_id}}"
+              ]
+            },
+            "description": "Listar documentos vinculados a un expediente específico"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /documento-expediente/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Consultar documento de expediente por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /documento-expediente/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar estado de trámite o datos del documento",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"expe_id\": 1,\n  \"prsn_id\": 1,\n  \"tpdc_id\": 1,\n  \"es_habilitante\": true,\n  \"estado_tramite\": \"pendiente\",\n  \"numero_documento\": \"OFI-2026-0045-JNA\",\n  \"fecha_documento\": \"2026-02-20\",\n  \"emisor\": \"Juzgado Primero de la Familia, Niñez y Adolescencia\",\n  \"observaciones\": \"Documento original foliado en expediente físico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /documento-expediente/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documento-expediente/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "documento-expediente",
+                "{{id}}"
+              ]
+            },
+            "description": "Inactivar documento de expediente (borrado lógico)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Seguridad",
+      "item": [
+        {
+          "name": "GET /users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Listar usuarios activos"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "Registrar usuario (exige perfil institucional activo, RF-12 → RF-01)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Lucía\",\n  \"apellidos\": \"Mora\",\n  \"sexo\": \"F\",\n  \"direccion\": \"Av. Cevallos y Montalvo, Ambato\",\n  \"telefono\": \"0991234567\",\n  \"correo\": \"lucia.mora@uzdi.gob.ec\",\n  \"login\": \"lmora\",\n  \"password\": \"{{password}}\",\n  \"uzdi_id\": 1,\n  \"tppr_id\": 1,\n  \"observaciones\": \"Trabajadora social de la UZDI Ambato\",\n  \"perfiles_ids\": [\n    4\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "perez",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Buscar por nombres, apellidos, login o correo"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de un usuario"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /users/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar usuario (incluye restablecer contraseña)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Lucía\",\n  \"apellidos\": \"Mora\",\n  \"sexo\": \"F\",\n  \"direccion\": \"Av. Cevallos y Montalvo, Ambato\",\n  \"telefono\": \"0991234567\",\n  \"correo\": \"lucia.mora@uzdi.gob.ec\",\n  \"login\": \"lmora\",\n  \"password\": \"{{password}}\",\n  \"uzdi_id\": 1,\n  \"tppr_id\": 1,\n  \"observaciones\": \"Trabajadora social de la UZDI Ambato\",\n  \"perfiles_ids\": [\n    4\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /users/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar usuario (borrado lógico; su token deja de servir)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /users/{id}/perfiles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{id}}/perfiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{id}}",
+                "perfiles"
+              ]
+            },
+            "description": "Perfiles institucionales asignados al usuario (seguridad.prpf)"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /users/{id}/perfiles",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{id}}/perfiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{id}}",
+                "perfiles"
+              ]
+            },
+            "description": "Reemplazar los perfiles asignados al usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perfiles_ids\": [\n    3,\n    7\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /perfil",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil"
+              ]
+            },
+            "description": "Listar perfiles (activos por defecto)"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /perfil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil"
+              ]
+            },
+            "description": "Crear perfil institucional",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"AUDIT\",\n  \"nombre\": \"Auditor interno\",\n  \"descripcion\": \"Revisión de bitácoras y sesiones\",\n  \"observaciones\": \"Creado para fiscalización SNAI\",\n  \"padreId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /perfil/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de un perfil"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /perfil/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar perfil",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"AUDIT\",\n  \"nombre\": \"Auditor interno\",\n  \"descripcion\": \"Revisión de bitácoras y sesiones\",\n  \"observaciones\": \"Creado para fiscalización SNAI\",\n  \"padreId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /perfil/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar perfil (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /perfil/{id}/permisos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/perfil/{{id}}/permisos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "perfil",
+                "{{id}}",
+                "permisos"
+              ]
+            },
+            "description": "Acciones habilitadas para el perfil (seguridad.prms)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /accion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accion"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "adolescente",
+                  "description": "Filtra por texto en el nombre",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Listar acciones (filtro ?q= y ?incluirInactivos=true)"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /accion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accion"
+              ]
+            },
+            "description": "Registrar acción",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"reportes.exportar\",\n  \"descripcion\": \"Exportar reportes SNAI\",\n  \"auditable\": 1,\n  \"moduloId\": 3,\n  \"controladorId\": 1,\n  \"tipoAccionId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /accion/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accion",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de una acción"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /accion/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accion",
+                "{{id}}"
+              ]
+            },
+            "description": "Actualizar acción",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"reportes.exportar\",\n  \"descripcion\": \"Exportar reportes SNAI\",\n  \"auditable\": 1,\n  \"moduloId\": 3,\n  \"controladorId\": 1,\n  \"tipoAccionId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /accion/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/accion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "accion",
+                "{{id}}"
+              ]
+            },
+            "description": "Desactivar acción (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /permiso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso"
+              ],
+              "query": [
+                {
+                  "key": "prfl_id",
+                  "value": "4",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "accn_id",
+                  "value": "12",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Consultar matriz de permisos (?prfl_id=&accn_id=)"
+          },
+          "response": []
+        },
+        {
+          "name": "POST /permiso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso"
+              ]
+            },
+            "description": "Otorgar una acción a un perfil",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prfl_id\": 4,\n  \"accn_id\": 12\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /permiso/perfil/{prflId}/acciones",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso/perfil/{{prflId}}/acciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso",
+                "perfil",
+                "{{prflId}}",
+                "acciones"
+              ]
+            },
+            "description": "Asignar varias acciones a un perfil",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accn_ids\": [\n    1,\n    2,\n    3\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /permiso/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de un permiso"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /permiso/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso",
+                "{{id}}"
+              ]
+            },
+            "description": "Revocar permiso por prms_id (borrado lógico)"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /permiso/perfil/{prflId}/acciones/{accnId}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/permiso/perfil/{{prflId}}/acciones/{{accnId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "permiso",
+                "perfil",
+                "{{prflId}}",
+                "acciones",
+                "{{accnId}}"
+              ]
+            },
+            "description": "Revocar una acción a un perfil"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /persona",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/persona",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "persona"
+              ]
+            },
+            "description": "Listar personas activas (para altas usar POST /users)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /persona/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/persona/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "persona",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de una persona"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /sesion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/sesion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sesion"
+              ],
+              "query": [
+                {
+                  "key": "activas",
+                  "value": "true",
+                  "description": "true = solo sesiones abiertas",
+                  "disabled": true
+                },
+                {
+                  "key": "prsn_id",
+                  "value": "1",
+                  "description": "Filtra por usuario (prsn_id)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Bitácora de sesiones (?activas=true&prsn_id=)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /sesion/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/sesion/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sesion",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de una sesión"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /sesion/{id}/cerrar",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/sesion/{{id}}/cerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sesion",
+                "{{id}}",
+                "cerrar"
+              ]
+            },
+            "description": "Forzar cierre de una sesión (invalida su token)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /historial",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/historial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "historial"
+              ],
+              "query": [
+                {
+                  "key": "tabla",
+                  "value": "seguridad.prsn",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "registro_id",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "usuario_id",
+                  "value": "1",
+                  "description": "Usuario que hizo el cambio",
+                  "disabled": true
+                },
+                {
+                  "key": "accion",
+                  "value": "true",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "desde",
+                  "value": "2026-11-01",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "hasta",
+                  "value": "2026-11-30",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "pagina",
+                  "value": "1",
+                  "description": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limite",
+                  "value": "50",
+                  "description": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Consultar auditoría (filtros por tabla, registro, usuario, acción y fechas)"
+          },
+          "response": []
+        },
+        {
+          "name": "GET /historial/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/historial/{{id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "historial",
+                "{{id}}"
+              ]
+            },
+            "description": "Detalle de un registro de auditoría"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://uzdi-backend-api.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "login",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "prflId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "accnId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "cedula",
+      "value": "1712345678",
+      "type": "string"
+    },
+    {
+      "key": "adlc_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "tall_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "expe_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

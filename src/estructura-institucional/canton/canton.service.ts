@@ -31,10 +31,12 @@ export class CantonService {
     });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({
+  async findOne(id: number) {
+    const entity = await this.repository.findOne({
       where: { id, estado: true, provincia: { estado: true } },
     });
+    if (!entity) throw new NotFoundException('Cantón activo no encontrado');
+    return entity;
   }
 
   async update(id: number, updateCantonDto: UpdateCantonDto) {

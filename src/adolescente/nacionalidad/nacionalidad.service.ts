@@ -21,8 +21,13 @@ export class NacionalidadService {
     return this.repository.find({ where: { estado: true } });
   }
 
-  findOne(id: number) {
-    return this.repository.findOne({ where: { id, estado: true } });
+  async findOne(id: number) {
+    const entity = await this.repository.findOne({
+      where: { id, estado: true },
+    });
+    if (!entity)
+      throw new NotFoundException('Nacionalidad activa no encontrada');
+    return entity;
   }
 
   async update(id: number, updateNacionalidadDto: UpdateNacionalidadDto) {

@@ -2,12 +2,15 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 
 export class LoginDto {
-  @ApiProperty({ example: 'admin', description: 'Login o correo' })
+  @ApiProperty({ example: 'usuario.demo', description: 'Login o correo' })
   @IsString()
   @IsNotEmpty({ message: 'El login o correo es obligatorio' })
   login: string;
 
-  @ApiProperty({ example: 'Admin.Uzdi2026' })
+  @ApiProperty({
+    example: 'TuClaveDePrueba',
+    description: 'No publicar credenciales reales en la documentación',
+  })
   @IsString()
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
   password: string;
